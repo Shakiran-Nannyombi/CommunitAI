@@ -24,7 +24,10 @@ from sqlalchemy import (
 from sqlalchemy.dialects.postgresql import JSONB, UUID
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
-from backend.db import Base
+try:
+    from backend.db import Base
+except ModuleNotFoundError:
+    from db import Base  # when running alembic from inside backend/
 
 
 class Meeting(Base):

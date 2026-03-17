@@ -1,6 +1,10 @@
 gradient-ai-adk
+gradient
 httpx
 openai
 sqlalchemy[asyncio]
 asyncpg
+pydantic-settings
+python-dotenv
+boto3
 hypothesis
