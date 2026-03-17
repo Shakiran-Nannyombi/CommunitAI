@@ -10,6 +10,9 @@ class Settings(BaseSettings):
     GRADIENT_API_KEY: str = ""
     OPENAI_API_KEY: str = ""
     GRADIENT_KB_ID: str = ""
+    GRADIENT_INFERENCE_MODEL: str = "llama3.3-70b-instruct"
+    GRADIENT_INFERENCE_URL: str = "https://inference.do-ai.run/v1/chat/completions"
+    MODEL_ACCESS_KEY: str = ""
 
     class Config:
         env_file = ".env"
