@@ -9,7 +9,7 @@ class Settings(BaseSettings):
     DO_SPACES_BUCKET: str = ""
     GRADIENT_API_KEY: str = ""
     OPENAI_API_KEY: str = ""
-    GRADIENT_KB_ID: str | None = None
+    GRADIENT_KB_ID: str = ""
 
     class Config:
         env_file = ".env"
