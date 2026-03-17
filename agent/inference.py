@@ -1,32 +1,36 @@
-"""
-Gradient AI Serverless Inference helper.
-Uses the official gradient-ai SDK with MODEL_ACCESS_KEY.
-Model: llama3.3-70b-instruct
-"""
-
-import os
-
-from gradient import Gradient
+import httpx
 
 from agent.config import settings
 
-
-def _get_client() -> Gradient:
-    return Gradient(model_access_key=settings.GRADIENT_MODEL_ACCESS_KEY)
+INFERENCE_URL = "https://inference.do-ai.run/v1/chat/completions"
+MODEL = "meta-llama-3.1-70b-instruct"
 
 
 async def call_inference(system_prompt: str, user_content: str) -> str:
+    """Call Gradient AI Serverless Inference with the given prompts.
+
+    If GRADIENT_KB_ID is configured, appends a note to the system prompt
+    instructing the model to use the knowledge base context.
     """
-    Call Gradient AI chat completions synchronously (SDK is sync).
-    Returns the assistant message content as a string.
-    """
-    client = _get_client()
-    response = client.chat.completions.create(
-        model=settings.GRADIENT_INFERENCE_MODEL,
-        messages=[
-            {"role": "system", "content": system_prompt},
-            {"role": "user", "content": user_content},
-        ],
-        max_tokens=2048,
-    )
-    return response.choices[0].message.content
+    effective_system_prompt = system_prompt
+    if settings.GRADIENT_KB_ID:
+        effective_system_prompt = (
+            f"{system_prompt}\n\n"
+            f"Note: Use the knowledge base (ID: {settings.GRADIENT_KB_ID}) "
+            "for additional community management context when relevant."
+        )
+
+    async with httpx.AsyncClient() as client:
+        response = await client.post(
+            INFERENCE_URL,
+            headers={"Authorization": f"Bearer {settings.GRADIENT_API_KEY}"},
+            json={
+                "model": MODEL,
+                "messages": [
+                    {"role": "system", "content": effective_system_prompt},
+                    {"role": "user", "content": user_content},
+                ],
+            },
+        )
+        response.raise_for_status()
+        return response.json()["choices"][0]["message"]["content"]

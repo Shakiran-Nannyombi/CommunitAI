@@ -1,61 +1,133 @@
-"""
-Step 3 — Sentiment Analysis
-Calls Gradient AI LLM with the analyze prompt, validates classification,
-persists to sentiment_reports table.
-"""
-
+"""Sentiment analysis step: call Gradient Inference, parse, and persist to DB."""
 import json
+import logging
 from pathlib import Path
-
-from agent.db import SessionLocal, update_meeting_status
-from agent.inference import call_inference
-from agent.utils import with_retry
 
 from sqlalchemy import text
 
-PROMPT_PATH = Path(__file__).parent.parent / "prompts" / "analyze.txt"
-VALID_CLASSIFICATIONS = {"positive", "neutral", "negative"}
+from agent.db import AsyncSessionLocal, update_meeting_status
+from agent.inference import call_inference
+from agent.utils import with_retry
+
+logger = logging.getLogger(__name__)
+
+_PROMPT_PATH = Path(__file__).parent.parent / "prompts" / "analyze.txt"
+
+_VALID_CLASSIFICATIONS = {"positive", "neutral", "negative"}
 
 
-async def analyze(meeting_id: str, transcript: str) -> dict:
+def _load_system_prompt() -> str:
+    return _PROMPT_PATH.read_text(encoding="utf-8")
+
+
+def _parse_sentiment(raw: str) -> dict | None:
+    """Parse and validate the JSON sentiment response from inference.
+
+    Returns a dict with 'classification' and 'signals' on success, or None if
+    the response is malformed or fails validation.
     """
-    Analyze sentiment of transcript, persist to DB.
-    Returns the sentiment report dict.
-    """
-    system_prompt = PROMPT_PATH.read_text()
-
-    async def _run():
-        raw = await call_inference(system_prompt, transcript)
-        cleaned = raw.strip()
-        if cleaned.startswith("```"):
-            cleaned = cleaned.split("```")[1]
-            if cleaned.startswith("json"):
-                cleaned = cleaned[4:]
-        report: dict = json.loads(cleaned.strip())
-        if report.get("classification") not in VALID_CLASSIFICATIONS:
-            raise ValueError(f"Invalid classification: {report.get('classification')}")
-        return report
-
     try:
-        report = await with_retry(_run, max_retries=3)
-    except Exception:
-        await update_meeting_status(meeting_id, "analysis_failed")
-        raise
+        data = json.loads(raw)
+    except json.JSONDecodeError:
+        logger.warning("Failed to parse sentiment JSON: %r", raw[:200])
+        return None
 
-    async with SessionLocal() as session:
-        await session.execute(
+    if not isinstance(data, dict):
+        logger.warning("Expected JSON object, got %s", type(data).__name__)
+        return None
+
+    classification = data.get("classification")
+    if classification not in _VALID_CLASSIFICATIONS:
+        logger.warning(
+            "Invalid classification %r; must be one of %s",
+            classification,
+            _VALID_CLASSIFICATIONS,
+        )
+        return None
+
+    signals = data.get("signals")
+    if not isinstance(signals, list):
+        logger.warning("Expected 'signals' to be a list, got %s", type(signals).__name__)
+        return None
+
+    return {"classification": classification, "signals": signals}
+
+
+async def _persist_sentiment(meeting_id: str, classification: str, signals: list) -> dict:
+    """Insert a sentiment report into the sentiment_reports table; return the row."""
+    async with AsyncSessionLocal() as session:
+        result = await session.execute(
             text(
                 """
-                INSERT INTO sentiment_reports (id, meeting_id, classification, signals)
-                VALUES (gen_random_uuid(), :meeting_id, :classification, cast(:signals as jsonb))
+                INSERT INTO sentiment_reports (meeting_id, classification, signals)
+                VALUES (:meeting_id, :classification, :signals)
+                RETURNING id, meeting_id, classification, signals, status, created_at
                 """
             ),
             {
                 "meeting_id": meeting_id,
-                "classification": report["classification"],
-                "signals": json.dumps(report.get("signals", [])),
+                "classification": classification,
+                "signals": json.dumps(signals),
             },
         )
+        row = result.mappings().one()
         await session.commit()
+    return dict(row)
 
+
+async def analyze_sentiment(meeting_id: str, transcript: str) -> dict | None:
+    """Analyze sentiment from transcript and persist the report to the database.
+
+    - Loads the system prompt from agent/prompts/analyze.txt.
+    - Calls Gradient Inference wrapped in with_retry(max_retries=3).
+    - Validates the response has 'classification' in {positive, neutral, negative}
+      and 'signals' is a list.
+    - Persists the report to the sentiment_reports table.
+    - On final inference failure, calls update_meeting_status with 'analysis_failed'
+      and returns None.
+
+    Returns the persisted report dict on success.
+    """
+    system_prompt = _load_system_prompt()
+
+    async def call() -> str:
+        return await call_inference(system_prompt, transcript)
+
+    try:
+        raw_response = await with_retry(call, max_retries=3)
+    except Exception as exc:
+        logger.error(
+            "Sentiment analysis failed after retries for meeting %s: %s",
+            meeting_id,
+            exc,
+        )
+        await update_meeting_status(meeting_id, "analysis_failed")
+        return None
+
+    parsed = _parse_sentiment(raw_response)
+    if parsed is None:
+        logger.error(
+            "Invalid sentiment response for meeting %s; marking analysis_failed.",
+            meeting_id,
+        )
+        await update_meeting_status(meeting_id, "analysis_failed")
+        return None
+
+    try:
+        report = await _persist_sentiment(
+            meeting_id, parsed["classification"], parsed["signals"]
+        )
+    except Exception as exc:
+        logger.error(
+            "Failed to persist sentiment report for meeting %s: %s", meeting_id, exc
+        )
+        await update_meeting_status(meeting_id, "analysis_failed")
+        return None
+
+    logger.info(
+        "Persisted sentiment report for meeting %s (classification=%s, signals=%d).",
+        meeting_id,
+        parsed["classification"],
+        len(parsed["signals"]),
+    )
     return report

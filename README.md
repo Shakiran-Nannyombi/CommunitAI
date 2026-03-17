@@ -1,69 +1,102 @@
-# CommunitAI: The AI Chief of Staff for Community Leaders
+# CommunitAI
 
-CommunitAI is a production-ready AI platform designed to automate the administrative burden of community management. Built on DigitalOcean Gradient AI, it transforms messy meeting recordings into structured action items, sentiment reports, and automated follow-ups.
+AI-powered Chief of Staff for community leaders. Records or uploads meeting audio, transcribes it, extracts action items, analyzes sentiment, and generates a shareable summary — all automatically.
 
-## The Mission
+## Architecture
 
-Community leads often spend more time on spreadsheets and notes than on people. CommunitAI uses fine-tuned LLMs to handle the "boring stuff"—meeting transcription, task tracking, and community health monitoring—so leaders can focus on building belonging.
-
-## Tech Stack & Architecture
-
-- **AI Engine:** DigitalOcean Gradient AI (Fine-tuned Llama-3/Mistral models for Community Management).
-- **Infrastructure:** DigitalOcean Droplets for the backend API and Spaces Object Storage for audio file hosting.
-- **Backend:** Python (FastAPI/Flask) utilizing the Gradient Python SDK.
-Frontend: Next.js / Tailwind CSS dashboard.
-
-## Features
-
-- **Smart Transcription:** Upload campus meeting audio for instant, high-accuracy text conversion.
-- **Agentic Action Items:** Automatically identifies who is responsible for what and assigns deadlines.
-- **Community Sentiment Analysis:** Uses a fine-tuned Gradient model to detect burnout or conflict within meeting transcripts.
-- **Automated Summaries:** Generates "TL;DR" reports ready to be blasted to Discord or Slack.
-
-## Setup & Installation
-
-**Prerequisites**
-
-1. A DigitalOcean Account.
-2. A Gradient Access Token and Workspace ID.
-3. Python 3.10+ installed.
-
-- **Installation**
-
-```bash
-Clone the Repository:
-bash
-git clone https://github.com
-cd CommunitAI
-Use code with caution.
+```
+frontend/   Next.js 14 (App Router, TypeScript, Tailwind)
+backend/    FastAPI + SQLAlchemy + Alembic + DigitalOcean Spaces
+agent/      Gradient AI ADK pipeline (Whisper → Extract → Analyze → Summarize)
 ```
 
-- **Environment Setup:**
+## Local Development
+
+### Prerequisites
+
+- Docker & Docker Compose
+- Node.js 20+
+- Python 3.12+
+
+### 1. Clone and configure environment
 
 ```bash
-Create a .env file in the root directory:
-env
-GRADIENT_ACCESS_TOKEN=your_token_here
-GRADIENT_WORKSPACE_ID=your_workspace_id_here
-DO_SPACES_KEY=your_spaces_key
-DO_SPACES_SECRET=your_spaces_secret
-Use code with caution.
+cp backend/.env.example backend/.env
+cp agent/.env.example agent/.env
+cp frontend/.env.example frontend/.env.local
 ```
 
-- **Install Dependencies:**
+Edit each `.env` file with your credentials (see [Environment Variables](#environment-variables)).
+
+### 2. Start all services
 
 ```bash
-pip install -r requirements.txt
-Use code with caution.
+docker compose up --build
 ```
 
-- **Run the Application:**
+| Service  | URL                    |
+|----------|------------------------|
+| Frontend | http://localhost:3000  |
+| Backend  | http://localhost:8000  |
+| Agent    | http://localhost:8080  |
+| Postgres | localhost:5432         |
+
+### 3. Run database migrations
 
 ```bash
-python main.py
-Use code with caution.
+docker compose exec backend alembic upgrade head
 ```
 
-## License
+## Running Tests
 
-Distributed under the MIT License. See LICENSE for more information.
+### Agent (Python / Hypothesis)
+
+```bash
+cd agent
+python3 -m pytest tests/ -q
+```
+
+### Backend (Python / Hypothesis)
+
+```bash
+cd backend
+python3 -m pytest tests/ -q
+```
+
+### Frontend (Jest / fast-check)
+
+```bash
+cd frontend
+npm install
+npm test -- --no-coverage
+```
+
+## Environment Variables
+
+### Backend (`backend/.env`)
+
+| Variable             | Description                              |
+|----------------------|------------------------------------------|
+| `DATABASE_URL`       | PostgreSQL connection string             |
+| `DO_SPACES_KEY`      | DigitalOcean Spaces access key           |
+| `DO_SPACES_SECRET`   | DigitalOcean Spaces secret key           |
+| `DO_SPACES_REGION`   | Spaces region (e.g. `nyc3`)              |
+| `DO_SPACES_BUCKET`   | Spaces bucket name                       |
+| `AGENT_ENDPOINT_URL` | ADK agent base URL                       |
+| `AGENT_API_KEY`      | ADK agent API key                        |
+| `GRADIENT_API_KEY`   | Gradient AI API key (for inference)      |
+| `OPENAI_API_KEY`     | OpenAI API key (for Whisper)             |
+
+### Agent (`agent/.env`)
+
+Same as backend, plus:
+
+| Variable        | Description                                      |
+|-----------------|--------------------------------------------------|
+| `GRADIENT_KB_ID`| (Optional) Gradient AI Knowledge Base ID         |
+
+### Frontend (`frontend/.env.local`)
+
+| Variable              | Description              |
+|-----------------------|--------------------------|
+| `NEXT_PUBLIC_API_URL` | Backend API base URL     |
