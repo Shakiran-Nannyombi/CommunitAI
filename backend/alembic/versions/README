@@ -1,0 +1,9 @@
+# Alembic migration versions
+
+Migration scripts are generated here via:
+
+    alembic revision --autogenerate -m "description"
+
+Apply migrations with:
+
+    alembic upgrade head
