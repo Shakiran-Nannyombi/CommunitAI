@@ -166,8 +166,8 @@ async def upload_audio(
     meeting.status = "processing"
     await db.flush()
 
-    # Fire-and-forget: trigger agent
-    asyncio.create_task(agent_client.trigger_agent(str(meeting_id)))
+    # Fire-and-forget: trigger agent with the exact R2 key
+    asyncio.create_task(agent_client.trigger_agent(str(meeting_id), audio_key=key))
 
     # Reload relationships for response
     await db.refresh(meeting, ["transcript", "action_items", "sentiment_report", "summary"])
