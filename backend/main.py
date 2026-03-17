@@ -7,6 +7,7 @@ from fastapi.responses import JSONResponse
 from backend.exceptions import StorageError
 from backend.routers.action_items import router as action_items_router
 from backend.routers.meetings import router as meetings_router
+from backend.routers.workspaces import router as workspaces_router
 
 logger = logging.getLogger(__name__)
 
@@ -41,3 +42,4 @@ async def storage_error_handler(request: Request, exc: StorageError) -> JSONResp
 
 app.include_router(meetings_router, prefix="/api")
 app.include_router(action_items_router, prefix="/api")
+app.include_router(workspaces_router, prefix="/api")
