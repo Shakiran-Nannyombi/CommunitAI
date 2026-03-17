@@ -1,7 +1,10 @@
 """
 Step 1 — Transcription
-Downloads audio from R2, calls Gradient AI Whisper endpoint, stores transcript back to R2,
-persists to DB, and updates meeting status.
+Downloads audio from R2, calls Groq Whisper endpoint for transcription,
+stores transcript back to R2, persists to DB, and updates meeting status.
+
+Note: Gradient AI does not offer a Whisper/audio endpoint.
+Groq provides free Whisper Large v3 with the same OpenAI-compatible API.
 """
 
 import httpx
@@ -14,27 +17,31 @@ from agent.utils import with_retry
 from sqlalchemy import text
 
 
-WHISPER_URL = "https://inference.do-ai.run/v1/audio/transcriptions"
+WHISPER_URL = "https://api.groq.com/openai/v1/audio/transcriptions"
 WHISPER_MODEL = "whisper-large-v3"
 
 
 async def transcribe(meeting_id: str, audio_key: str) -> str:
     """
-    Download audio from R2, transcribe via Gradient Whisper, store transcript to R2 and DB.
+    Download audio from R2, transcribe via Groq Whisper, store transcript to R2 and DB.
     Returns the transcript text.
-    Raises on failure after retries (caller should set status to transcription_failed).
     """
 
     async def _run():
         # 1. Download audio bytes from R2
         audio_bytes = download_bytes(audio_key)
 
-        # 2. Call Gradient AI Whisper
+        # Detect extension from key for correct MIME type
+        ext = audio_key.rsplit(".", 1)[-1] if "." in audio_key else "mp3"
+        mime_map = {"mp3": "audio/mpeg", "wav": "audio/wav", "mp4": "audio/mp4", "m4a": "audio/x-m4a", "webm": "audio/webm"}
+        mime = mime_map.get(ext, "audio/mpeg")
+
+        # 2. Call Groq Whisper
         async with httpx.AsyncClient(timeout=120) as client:
             response = await client.post(
                 WHISPER_URL,
-                headers={"Authorization": f"Bearer {settings.GRADIENT_MODEL_ACCESS_KEY}"},
-                files={"file": ("audio.webm", audio_bytes, "audio/webm")},
+                headers={"Authorization": f"Bearer {settings.GROQ_API_KEY}"},
+                files={"file": (f"audio.{ext}", audio_bytes, mime)},
                 data={"model": WHISPER_MODEL},
             )
             response.raise_for_status()

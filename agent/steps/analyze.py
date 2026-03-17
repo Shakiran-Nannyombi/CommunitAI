@@ -47,7 +47,7 @@ async def analyze(meeting_id: str, transcript: str) -> dict:
             text(
                 """
                 INSERT INTO sentiment_reports (id, meeting_id, classification, signals)
-                VALUES (gen_random_uuid(), :meeting_id, :classification, :signals::jsonb)
+                VALUES (gen_random_uuid(), :meeting_id, :classification, cast(:signals as jsonb))
                 """
             ),
             {
