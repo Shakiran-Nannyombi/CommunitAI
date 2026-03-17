@@ -1,0 +1,61 @@
+"""
+Step 3 — Sentiment Analysis
+Calls Gradient AI LLM with the analyze prompt, validates classification,
+persists to sentiment_reports table.
+"""
+
+import json
+from pathlib import Path
+
+from agent.db import SessionLocal, update_meeting_status
+from agent.inference import call_inference
+from agent.utils import with_retry
+
+from sqlalchemy import text
+
+PROMPT_PATH = Path(__file__).parent.parent / "prompts" / "analyze.txt"
+VALID_CLASSIFICATIONS = {"positive", "neutral", "negative"}
+
+
+async def analyze(meeting_id: str, transcript: str) -> dict:
+    """
+    Analyze sentiment of transcript, persist to DB.
+    Returns the sentiment report dict.
+    """
+    system_prompt = PROMPT_PATH.read_text()
+
+    async def _run():
+        raw = await call_inference(system_prompt, transcript)
+        cleaned = raw.strip()
+        if cleaned.startswith("```"):
+            cleaned = cleaned.split("```")[1]
+            if cleaned.startswith("json"):
+                cleaned = cleaned[4:]
+        report: dict = json.loads(cleaned.strip())
+        if report.get("classification") not in VALID_CLASSIFICATIONS:
+            raise ValueError(f"Invalid classification: {report.get('classification')}")
+        return report
+
+    try:
+        report = await with_retry(_run, max_retries=3)
+    except Exception:
+        await update_meeting_status(meeting_id, "analysis_failed")
+        raise
+
+    async with SessionLocal() as session:
+        await session.execute(
+            text(
+                """
+                INSERT INTO sentiment_reports (id, meeting_id, classification, signals)
+                VALUES (gen_random_uuid(), :meeting_id, :classification, :signals::jsonb)
+                """
+            ),
+            {
+                "meeting_id": meeting_id,
+                "classification": report["classification"],
+                "signals": json.dumps(report.get("signals", [])),
+            },
+        )
+        await session.commit()
+
+    return report
