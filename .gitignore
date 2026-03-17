@@ -1,2 +1,15 @@
 context.txt
 .kiro/*
+
+# Python
+__pycache__/
+*.py[cod]
+
+# Environment
+.env
+
+# Node
+node_modules/
+
+# Next.js
+.next/
