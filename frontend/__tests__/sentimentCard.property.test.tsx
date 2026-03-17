@@ -6,6 +6,7 @@
  * the correct CSS color class.
  */
 import React from "react";
+import React from "react";
 import { render, screen } from "@testing-library/react";
 import fc from "fast-check";
 import SentimentCard from "@/components/SentimentCard";
