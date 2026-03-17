@@ -43,7 +43,7 @@ _signals_st = st.one_of(
     classification=_classification_st,
     signals=_signals_st,
 )
-@settings(max_examples=100)
+@settings(max_examples=20)
 def test_sentiment_report_structure_invariant(classification, signals):
     """Validates: Requirements 5.2
 

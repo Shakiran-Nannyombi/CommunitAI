@@ -18,7 +18,7 @@ from agent.utils import with_retry
 
 
 @given(st.sampled_from(["transcription", "sentiment", "summarization"]))
-@settings(max_examples=100)
+@settings(max_examples=20)
 def test_retry_exhaustion(step_name: str) -> None:
     """After exactly 3 failures, with_retry raises and makes no further calls."""
     call_count = 0

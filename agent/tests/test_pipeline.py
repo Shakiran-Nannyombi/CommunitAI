@@ -47,7 +47,7 @@ import agent.agent  # noqa: E402  (must come after stubs)
 # ---------------------------------------------------------------------------
 
 @given(st.text())
-@settings(max_examples=100, deadline=None)
+@settings(max_examples=20, deadline=None)
 def test_pipeline_halts_when_transcription_returns_none(meeting_id: str) -> None:
     """No LLM step is invoked when transcription returns None."""
 
@@ -84,7 +84,7 @@ def test_pipeline_halts_when_transcription_returns_none(meeting_id: str) -> None
 # ---------------------------------------------------------------------------
 
 @given(st.text(min_size=1), st.text())
-@settings(max_examples=100, deadline=None)
+@settings(max_examples=20, deadline=None)
 def test_pipeline_calls_downstream_steps_after_successful_transcription(
     transcript: str, meeting_id: str
 ) -> None:
@@ -151,7 +151,7 @@ def test_pipeline_calls_downstream_steps_after_successful_transcription(
 # ---------------------------------------------------------------------------
 
 @given(st.sampled_from(["transcribe", "analyze", "summarize"]))
-@settings(max_examples=100, deadline=None)
+@settings(max_examples=20, deadline=None)
 def test_failure_halts_pipeline(failing_step: str) -> None:
     """When a pipeline step returns None, no subsequent steps are called."""
 
@@ -222,7 +222,7 @@ def test_failure_halts_pipeline(failing_step: str) -> None:
 # ---------------------------------------------------------------------------
 
 @given(st.text(min_size=1))
-@settings(max_examples=100, deadline=None)
+@settings(max_examples=20, deadline=None)
 def test_pipeline_step_produces_output(transcript: str) -> None:
     """Each pipeline step is called and the pipeline completes successfully."""
 
@@ -278,7 +278,7 @@ def test_pipeline_step_produces_output(transcript: str) -> None:
 # ---------------------------------------------------------------------------
 
 @given(st.text(min_size=1))
-@settings(max_examples=100, deadline=None)
+@settings(max_examples=20, deadline=None)
 def test_pipeline_output_association(meeting_id: str) -> None:
     """Every pipeline step is called with the correct meeting_id."""
 

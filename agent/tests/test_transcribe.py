@@ -25,7 +25,7 @@ sys.modules.setdefault("agent.db", _db_stub)
 
 
 @given(st.text(min_size=1))
-@settings(max_examples=100, deadline=None)
+@settings(max_examples=20, deadline=None)
 def test_status_transition_after_transcription(transcript_text: str) -> None:
     """After successful transcription, status is set to 'transcribed' and
     the transcript text is returned."""

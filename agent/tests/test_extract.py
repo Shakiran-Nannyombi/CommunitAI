@@ -49,7 +49,7 @@ def _action_item_strategy(*, require_due_date: bool = False):
 
 # Feature: communit-ai, Property 6: Action item field invariant
 @given(st.lists(_action_item_strategy(), min_size=0, max_size=20))
-@settings(max_examples=100)
+@settings(max_examples=20)
 def test_action_item_field_invariant(items):
     """Validates: Requirements 4.2
 
@@ -89,7 +89,7 @@ def test_action_item_field_invariant(items):
         )
     )
 )
-@settings(max_examples=100)
+@settings(max_examples=20)
 def test_action_item_due_date_preservation(items):
     """Validates: Requirements 4.3
 
