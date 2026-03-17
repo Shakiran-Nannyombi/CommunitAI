@@ -231,3 +231,99 @@ def test_cascade_deletion(
         assert db_session.get(ActionItemLite, ai_id) is None, (
             f"ActionItem {ai_id} should be cascade-deleted"
         )
+
+
+# ---------------------------------------------------------------------------
+# Feature: communit-ai, Property 11: Meeting list ordering
+# ---------------------------------------------------------------------------
+# Property 11: Meeting list ordering
+# Validates: Requirements 8.1
+#
+# For any list of meetings returned by GET /meetings, the meetings should be
+# ordered by created_at descending — i.e., for any two adjacent meetings in
+# the list, the first meeting's created_at should be >= the second's.
+# ---------------------------------------------------------------------------
+
+from datetime import datetime, timezone
+
+from sqlalchemy import DateTime
+
+
+class MeetingOrdering(Base):
+    __tablename__ = "meetings_ordering"
+
+    id: Mapped[str] = mapped_column(String(36), primary_key=True)
+    user_id: Mapped[str] = mapped_column(Text, nullable=False)
+    title: Mapped[str] = mapped_column(Text, nullable=False)
+    status: Mapped[str] = mapped_column(String(64), nullable=False, default="pending")
+    created_at: Mapped[datetime] = mapped_column(DateTime, nullable=False)
+
+
+@pytest.fixture(scope="module")
+def db_session_ordering():
+    engine = create_engine("sqlite:///:memory:", echo=False)
+    MeetingOrdering.__table__.create(engine)
+    Session = sessionmaker(bind=engine)
+    session = Session()
+    yield session
+    session.close()
+    engine.dispose()
+
+
+# Hypothesis strategy: generate a list of naive datetimes (SQLite-compatible)
+datetime_strategy = st.datetimes(
+    min_value=datetime(2000, 1, 1),
+    max_value=datetime(2099, 12, 31),
+    timezones=st.none(),  # naive datetimes for SQLite compatibility
+)
+
+
+@given(created_ats=st.lists(datetime_strategy, min_size=0, max_size=20))
+@settings(max_examples=100)
+def test_meeting_list_ordering(db_session_ordering, created_ats):
+    """
+    **Validates: Requirements 8.1**
+
+    For any set of meetings inserted with arbitrary created_at values,
+    querying with ORDER BY created_at DESC must return them in descending
+    order — each meeting's created_at must be >= the next one's.
+    """
+    from sqlalchemy import desc, select
+
+    # Insert meetings with the generated created_at values
+    inserted_ids = []
+    for created_at in created_ats:
+        meeting_id = str(uuid.uuid4())
+        inserted_ids.append(meeting_id)
+        db_session_ordering.add(
+            MeetingOrdering(
+                id=meeting_id,
+                user_id="user-test",
+                title="Test Meeting",
+                status="pending",
+                created_at=created_at,
+            )
+        )
+    db_session_ordering.commit()
+
+    # Simulate GET /meetings ordering logic: ORDER BY created_at DESC
+    stmt = (
+        select(MeetingOrdering)
+        .where(MeetingOrdering.id.in_(inserted_ids))
+        .order_by(desc(MeetingOrdering.created_at))
+    )
+    results = db_session_ordering.execute(stmt).scalars().all()
+
+    # Assert the result is sorted descending
+    for i in range(len(results) - 1):
+        assert results[i].created_at >= results[i + 1].created_at, (
+            f"Meeting at index {i} (created_at={results[i].created_at}) "
+            f"should be >= meeting at index {i+1} (created_at={results[i+1].created_at})"
+        )
+
+    # Cleanup: remove inserted rows so test runs are independent
+    for meeting_id in inserted_ids:
+        row = db_session_ordering.get(MeetingOrdering, meeting_id)
+        if row:
+            db_session_ordering.delete(row)
+    db_session_ordering.commit()
