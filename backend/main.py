@@ -5,6 +5,8 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 
 from backend.exceptions import StorageError
+from backend.routers.action_items import router as action_items_router
+from backend.routers.meetings import router as meetings_router
 
 logger = logging.getLogger(__name__)
 
@@ -37,6 +39,5 @@ async def storage_error_handler(request: Request, exc: StorageError) -> JSONResp
     )
 
 
-# Routers will be registered here in task 4.1
-# app.include_router(meetings_router)
-# app.include_router(action_items_router)
+app.include_router(meetings_router, prefix="/api")
+app.include_router(action_items_router, prefix="/api")
