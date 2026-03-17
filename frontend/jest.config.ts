@@ -2,7 +2,7 @@ import type { Config } from "jest";
 
 const config: Config = {
     testEnvironment: "jsdom",
-    setupFilesAfterFramework: ["@testing-library/jest-dom"],
+    setupFilesAfterFramework: ["<rootDir>/jest.setup.ts"],
     transform: {
         "^.+\\.tsx?$": ["ts-jest", { tsconfig: { jsx: "react" } }],
     },
