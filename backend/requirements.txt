@@ -6,5 +6,6 @@ alembic
 boto3
 httpx
 pydantic[email]
+pydantic-settings
 python-multipart
 hypothesis
