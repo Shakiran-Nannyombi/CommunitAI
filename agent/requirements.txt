@@ -1,0 +1,6 @@
+gradient-ai-adk
+httpx
+openai
+sqlalchemy[asyncio]
+asyncpg
+hypothesis
