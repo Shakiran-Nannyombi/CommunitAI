@@ -1,0 +1,77 @@
+# DigitalOcean Gradient™ AI Platform – DigitalOcean Documentation
+
+> Build AI agents on GPU-powered infrastructure using foundation models and resources such as knowledge bases and agent routes.
+- [DigitalOcean Gradient™ AI Platform Support](https://docs.digitalocean.com/products/gradient-ai-platform/support/index.html.md): Get help with technical support and answers to frequently asked questions.
+
+
+
+## Getting Started with DigitalOcean Gradient™ AI Platform
+
+Quickstarts and intermediate tutorials to get started.
+
+- [DigitalOcean Gradient™ AI Platform Quickstart](https://docs.digitalocean.com/products/gradient-ai-platform/getting-started/quickstart/index.html.md): Just the essentials to go from zero to working in a few minutes.
+- [Test and Compare Models Using the Model Playground](https://docs.digitalocean.com/products/gradient-ai-platform/getting-started/use-model-playground/index.html.md): Test and compare foundation models in the Model Playground.
+- [Use Agent Development Kit to Build, Test, and Deploy Agents](https://docs.digitalocean.com/products/gradient-ai-platform/getting-started/use-adk/index.html.md): Build, test, and deploy agents using Agent Development Kit.
+
+## DigitalOcean Gradient™ AI Platform How-Tos
+
+How to accomplish specific tasks in detail, like creation/deletion, configuration, and management.
+
+- [How to Use Serverless Inference on DigitalOcean Gradient™ AI Platform](https://docs.digitalocean.com/products/gradient-ai-platform/how-to/use-serverless-inference/index.html.md): Create model access keys that allow you to send requests to foundation models without creating an agent.
+- [How to Use Dedicated Inference on DigitalOcean Gradient™ AI Platform](https://docs.digitalocean.com/products/gradient-ai-platform/how-to/use-dedicated-inference-platform/index.html.md): Deploy open-source and commercial LLMs on dedicated GPUs as inference endpoints.
+- [How to Build, Test, and Deploy Agents on DigitalOcean Gradient™ AI Platform Using Agent Development Kit](https://docs.digitalocean.com/products/gradient-ai-platform/how-to/build-agents-using-adk/index.html.md): Use Agent Development Kit to create and manage agents on Gradient™ AI Platform.
+- [How to Create Agents on DigitalOcean Gradient™ AI Platform](https://docs.digitalocean.com/products/gradient-ai-platform/how-to/create-agents/index.html.md): Create an agent with domain-specific knowledge to provide information or take action.
+- [How to Add, Edit, or Delete Partner Provider Keys on DigitalOcean Gradient™ AI Platform](https://docs.digitalocean.com/products/gradient-ai-platform/how-to/manage-model-provider-keys/index.html.md): Add, edit, or delete API keys to use their models with your agents.
+- [How to Create and Manage Workspaces on DigitalOcean Gradient™ AI Platform](https://docs.digitalocean.com/products/gradient-ai-platform/how-to/manage-workspaces/index.html.md): Create workspaces to group agents together and move agents between workspaces as needed.
+- [How to Configure Model Settings Using the Model Playground on DigitalOcean Gradient™ AI Platform](https://docs.digitalocean.com/products/gradient-ai-platform/how-to/configure-models/index.html.md): Evaluate, compare, and configure model settings in Model Playground.
+- [How to Use Agents in Your Applications on DigitalOcean Gradient™ AI Platform](https://docs.digitalocean.com/products/gradient-ai-platform/how-to/use-agents/index.html.md): Use your agent in an application or through a chat bot interface.
+- [How to Test Agents Using the Agent Playground on DigitalOcean Gradient™ AI Platform](https://docs.digitalocean.com/products/gradient-ai-platform/how-to/test-agents/index.html.md): Test the full agent experience with the directions and features you've configured using the Agent Playground.
+- [How to Evaluate Agent Performance on DigitalOcean Gradient™ AI Platform](https://docs.digitalocean.com/products/gradient-ai-platform/how-to/evaluate-agents/index.html.md): Create test cases and measure how well your agents perform against for things like tone, factual accuracy, and context relevance.
+- [How to Create an Evaluation Dataset on DigitalOcean Gradient™ AI Platform](https://docs.digitalocean.com/products/gradient-ai-platform/how-to/create-evaluation-datasets/index.html.md): Create effective evaluation datasets in CSV format to test your agent's performance, improve accuracy, and measure qualities like factual correctness, safety, and instruction following.
+- [How to View Agent Insights and Logs on DigitalOcean Gradient™ AI Platform](https://docs.digitalocean.com/products/gradient-ai-platform/how-to/view-agent-observability/index.html.md): View insights and runtime logs for your agents to troubleshoot issues.
+- [How to Trace Agent Responses on DigitalOcean Gradient™ AI Platform](https://docs.digitalocean.com/products/gradient-ai-platform/how-to/trace-agents/index.html.md): Trace how your agent processes prompts to troubleshoot issues, improve performance, and control costs.
+- [How to Route to Multiple Agents on DigitalOcean Gradient™ AI Platform](https://docs.digitalocean.com/products/gradient-ai-platform/how-to/route-agents/index.html.md): Integrate multiple generative AI agents.
+- [How to Route Functions in Agents on DigitalOcean Gradient™ AI Platform](https://docs.digitalocean.com/products/gradient-ai-platform/how-to/route-agent-functions/index.html.md): Enable the foundation model in your agent to access the external data sources using functions.
+- [How to Rollback to a Previous Version of Agents on DigitalOcean Gradient™ AI Platform](https://docs.digitalocean.com/products/gradient-ai-platform/how-to/manage-agent-versions/index.html.md): Rollback to a previous version of an agent to undo changes made to it.
+- [How to Create, Edit, and Destroy Knowledge Bases on DigitalOcean Gradient™ AI Platform](https://docs.digitalocean.com/products/gradient-ai-platform/how-to/create-manage-agent-knowledge-bases/index.html.md): Create, edit, manage data sources, verify, and permanently destroy knowledge bases.
+- [How to Attach and Detach Agent Knowledge Bases on DigitalOcean Gradient™ AI Platform](https://docs.digitalocean.com/products/gradient-ai-platform/how-to/attach-agent-knowledge-bases/index.html.md): Attach or detach a knowledge base from your agents.
+- [How to Attach, Edit, Duplicate, and Destroy Agent Guardrails on DigitalOcean Gradient™ AI Platform](https://docs.digitalocean.com/products/gradient-ai-platform/how-to/manage-agent-guardrails/index.html.md): Create, manage, edit, duplicate, or delete guardrails to control how your agents respond to sensitive or inappropriate content.
+- [How to Destroy Agents Using the Control Panel on DigitalOcean Gradient™ AI Platform](https://docs.digitalocean.com/products/gradient-ai-platform/how-to/destroy-agents/index.html.md): Destroy an agent to permanently and irreversibly destroy the agent and removes all endpoints for the agent.
+
+## DigitalOcean Gradient™ AI Platform Reference
+
+Native and third-party tools, troubleshooting, and answers to frequently asked questions.
+
+- [Agent Evaluation Metrics](https://docs.digitalocean.com/products/gradient-ai-platform/reference/agent-evaluation-metrics/index.html.md): A list of available agent evaluation metrics and their definitions.
+- [Chunking Parameters](https://docs.digitalocean.com/products/gradient-ai-platform/reference/chunking-strategies/index.html.md): Reference for chunking parameters, their recommendations, and their constraints across supported embedding models.
+- [Agent Tracing Data](https://docs.digitalocean.com/products/gradient-ai-platform/reference/agent-tracing-metrics/index.html.md): Understand the information agent tracing captures and how it helps you debug and optimize your agents.
+
+## DigitalOcean Gradient™ AI Platform Concepts
+
+Explanations and definitions of core concepts in Gradient AI Platform.
+
+- [Best Practices for Context Management when Generating Code with AI Agents](https://docs.digitalocean.com/products/gradient-ai-platform/concepts/context-management/index.html.md): Improve AI output quality by carefully managing LLM context.
+- [Agent Instructions Best Practices for DigitalOcean Gradient™ AI Platform](https://docs.digitalocean.com/products/gradient-ai-platform/concepts/agent-instructions/index.html.md): Write effective agent instructions to align responses with your goals, minimize hallucinations, and enhance performance.
+- [Function Instructions Best Practices for DigitalOcean Gradient™ AI Platform](https://docs.digitalocean.com/products/gradient-ai-platform/concepts/function-instructions/index.html.md): Write concise and actionable function instructions by defining purpose, specifying outputs, ensuring concise descriptions, and addressing constraints with structured examples.
+- [Prompt Writing Best Practices for DigitalOcean Gradient™ AI Platform](https://docs.digitalocean.com/products/gradient-ai-platform/concepts/prompts/index.html.md): Write effective prompts to maintain a neutral tone, ask focused questions, simplify complexity, and enhance clarity with examples or screenshots.
+- [Effectively Group Agents in Workspaces for DigitalOcean Gradient™ AI Platform](https://docs.digitalocean.com/products/gradient-ai-platform/concepts/workspaces/index.html.md): Learn to how you can effectively group agents in workspaces for various purposes.
+- [Chunking Best Practices for Knowledge Base Indexing in DigitalOcean Gradient™ AI Platform](https://docs.digitalocean.com/products/gradient-ai-platform/concepts/chunking-strategies/index.html.md): Choose and configure chunking strategies to improve retrieval accuracy, reduce hallucinations, and optimize token usage when indexing knowledge bases.
+
+## DigitalOcean Gradient™ AI Platform Details
+
+Features, plans and pricing, availability, limits, known issues, and more.
+
+- [DigitalOcean Gradient™ AI Platform Features](https://docs.digitalocean.com/products/gradient-ai-platform/details/features/index.html.md): We offer a variety of features and components within Gradient AI Platform to enhance your experience when creating an agent, like agent routing, models, the model and agent playground, and more.
+- [DigitalOcean Gradient™ AI Platform Pricing](https://docs.digitalocean.com/products/gradient-ai-platform/details/pricing/index.html.md): Gradient AI Platform charges based on the models you use, their usage, and additional features such as knowledge bases, guardrails, and evaluations.
+- [DigitalOcean Gradient™ AI Platform Availability](https://docs.digitalocean.com/products/gradient-ai-platform/details/availability/index.html.md): Regional datacenter availability for Gradient AI Platform.
+- [DigitalOcean Gradient™ AI Platform Limits](https://docs.digitalocean.com/products/gradient-ai-platform/details/limits/index.html.md): Limits and known issues for Gradient AI Platform.
+- [Available Foundation and Embedding Models for DigitalOcean Gradient™ AI Platform](https://docs.digitalocean.com/products/gradient-ai-platform/details/models/index.html.md): A list of the foundation and embedding models available for Gradient AI Platform.
+- [DigitalOcean Gradient™ AI Data Privacy](https://docs.digitalocean.com/products/gradient-ai-platform/details/data-privacy/index.html.md): Information about the data we collect when using Gradient™ AI Platform.
+- [DigitalOcean Gradient™ AI Website Crawler](https://docs.digitalocean.com/products/gradient-ai-platform/details/website-crawler/index.html.md): Information about the web crawler DigitalOcean provides to crawl websites as data sources for knowledge bases.
+- [Model Support Policy](https://docs.digitalocean.com/products/gradient-ai-platform/details/model-support-policy/index.html.md): Release process and deprecation policy for Gradient AI Platform's supported foundation and embedding models.
+
+## DigitalOcean Gradient™ AI Platform Support
+
+Technical support articles for DigitalOcean Gradient™ AI Platform.
+
+- [How do I schedule automatic reindexing for my knowledge bases?](https://docs.digitalocean.com/support/how-do-i-schedule-automatic-reindexing-for-my-knowledge-bases/index.html.md): Create a scheduled function to trigger automatic knowledge base reindexing.
