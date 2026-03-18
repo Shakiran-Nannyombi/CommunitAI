@@ -1,69 +1,159 @@
-# CommunitAI: The AI Chief of Staff for Community Leaders
+<div align="center">
 
-CommunitAI is a production-ready AI platform designed to automate the administrative burden of community management. Built on DigitalOcean Gradient AI, it transforms messy meeting recordings into structured action items, sentiment reports, and automated follow-ups.
+<!-- Animated wave header -->
+<img src="https://capsule-render.vercel.app/api?type=waving&color=0,000000,60,166534,100,4ADE80&height=200&section=header&text=CommunitAI&fontSize=72&fontColor=4ADE80&fontAlignY=38&animation=fadeIn&desc=Record.%20Transcribe.%20Act.&descAlignY=58&descSize=20&descColor=86efac" width="100%"/>
 
-## The Mission
+<div align="center">
+<img src="assets/logo.svg" alt="CommunitAI Platform" width="25%" style="border-radius: 12px;"/>
+</div>
 
-Community leads often spend more time on spreadsheets and notes than on people. CommunitAI uses fine-tuned LLMs to handle the "boring stuff"—meeting transcription, task tracking, and community health monitoring—so leaders can focus on building belonging.
+<!-- Typing animation -->
+[![Typing SVG](https://readme-typing-svg.demolab.com?font=Fira+Code&weight=700&size=22&pause=1000&color=4ADE80&background=00000000&center=true&vCenter=true&multiline=false&width=700&height=50&lines=Upload+a+recording...;Get+action+items+automatically;Understand+community+sentiment;Share+Slack-ready+summaries;Powered+by+Gradient+AI+%26+Whisper)](https://git.io/typing-svg)
 
-## Tech Stack & Architecture
+<br/>
 
-- **AI Engine:** DigitalOcean Gradient AI (Fine-tuned Llama-3/Mistral models for Community Management).
-- **Infrastructure:** DigitalOcean Droplets for the backend API and Spaces Object Storage for audio file hosting.
-- **Backend:** Python (FastAPI/Flask) utilizing the Gradient Python SDK.
-Frontend: Next.js / Tailwind CSS dashboard.
+<!-- Badges -->
+![Python](https://img.shields.io/badge/Python_3.12-16a34a?style=for-the-badge&logo=python&logoColor=white)
+![Next.js](https://img.shields.io/badge/Next.js_14-15803d?style=for-the-badge&logo=next.js&logoColor=white)
+![FastAPI](https://img.shields.io/badge/FastAPI-166534?style=for-the-badge&logo=fastapi&logoColor=white)
+![Tailwind](https://img.shields.io/badge/Tailwind-14532d?style=for-the-badge&logo=tailwind-css&logoColor=white)
+![DigitalOcean](https://img.shields.io/badge/DigitalOcean-16a34a?style=for-the-badge&logo=digitalocean&logoColor=white)
+![Hypothesis](https://img.shields.io/badge/Property_Tests-15803d?style=for-the-badge&logo=pytest&logoColor=white)
+
+<br/>
+
+<div align="center">
+<img src="https://raw.githubusercontent.com/andreasbm/readme/master/assets/lines/grass.png" width="100%"/>
+</div>
+
+<br/>
+
+# What is CommunitAI?
+
+CommunitAI is a production-ready AI platform that automates the administrative burden of community management. Built on DigitalOcean Gradient AI, it turns messy meeting recordings into structured action items, sentiment reports, and shareable summaries — automatically.
+
+> Community leads spend more time on spreadsheets than on people. CommunitAI fixes that.
+
+<br/>
+
+---
 
 ## Features
 
-- **Smart Transcription:** Upload campus meeting audio for instant, high-accuracy text conversion.
-- **Agentic Action Items:** Automatically identifies who is responsible for what and assigns deadlines.
-- **Community Sentiment Analysis:** Uses a fine-tuned Gradient model to detect burnout or conflict within meeting transcripts.
-- **Automated Summaries:** Generates "TL;DR" reports ready to be blasted to Discord or Slack.
+| Feature | Description |
+|---|---|
+| **Smart Transcription** | Upload or record audio for instant high-accuracy transcription via Whisper |
+| **Action Item Extraction** | Automatically identifies who owns what and assigns deadlines |
+| **Sentiment Analysis** | Detects burnout, conflict, or positive momentum in meeting transcripts |
+| **Auto Summaries** | Generates TL;DR reports ready to post to Discord or Slack |
+| **Retry & Resume** | Failed steps resume from where they left off — no full re-runs |
+| **Knowledge Base** | Optionally attach a Gradient AI KB for community-specific context |
+---
 
-## Setup & Installation
+## Architecture
 
-**Prerequisites**
-
-1. A DigitalOcean Account.
-2. A Gradient Access Token and Workspace ID.
-3. Python 3.10+ installed.
-
-- **Installation**
-
-```bash
-Clone the Repository:
-bash
-git clone https://github.com
-cd CommunitAI
-Use code with caution.
+```
+frontend/   Next.js 14  — App Router · TypeScript · Tailwind CSS
+backend/    FastAPI     — SQLAlchemy · Alembic · DigitalOcean Spaces
+agent/      Gradient AI — ADK pipeline: Whisper → Extract → Analyze → Summarize
 ```
 
-- **Environment Setup:**
+---
+
+## Local Development
+
+### Prerequisites
+
+- Docker & Docker Compose
+- Node.js 20+
+- Python 3.12+
+
+### 1. Configure environment
 
 ```bash
-Create a .env file in the root directory:
-env
-GRADIENT_ACCESS_TOKEN=your_token_here
-GRADIENT_WORKSPACE_ID=your_workspace_id_here
-DO_SPACES_KEY=your_spaces_key
-DO_SPACES_SECRET=your_spaces_secret
-Use code with caution.
+cp backend/.env.example backend/.env
+cp agent/.env.example    agent/.env
+cp frontend/.env.example frontend/.env.local
 ```
 
-- **Install Dependencies:**
+Edit each `.env` with your credentials — see [Environment Variables](#environment-variables).
+
+### 2. Start all services
 
 ```bash
-pip install -r requirements.txt
-Use code with caution.
+docker compose up --build
 ```
 
-- **Run the Application:**
+| Service  | URL |
+|----------|-----|
+| Frontend | http://localhost:3000 |
+| Backend  | http://localhost:8000 |
+| Agent    | http://localhost:8080 |
+| Postgres | localhost:5432 |
+
+### 3. Run migrations
 
 ```bash
-python main.py
-Use code with caution.
+docker compose exec backend alembic upgrade head
 ```
+
+---
+
+## Running Tests
+
+```bash
+# Agent — Python / Hypothesis
+python3 -m pytest agent/tests/ -q
+
+# Backend — Python / Hypothesis
+python3 -m pytest backend/tests/ -q
+
+# Frontend — Jest / fast-check
+cd frontend && npm install && npm test -- --no-coverage
+```
+
+---
+
+## Environment Variables
+
+### Backend & Agent
+
+| Variable | Description |
+|---|---|
+| `DATABASE_URL` | PostgreSQL connection string |
+| `DO_SPACES_KEY` | DigitalOcean Spaces access key |
+| `DO_SPACES_SECRET` | DigitalOcean Spaces secret |
+| `DO_SPACES_REGION` | Spaces region (e.g. `nyc3`) |
+| `DO_SPACES_BUCKET` | Spaces bucket name |
+| `GRADIENT_API_KEY` | Gradient AI API key |
+| `OPENAI_API_KEY` | OpenAI key (Whisper) |
+| `AGENT_ENDPOINT_URL` | ADK agent base URL |
+| `AGENT_API_KEY` | ADK agent API key |
+| `GRADIENT_KB_ID` | *(Optional)* Gradient AI Knowledge Base ID |
+
+### Frontend
+
+| Variable | Description |
+|---|---|
+| `NEXT_PUBLIC_API_URL` | Backend API base URL |
+
+---
+
+## Deployment
+
+See [`docs/deployment.md`](docs/deployment.md) for DigitalOcean App Platform, Managed PostgreSQL, Spaces, and ADK agent deployment instructions.
+
+---
 
 ## License
 
-Distributed under the MIT License. See LICENSE for more information.
+Distributed under the MIT License. See [LICENSE](LICENSE) for more information.
+
+<div align="center">
+
+<br/>
+
+<!-- Animated footer wave -->
+<img src="https://capsule-render.vercel.app/api?type=waving&color=0,4ADE80,60,166534,100,000000&height=120&section=footer&text=Built+for+communities.+Powered+by+AI.&fontSize=16&fontColor=4ADE80&fontAlignY=65&animation=fadeIn" width="100%"/>
+
+</div>
