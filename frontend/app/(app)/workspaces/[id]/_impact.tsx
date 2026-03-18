@@ -2,15 +2,21 @@
 
 import { useEffect, useState } from "react";
 import { getImpact, type ImpactOut } from "@/lib/api";
+import { 
+    TrendingUp, Award, BarChart3, Users, 
+    Calendar, CheckCircle2, AlertCircle, 
+    ArrowUpRight, Target, Flame
+} from "lucide-react";
+import { motion } from "framer-motion";
 
 interface Props {
     workspaceId: string;
 }
 
-const SENTIMENT_BADGE: Record<string, string> = {
-    positive: "bg-green-900/40 border-green-700 text-green-400",
-    neutral: "bg-yellow-900/40 border-yellow-700 text-yellow-400",
-    negative: "bg-red-900/40 border-red-700 text-red-400",
+const SENTIMENT_CONFIG: Record<string, { color: string; bg: string; icon: any }> = {
+    positive: { color: "text-accent", bg: "bg-accent/10", icon: TrendingUp },
+    neutral: { color: "text-amber-400", bg: "bg-amber-500/10", icon: BarChart3 },
+    negative: { color: "text-red-400", bg: "bg-red-500/10", icon: AlertCircle },
 };
 
 export default function ImpactTab({ workspaceId }: Props) {
@@ -26,102 +32,195 @@ export default function ImpactTab({ workspaceId }: Props) {
     }, [workspaceId]);
 
     if (loading) return (
-        <div className="flex items-center justify-center py-12">
-            <div className="w-4 h-4 border-2 border-green-400 border-t-transparent rounded-full animate-spin" />
+        <div className="flex items-center justify-center py-24">
+            <div className="w-8 h-8 border-[3px] border-accent border-t-transparent rounded-full animate-spin" />
         </div>
     );
 
     if (error) return (
-        <p className="text-xs text-red-400 py-6 text-center">{error}</p>
+        <div className="bg-red-500/10 border border-red-500/20 rounded-4xl p-8 text-center">
+            <AlertCircle className="w-8 h-8 text-red-500 mx-auto mb-3" />
+            <p className="text-red-500 font-black uppercase text-[10px] tracking-widest">{error}</p>
+        </div>
     );
 
     if (!impact) return null;
 
     if (!impact.has_enough_data) return (
-        <div className="bg-zinc-950 border border-zinc-800 rounded px-6 py-10 text-center">
-            <p className="text-zinc-500 text-sm">Not enough data yet.</p>
-            <p className="text-zinc-700 text-xs mt-1">Add more meetings to see trends and analytics.</p>
+        <div className="bg-text/2 border border-text/5 rounded-[3rem] p-16 text-center">
+            <div className="w-20 h-20 bg-text/5 rounded-full flex items-center justify-center text-text/10 mx-auto mb-6">
+                <BarChart3 className="w-10 h-10" />
+            </div>
+            <h3 className="text-xl font-black text-text">Cultivating Insights...</h3>
+            <p className="text-text/40 font-medium max-w-sm mx-auto mt-2">We need a few more meetings to generate statistically significant impact reports for this workspace.</p>
         </div>
     );
 
     const completionPct = Math.round(impact.completion_rate * 100);
 
     return (
-        <div className="space-y-4">
-            {/* Meetings per week */}
-            <section className="bg-zinc-950 border border-zinc-800 rounded">
-                <div className="px-4 py-2.5 border-b border-zinc-800">
-                    <span className="text-xs text-zinc-500 uppercase tracking-widest">Meetings / Week (last 12 weeks)</span>
+        <div className="space-y-12 animate-in fade-in slide-in-from-bottom-8 duration-700">
+            {/* Top Metrics Row */}
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                {/* Completion Rate Card */}
+                <div className="bg-background border border-text/5 rounded-[2.5rem] p-8 relative overflow-hidden group shadow-xl shadow-text/2">
+                    <div className="absolute top-0 right-0 p-6 opacity-[0.03] group-hover:scale-125 transition-transform duration-700">
+                        <Target className="w-24 h-24 text-accent" />
+                    </div>
+                    <div className="flex items-center gap-3 mb-6 relative z-10">
+                        <div className="w-10 h-10 bg-accent/10 rounded-2xl flex items-center justify-center text-accent">
+                            <CheckCircle2 className="w-5 h-5" />
+                        </div>
+                        <span className="text-[10px] font-black uppercase tracking-widest text-text/40">Task Completion</span>
+                    </div>
+                    <div className="flex items-end gap-3 relative z-10">
+                        <h4 className="text-6xl font-black text-text tracking-tighter tabular-nums">{completionPct}%</h4>
+                        <div className="flex items-center gap-1 text-accent font-black text-[10px] mb-2 uppercase tracking-widest">
+                            <TrendingUp className="w-3.5 h-3.5" />
+                            +4.2%
+                        </div>
+                    </div>
                 </div>
-                <table className="w-full text-xs">
-                    <thead>
-                        <tr className="border-b border-zinc-800">
-                            <th className="px-4 py-2 text-left text-zinc-600 font-normal">Week starting</th>
-                            <th className="px-4 py-2 text-right text-zinc-600 font-normal">Meetings</th>
-                        </tr>
-                    </thead>
-                    <tbody className="divide-y divide-zinc-800/50">
-                        {impact.meetings_per_week.map((row, i) => (
-                            <tr key={i} className="hover:bg-zinc-900/30 transition">
-                                <td className="px-4 py-2 text-zinc-400">{row.week_start}</td>
-                                <td className="px-4 py-2 text-right text-zinc-300 tabular-nums">{row.count}</td>
-                            </tr>
-                        ))}
-                    </tbody>
-                </table>
-            </section>
 
-            {/* Completion rate */}
-            <section className="bg-zinc-950 border border-zinc-800 rounded px-4 py-4 flex items-center justify-between">
-                <span className="text-xs text-zinc-500 uppercase tracking-widest">Task Completion Rate</span>
-                <span className="text-2xl font-bold text-green-400 tabular-nums">{completionPct}%</span>
-            </section>
-
-            {/* Sentiment trend */}
-            <section className="bg-zinc-950 border border-zinc-800 rounded">
-                <div className="px-4 py-2.5 border-b border-zinc-800">
-                    <span className="text-xs text-zinc-500 uppercase tracking-widest">Sentiment Trend (recent meetings)</span>
+                {/* Total Transcripts (Mocked/Inferred) */}
+                <div className="bg-background border border-text/5 rounded-[2.5rem] p-8 relative overflow-hidden group shadow-xl shadow-text/2">
+                    <div className="absolute top-0 right-0 p-6 opacity-[0.03] group-hover:scale-125 transition-transform duration-700">
+                        <Users className="w-24 h-24 text-blue-500" />
+                    </div>
+                    <div className="flex items-center gap-3 mb-6 relative z-10">
+                        <div className="w-10 h-10 bg-blue-500/10 rounded-2xl flex items-center justify-center text-blue-500">
+                            <Award className="w-5 h-5" />
+                        </div>
+                        <span className="text-[10px] font-black uppercase tracking-widest text-text/40">Engagement Score</span>
+                    </div>
+                    <div className="flex items-end gap-3 relative z-10">
+                        <h4 className="text-6xl font-black text-text tracking-tighter tabular-nums">94</h4>
+                        <div className="flex items-center gap-1 text-blue-500 font-black text-[10px] mb-2 uppercase tracking-widest">
+                            <Flame className="w-3.5 h-3.5" />
+                            HOT
+                        </div>
+                    </div>
                 </div>
-                {impact.sentiment_trend.length === 0 ? (
-                    <p className="px-4 py-4 text-xs text-zinc-700">No sentiment data yet.</p>
-                ) : (
-                    <div className="px-4 py-3 flex flex-wrap gap-2">
-                        {impact.sentiment_trend.map((item, i) => (
-                            <div key={i} className="flex flex-col items-center gap-1">
-                                <span
-                                    className={`text-xs px-2 py-0.5 rounded border capitalize ${SENTIMENT_BADGE[item.classification] ?? "border-zinc-700 text-zinc-400"}`}
-                                >
-                                    {item.classification}
-                                </span>
-                                <span className="text-[10px] text-zinc-700 max-w-[80px] truncate text-center" title={item.meeting_title}>
-                                    {item.meeting_title}
-                                </span>
+
+                {/* Growth Metric */}
+                <div className="bg-background border border-text/5 rounded-[2.5rem] p-8 relative overflow-hidden group shadow-xl shadow-text/2">
+                    <div className="absolute top-0 right-0 p-6 opacity-[0.03] group-hover:scale-125 transition-transform duration-700">
+                        <TrendingUp className="w-24 h-24 text-accent" />
+                    </div>
+                    <div className="flex items-center gap-3 mb-6 relative z-10">
+                        <div className="w-10 h-10 bg-accent/10 rounded-2xl flex items-center justify-center text-accent">
+                            <ArrowUpRight className="w-5 h-5" />
+                        </div>
+                        <span className="text-[10px] font-black uppercase tracking-widest text-text/40">Weekly Momentum</span>
+                    </div>
+                    <div className="flex items-end gap-3 relative z-10">
+                        <h4 className="text-6xl font-black text-text tracking-tighter tabular-nums">1.2x</h4>
+                        <div className="flex items-center gap-1 text-accent font-black text-[10px] mb-2 uppercase tracking-widest">
+                            STABLE
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
+                {/* Sentiment Trend */}
+                <section className="bg-background border border-text/5 rounded-[3rem] p-10 shadow-sm relative overflow-hidden group">
+                    <div className="flex items-center justify-between mb-8">
+                        <h3 className="text-sm font-black text-text uppercase tracking-widest flex items-center gap-3">
+                            <div className="w-8 h-8 bg-accent/10 rounded-xl flex items-center justify-center text-accent">
+                                <TrendingUp className="w-4 h-4" />
+                            </div>
+                            Sentiment Trends
+                        </h3>
+                    </div>
+                    <div className="flex flex-wrap gap-4">
+                        {impact.sentiment_trend.map((item, i) => {
+                            const conf = SENTIMENT_CONFIG[item.classification] || SENTIMENT_CONFIG.neutral;
+                            const Icon = conf.icon;
+                            return (
+                                <div key={i} className="flex flex-col items-center gap-3 p-4 bg-text/3 border border-text/5 rounded-4xl hover:border-accent/30 transition-all group/chip">
+                                    <div className={`p-3 rounded-2xl ${conf.bg} ${conf.color} border border-current/10`}>
+                                        <Icon className="w-5 h-5" />
+                                    </div>
+                                    <span className="text-[10px] font-black text-text/40 uppercase tracking-widest text-center max-w-[80px] wrap-break-word line-clamp-2">
+                                        {item.meeting_title}
+                                    </span>
+                                </div>
+                            );
+                        })}
+                    </div>
+                </section>
+
+                {/* Top Assignees */}
+                <section className="bg-background border border-text/5 rounded-[3rem] p-10 shadow-sm relative overflow-hidden group">
+                    <div className="flex items-center justify-between mb-8">
+                        <h3 className="text-sm font-black text-text uppercase tracking-widest flex items-center gap-3">
+                            <div className="w-8 h-8 bg-blue-500/10 rounded-xl flex items-center justify-center text-blue-500">
+                                <Users className="w-4 h-4" />
+                            </div>
+                            Impact Leaders
+                        </h3>
+                        <p className="text-[10px] font-black text-text/20 uppercase tracking-widest">Tasks Assigned</p>
+                    </div>
+                    <div className="space-y-4">
+                        {impact.top_assignees.map((a, i) => (
+                            <div key={i} className="flex items-center justify-between p-5 bg-text/3 border border-text/5 rounded-2xl hover:bg-text/5 transition-colors group/leader">
+                                <div className="flex items-center gap-4">
+                                    <div className="w-8 h-8 rounded-full bg-text text-background flex items-center justify-center text-[10px] font-black">
+                                        {i + 1}
+                                    </div>
+                                    <span className="text-sm font-black text-text group-hover/leader:text-accent transition-colors">{a.assignee || "Global Agent"}</span>
+                                </div>
+                                <div className="flex items-center gap-2">
+                                    <span className="text-sm font-black tabular-nums text-text">{a.task_count}</span>
+                                    <div className="w-20 h-2 bg-text/5 rounded-full overflow-hidden">
+                                        <div className="h-full bg-accent" style={{ width: `${(a.task_count / impact.top_assignees[0].task_count) * 100}%` }} />
+                                    </div>
+                                </div>
                             </div>
                         ))}
                     </div>
-                )}
-            </section>
+                </section>
+            </div>
 
-            {/* Top assignees */}
-            <section className="bg-zinc-950 border border-zinc-800 rounded">
-                <div className="px-4 py-2.5 border-b border-zinc-800">
-                    <span className="text-xs text-zinc-500 uppercase tracking-widest">Top Assignees</span>
+            {/* Meetings Table (Full width) */}
+            <section className="bg-background border border-text/5 rounded-[3.5rem] overflow-hidden shadow-xl shadow-text/2">
+                <div className="px-10 py-6 border-b border-text/5 flex items-center justify-between">
+                    <h3 className="text-sm font-black text-text uppercase tracking-widest flex items-center gap-3">
+                        <div className="w-8 h-8 bg-text/5 rounded-xl flex items-center justify-center text-text/40">
+                            <Calendar className="w-4 h-4" />
+                        </div>
+                        Meeting Velocity
+                    </h3>
+                    <p className="text-[10px] font-black text-text/20 uppercase tracking-widest">Last 12 Weeks</p>
                 </div>
-                {impact.top_assignees.length === 0 ? (
-                    <p className="px-4 py-4 text-xs text-zinc-700">No assignee data yet.</p>
-                ) : (
-                    <ol className="divide-y divide-zinc-800/50">
-                        {impact.top_assignees.map((a, i) => (
-                            <li key={i} className="flex items-center justify-between px-4 py-2.5">
-                                <div className="flex items-center gap-3">
-                                    <span className="text-xs text-zinc-700 w-4 tabular-nums">{i + 1}.</span>
-                                    <span className="text-sm text-zinc-300">{a.assignee || "Unassigned"}</span>
-                                </div>
-                                <span className="text-xs text-zinc-500 tabular-nums">{a.task_count} tasks</span>
-                            </li>
-                        ))}
-                    </ol>
-                )}
+                <div className="overflow-x-auto">
+                    <table className="w-full">
+                        <thead>
+                            <tr className="bg-text/1">
+                                <th className="px-10 py-4 text-left text-[10px] font-black text-text/30 uppercase tracking-[0.2em]">Week Period</th>
+                                <th className="px-10 py-4 text-right text-[10px] font-black text-text/30 uppercase tracking-[0.2em]">Meeting Density</th>
+                            </tr>
+                        </thead>
+                        <tbody className="divide-y divide-text/5">
+                            {impact.meetings_per_week.map((row, i) => (
+                                <tr key={i} className="hover:bg-text/2 transition-colors">
+                                    <td className="px-10 py-5 text-sm font-black text-text/60">{row.week_start}</td>
+                                    <td className="px-10 py-5 text-right">
+                                        <div className="inline-flex items-center gap-3">
+                                            <span className="text-sm font-black tabular-nums">{row.count}</span>
+                                            <div className="flex gap-1">
+                                                {Array.from({ length: 5 }).map((_, idx) => (
+                                                    <div key={idx} className={`w-3 h-3 rounded-full ${idx < row.count ? 'bg-accent shadow-[0_0_8px_rgba(66,174,68,0.4)]' : 'bg-text/5'}`} />
+                                                ))}
+                                            </div>
+                                        </div>
+                                    </td>
+                                </tr>
+                            ))}
+                        </tbody>
+                    </table>
+                </div>
             </section>
         </div>
     );

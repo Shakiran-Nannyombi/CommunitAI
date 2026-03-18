@@ -11,7 +11,7 @@ import { OverviewTab, TasksTab, MeetingsTab } from "./_components";
 import { LogoMark, LogoFull } from "@/components/Logo";
 import { motion } from "framer-motion";
 import {
-    LayoutDashboard, CheckSquare, Mic, Zap, Sparkles
+    LayoutDashboard, CheckSquare, Mic, Zap, Sparkles, Bell, Search, Settings as SettingsIcon
 } from "lucide-react";
 
 const PROCESSING = new Set(["pending", "processing", "transcribed"]);
@@ -122,11 +122,56 @@ export default function CommandCentre() {
     return (
         <>
             {/* ── Main Dashboard Content ── */}
-            <div className="flex flex-1 flex-col h-screen overflow-hidden relative shadow-[-10px_0_30px_rgba(0,0,0,0.02)] z-0">
-                {/* Header */}
-                <header className="shrink-0 bg-background/80 backdrop-blur-md px-10 py-6 border-b border-text/5 items-center justify-between sticky top-0 z-10 hidden md:flex">
+            <div className="flex flex-1 flex-col relative z-0">
+                {/* Global Dashboard Header (Desktop) */}
+                <header className="hidden md:flex sticky top-0 z-50 items-center justify-between border-b border-text/10 bg-background/80 backdrop-blur-md px-10 py-5">
                     <div className="flex items-center gap-4">
-                        <div className="w-12 h-12 rounded-2xl bg-accent/10 border border-accent/20 flex items-center justify-center shadow-lg shadow-accent/5">
+                        <div className="w-10 h-10 rounded-xl bg-accent flex items-center justify-center text-background shadow-lg shadow-accent/20">
+                            {(() => {
+                                const Icon = navLinks.find(t => t.id === tab)?.icon.type || LayoutDashboard;
+                                return <Icon className="w-5 h-5" />;
+                            })()}
+                        </div>
+                        <div>
+                            <h1 className="text-xl font-bold text-text tracking-tight">
+                                {activeWs ? activeWs.name : (navLinks.find(t => t.id === tab)?.label.split('(')[0].trim() || "Dashboard")}
+                            </h1>
+                            <p className="text-[10px] font-bold uppercase tracking-widest text-text/40">
+                                {activeWs ? "Workspace Overview" : "Global Overview"}
+                            </p>
+                        </div>
+                    </div>
+
+                    <div className="flex items-center gap-6">
+                        <div className="relative hidden lg:block w-64">
+                            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-text/30" />
+                            <input 
+                                type="text" 
+                                placeholder="Search everything..." 
+                                className="w-full bg-text/5 border border-text/10 rounded-xl pl-10 pr-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-accent/20 transition-all"
+                            />
+                        </div>
+                        <div className="h-6 w-px bg-text/10"></div>
+                        <div className="flex items-center gap-3">
+                            <button className="p-2 text-text/40 hover:text-text hover:bg-text/5 rounded-lg transition-colors">
+                                <Bell className="w-5 h-5" />
+                            </button>
+                            <button className="p-2 text-text/40 hover:text-text hover:bg-text/5 rounded-lg transition-colors">
+                                <SettingsIcon className="w-5 h-5" />
+                            </button>
+                            <div className="h-10 w-10 rounded-full bg-text/5 border-2 border-accent/20 overflow-hidden">
+                                <div className="h-full w-full flex items-center justify-center text-accent font-bold">
+                                    {(user.display_name || user.email)[0].toUpperCase()}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </header>
+
+                {/* Mobile Header (re-added for context) */}
+                <div className="md:hidden shrink-0 px-6 py-6 border-b border-text/5 flex items-center justify-between">
+                    <div className="flex items-center gap-4">
+                        <div className="w-12 h-12 rounded-2xl bg-accent/10 border border-accent/20 flex items-center justify-center">
                             {(() => {
                                 const Icon = navLinks.find(t => t.id === tab)?.icon.type || LayoutDashboard;
                                 return <Icon className="w-6 h-6 text-accent" />;
@@ -134,21 +179,13 @@ export default function CommandCentre() {
                         </div>
                         <div>
                             <h1 className="text-xl font-bold text-text tracking-tight capitalize">
-                                {activeWs ? `${activeWs.icon_emoji} ${activeWs.name}` : (navLinks.find(t => t.id === tab)?.label.split('(')[0].trim() || "Dashboard")}
+                                {activeWs ? activeWs.name : (navLinks.find(t => t.id === tab)?.label.split('(')[0].trim() || "Dashboard")}
                             </h1>
-                            <div className="flex items-center gap-2 mt-0.5">
-                                <span className="w-1.5 h-1.5 rounded-full bg-accent/50" />
-                                <p className="text-xs font-semibold text-text/50 uppercase tracking-widest">
-                                    {tab === "overview" && !activeWs ? `${workspaces.length} Workspaces · ${pendingTasks.length} Open Tasks`
-                                        : tab === "tasks" ? `${pendingTasks.length} Open · ${filteredTasks.length} Total`
-                                            : `${meetings.length} Meetings total`}
-                                </p>
-                            </div>
                         </div>
                     </div>
-                </header>
+                </div>
 
-                <main className="flex-1 overflow-y-auto overflow-x-hidden p-6 md:p-10 w-full relative">
+                <div className="w-full relative px-6 md:px-10">
                     <div className="max-w-7xl mx-auto w-full">
                         {loading ? (
                             <div className="flex flex-col items-center justify-center h-[50vh]">
@@ -181,7 +218,7 @@ export default function CommandCentre() {
                             </div>
                         )}
                     </div>
-                </main>
+                </div>
             </div>
 
             {nudgeMsg && (

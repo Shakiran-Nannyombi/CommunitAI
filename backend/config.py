@@ -24,7 +24,8 @@ class Settings(BaseSettings):
     DEMO_PASSWORD: str = "demo1234"
 
     class Config:
-        env_file = str(_ENV_FILE)
+        # On Heroku, env vars are injected directly — .env file is optional
+        env_file = str(_ENV_FILE) if _ENV_FILE.exists() else None
         extra = "ignore"
 
 

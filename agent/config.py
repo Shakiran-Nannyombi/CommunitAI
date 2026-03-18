@@ -23,7 +23,8 @@ class Settings(BaseSettings):
     GRADIENT_MODEL_ACCESS_KEY: str = ""
 
     class Config:
-        env_file = str(_ENV_FILE)
+        # On Heroku, env vars are injected directly — .env file is optional
+        env_file = str(_ENV_FILE) if _ENV_FILE.exists() else None
         extra = "ignore"
 
 

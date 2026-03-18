@@ -2,6 +2,11 @@
 
 import { useEffect, useRef, useState } from "react";
 import { plannerChat, clearPlannerChat, loadAuth, type PlannerMessageOut } from "@/lib/api";
+import { 
+    Send, Trash2, Bot, User, Loader2, Sparkles, 
+    MessageSquare, AlertCircle, Info, Trash
+} from "lucide-react";
+import { motion, AnimatePresence } from "framer-motion";
 
 interface Props {
     workspaceId: string;
@@ -17,7 +22,6 @@ export default function PlannerTab({ workspaceId }: Props) {
 
     const userId = loadAuth()?.user_id ?? "";
 
-    // Auto-scroll to bottom when messages change
     useEffect(() => {
         bottomRef.current?.scrollIntoView({ behavior: "smooth" });
     }, [messages, loading]);
@@ -27,109 +31,177 @@ export default function PlannerTab({ workspaceId }: Props) {
         const text = input.trim();
         if (!text || loading) return;
 
+        // Optimistic update for user message
+        const userMsg: PlannerMessageOut = { 
+            role: "user", 
+            content: text,
+            created_at: new Date().toISOString()
+        };
+        setMessages(prev => [...prev, userMsg]);
+        setInput("");
         setLoading(true);
         setError("");
+
         try {
             const res = await plannerChat(workspaceId, text, userId);
             setMessages(res.history);
-            setInput("");
         } catch {
-            setError("Failed to get a response. Please try again.");
-            // input is preserved (not cleared)
+            setError("The Planner Agent is currently unavailable.");
+            // Remove the optimistic message if it failed? No, keep it but show error
         } finally {
             setLoading(false);
         }
     }
 
     async function handleClear() {
+        if (!confirm("Are you sure you want to clear the conversation?")) return;
         setClearing(true);
         setError("");
         try {
             await clearPlannerChat(workspaceId, userId);
             setMessages([]);
         } catch {
-            setError("Failed to clear conversation.");
+            setError("Failed to reset the agent memory.");
         } finally {
             setClearing(false);
         }
     }
 
     return (
-        <div className="bg-zinc-950 border border-zinc-800 rounded flex flex-col" style={{ height: "60vh" }}>
-            {/* Header */}
-            <div className="px-4 py-2.5 border-b border-zinc-800 flex items-center justify-between flex-shrink-0">
-                <span className="text-xs text-zinc-500 uppercase tracking-widest">Planner Agent</span>
+        <div className="flex flex-col h-[600px] bg-background border border-text/5 rounded-[2.5rem] overflow-hidden shadow-2xl shadow-text/2 relative group">
+            {/* Background Glow */}
+            <div className="absolute inset-0 bg-accent/1 pointer-events-none group-hover:bg-accent/2 transition-colors duration-700"></div>
+
+            {/* Chat Header */}
+            <header className="shrink-0 px-8 py-4 border-b border-text/5 bg-background/50 backdrop-blur-md flex items-center justify-between relative z-10">
+                <div className="flex items-center gap-3">
+                    <div className="w-10 h-10 bg-accent/10 rounded-2xl flex items-center justify-center text-accent">
+                        <Bot className="w-5 h-5" />
+                    </div>
+                    <div>
+                        <h3 className="text-sm font-black text-text tracking-tight uppercase">Planner Agent</h3>
+                        <p className="text-[10px] font-bold text-accent uppercase tracking-widest flex items-center gap-1.5">
+                            <span className="w-1.5 h-1.5 rounded-full bg-accent animate-pulse" />
+                            AI Insight Ready
+                        </p>
+                    </div>
+                </div>
                 <button
                     onClick={handleClear}
                     disabled={clearing || messages.length === 0}
-                    className="text-xs text-zinc-600 hover:text-red-400 transition disabled:opacity-40"
+                    className="p-2.5 text-text/20 hover:text-red-500 hover:bg-red-500/10 rounded-xl transition-all disabled:opacity-0"
+                    title="Clear Conversation"
                 >
-                    {clearing ? "Clearing..." : "Clear conversation"}
+                    <Trash2 className="w-5 h-5" />
                 </button>
-            </div>
+            </header>
 
-            {/* Message list */}
-            <div className="flex-1 overflow-y-auto px-4 py-3 space-y-3">
-                {messages.length === 0 && !loading && (
-                    <p className="text-xs text-zinc-700 text-center mt-8">
-                        Ask the Planner Agent anything about your community.
-                    </p>
-                )}
-                {messages.map((msg, i) => (
-                    <div
-                        key={i}
-                        className={`flex ${msg.role === "user" ? "justify-end" : "justify-start"}`}
-                    >
-                        <div
-                            className={`max-w-[75%] rounded px-3 py-2 text-sm leading-relaxed whitespace-pre-wrap ${msg.role === "user"
-                                    ? "bg-green-900/40 border border-green-800 text-green-100"
-                                    : "bg-zinc-900 border border-zinc-700 text-zinc-300"
-                                }`}
+            {/* Chat Content */}
+            <div className="flex-1 overflow-y-auto px-8 py-6 space-y-6 custom-scrollbar relative z-10">
+                <AnimatePresence initial={false}>
+                    {messages.length === 0 && !loading && (
+                        <motion.div 
+                            initial={{ opacity: 0, y: 10 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            className="flex flex-col items-center justify-center py-20 text-center space-y-4"
                         >
-                            {msg.content}
-                        </div>
-                    </div>
-                ))}
+                            <div className="w-16 h-16 bg-text/5 rounded-full flex items-center justify-center text-text/10">
+                                <MessageSquare className="w-8 h-8" />
+                            </div>
+                            <div className="max-w-xs">
+                                <h4 className="text-sm font-black text-text">Strategic Partner</h4>
+                                <p className="text-xs font-medium text-text/40 mt-1">Ask anything about community trends, task blockers, or future planning.</p>
+                            </div>
+                        </motion.div>
+                    )}
 
-                {/* Loading spinner */}
-                {loading && (
-                    <div className="flex justify-start">
-                        <div className="bg-zinc-900 border border-zinc-700 rounded px-3 py-2 flex items-center gap-2">
-                            <div className="w-3 h-3 border-2 border-green-400 border-t-transparent rounded-full animate-spin" />
-                            <span className="text-xs text-zinc-500">Thinking...</span>
-                        </div>
-                    </div>
-                )}
+                    {messages.map((msg, i) => (
+                        <motion.div
+                            key={i}
+                            initial={{ opacity: 0, x: msg.role === "user" ? 20 : -20 }}
+                            animate={{ opacity: 1, x: 0 }}
+                            className={`flex ${msg.role === "user" ? "justify-end" : "justify-start"}`}
+                        >
+                            <div className={`flex gap-3 max-w-[85%] ${msg.role === "user" ? "flex-row-reverse" : "flex-row"}`}>
+                                <div className={`shrink-0 w-8 h-8 rounded-xl flex items-center justify-center text-xs font-black shadow-sm ${
+                                    msg.role === "user" ? "bg-text text-background" : "bg-accent/10 text-accent border border-accent/20"
+                                }`}>
+                                    {msg.role === "user" ? <User className="w-4 h-4" /> : <Bot className="w-4 h-4" />}
+                                </div>
+                                <div className={`relative px-5 py-4 rounded-3xl text-sm font-medium leading-relaxed ${
+                                    msg.role === "user"
+                                        ? "bg-text text-background rounded-tr-none shadow-xl shadow-text/5"
+                                        : "bg-text/5 text-text rounded-tl-none border border-text/5"
+                                }`}>
+                                    {msg.content}
+                                </div>
+                            </div>
+                        </motion.div>
+                    ))}
 
-                {/* Inline error */}
-                {error && (
-                    <div className="flex justify-center">
-                        <span className="text-xs text-red-400 bg-red-900/20 border border-red-900 rounded px-3 py-1.5">
-                            {error}
-                        </span>
-                    </div>
-                )}
+                    {loading && (
+                        <motion.div 
+                            initial={{ opacity: 0, x: -20 }}
+                            animate={{ opacity: 1, x: 0 }}
+                            className="flex justify-start"
+                        >
+                            <div className="flex gap-3">
+                                <div className="shrink-0 w-8 h-8 bg-accent/10 border border-accent/20 rounded-xl flex items-center justify-center text-accent">
+                                    <Bot className="w-4 h-4" />
+                                </div>
+                                <div className="bg-text/5 border border-text/5 rounded-3xl rounded-tl-none px-5 py-4 flex items-center gap-3">
+                                    <div className="flex gap-1">
+                                        <div className="w-1.5 h-1.5 bg-accent/40 rounded-full animate-bounce [animation-delay:-0.3s]" />
+                                        <div className="w-1.5 h-1.5 bg-accent/40 rounded-full animate-bounce [animation-delay:-0.15s]" />
+                                        <div className="w-1.5 h-1.5 bg-accent/40 rounded-full animate-bounce" />
+                                    </div>
+                                    <span className="text-[10px] font-black uppercase text-accent/60 tracking-widest">Thinking</span>
+                                </div>
+                            </div>
+                        </motion.div>
+                    )}
 
+                    {error && (
+                        <motion.div 
+                            initial={{ opacity: 0, scale: 0.95 }}
+                            animate={{ opacity: 1, scale: 1 }}
+                            className="flex justify-center"
+                        >
+                            <div className="flex items-center gap-2 px-4 py-2 bg-red-500/10 border border-red-500/20 rounded-xl text-red-500 text-[10px] font-black uppercase tracking-widest">
+                                <AlertCircle className="w-3.5 h-3.5" />
+                                {error}
+                            </div>
+                        </motion.div>
+                    )}
+                </AnimatePresence>
                 <div ref={bottomRef} />
             </div>
 
-            {/* Input */}
-            <form onSubmit={handleSend} className="flex-shrink-0 border-t border-zinc-800 px-4 py-3 flex gap-2">
-                <input
-                    type="text"
-                    value={input}
-                    onChange={e => setInput(e.target.value)}
-                    placeholder="Ask the Planner Agent..."
-                    disabled={loading}
-                    className="flex-1 bg-black border border-zinc-800 rounded px-3 py-2 text-xs text-zinc-300 placeholder-zinc-700 focus:outline-none focus:border-green-700 transition disabled:opacity-50"
-                />
-                <button
-                    type="submit"
-                    disabled={loading || !input.trim()}
-                    className="text-xs px-4 py-2 bg-green-700 hover:bg-green-600 disabled:opacity-50 text-black font-bold rounded transition"
-                >
-                    Send
-                </button>
+            {/* Chat Input */}
+            <form onSubmit={handleSend} className="shrink-0 p-6 border-t border-text/5 bg-background/50 backdrop-blur-md relative z-10">
+                <div className="relative flex items-center gap-3">
+                    <div className="relative flex-1 group">
+                        <input
+                            type="text"
+                            value={input}
+                            onChange={e => setInput(e.target.value)}
+                            placeholder="Type a strategic question..."
+                            disabled={loading}
+                            className="w-full bg-text/3 border border-text/5 rounded-2xl pl-5 pr-12 py-4 text-sm font-semibold focus:outline-none focus:ring-4 focus:ring-accent/5 focus:border-accent/40 transition-all placeholder:text-text/20"
+                        />
+                        <button
+                            type="submit"
+                            disabled={loading || !input.trim()}
+                            className="absolute right-2 top-1/2 -translate-y-1/2 w-10 h-10 bg-text text-background rounded-xl flex items-center justify-center hover:scale-105 active:scale-95 transition-all disabled:opacity-0 disabled:scale-95"
+                        >
+                            <Send className="w-4 h-4" />
+                        </button>
+                    </div>
+                </div>
+                <p className="text-[9px] font-bold text-text/20 uppercase tracking-[0.2em] mt-3 text-center flex items-center justify-center gap-2">
+                    <Sparkles className="w-3 h-3" />
+                    CommunitAI Planner v2.0
+                </p>
             </form>
         </div>
     );

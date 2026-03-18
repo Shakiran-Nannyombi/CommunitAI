@@ -16,9 +16,14 @@ logger = logging.getLogger(__name__)
 
 app = FastAPI(title="CommunitAI API")
 
+import os
+
+_raw = os.environ.get("ALLOWED_ORIGINS", "*")
+_origins = [o.strip() for o in _raw.split(",")] if _raw != "*" else ["*"]
+
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
+    allow_origins=_origins,
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
