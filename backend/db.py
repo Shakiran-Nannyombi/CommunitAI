@@ -1,15 +1,14 @@
-"""
-Async SQLAlchemy engine, session factory, and FastAPI dependency for database access.
-DATABASE_URL must be an async-compatible URL, e.g. postgresql+asyncpg://...
-"""
-
-import os
 from typing import AsyncGenerator
 
 from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker, create_async_engine
 from sqlalchemy.orm import DeclarativeBase
 
-DATABASE_URL = os.environ.get("DATABASE_URL", "postgresql+asyncpg://localhost/communitai")
+try:
+    from backend.config import settings
+    DATABASE_URL = settings.DATABASE_URL
+except ModuleNotFoundError:
+    from config import settings  # type: ignore[no-redef]
+    DATABASE_URL = settings.DATABASE_URL
 
 engine = create_async_engine(DATABASE_URL, echo=False, future=True)
 
