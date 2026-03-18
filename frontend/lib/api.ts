@@ -224,8 +224,8 @@ export async function retryMeeting(id: string): Promise<MeetingDetail> {
     return data;
 }
 
-export async function deleteMeeting(id: string): Promise<void> {
-    await api.delete(`/meetings/${id}`);
+export async function deleteMeeting(id: string, userId: string): Promise<void> {
+    await api.delete(`/meetings/${id}`, { params: { user_id: userId } });
 }
 
 // --- Tasks ---

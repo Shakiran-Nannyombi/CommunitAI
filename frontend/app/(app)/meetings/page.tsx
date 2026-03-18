@@ -3,13 +3,13 @@
 import { useEffect, useState, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import {
-    getMeetings, loadAuth, uploadAudio, createMeeting,
+    getMeetings, deleteMeeting, loadAuth,
     type MeetingListItem, type AuthUser
 } from "@/lib/api";
 import {
-    Mic, Search, Filter, Upload, MoreVertical,
+    Mic, Search, Upload, MoreVertical,
     Calendar, Clock, ChevronRight, ChevronLeft,
-    AlertCircle, CheckCircle2, Loader2, Play
+    AlertCircle, CheckCircle2, Loader2, Play, Trash2, Eye
 } from "lucide-react";
 import Link from "next/link";
 
@@ -28,6 +28,7 @@ export default function MeetingsLibrary() {
     const [loading, setLoading] = useState(true);
     const [search, setSearch] = useState("");
     const [filter, setFilter] = useState("all");
+    const [openMenu, setOpenMenu] = useState<string | null>(null);
 
     const loadData = useCallback(async (uid: string) => {
         try {
@@ -46,6 +47,24 @@ export default function MeetingsLibrary() {
         setUser(auth);
         loadData(auth.user_id);
     }, [router, loadData]);
+
+    async function handleDelete(id: string) {
+        if (!user) return;
+        try {
+            await deleteMeeting(id, user.user_id);
+            setMeetings(prev => prev.filter(m => m.id !== id));
+        } catch (err) {
+            console.error("Failed to delete meeting", err);
+        } finally {
+            setOpenMenu(null);
+        }
+    }
+
+    useEffect(() => {
+        function handleClickOutside() { setOpenMenu(null); }
+        if (openMenu) document.addEventListener("click", handleClickOutside);
+        return () => document.removeEventListener("click", handleClickOutside);
+    }, [openMenu]);
 
     const filteredMeetings = meetings.filter(m => {
         const matchesSearch = m.title.toLowerCase().includes(search.toLowerCase());
@@ -143,9 +162,30 @@ export default function MeetingsLibrary() {
                                                 <StatusIcon className={`w-3 h-3 ${m.status === 'processing' ? 'animate-spin' : ''}`} />
                                                 {STATUS_CONFIG[m.status]?.label || m.status}
                                             </div>
-                                            <button className="p-2 text-text/20 hover:text-text rounded-lg transition-colors">
-                                                <MoreVertical className="w-4 h-4" />
-                                            </button>
+                                            <div className="relative" onClick={e => e.preventDefault()}>
+                                                <button
+                                                    onClick={() => setOpenMenu(openMenu === m.id ? null : m.id)}
+                                                    className="p-2 text-text/20 hover:text-text rounded-lg transition-colors"
+                                                >
+                                                    <MoreVertical className="w-4 h-4" />
+                                                </button>
+                                                {openMenu === m.id && (
+                                                    <div className="absolute right-0 top-8 z-20 w-36 bg-background border border-text/10 rounded-2xl shadow-2xl overflow-hidden">
+                                                        <button
+                                                            onClick={() => { setOpenMenu(null); router.push(`/meetings/${m.id}`); }}
+                                                            className="w-full flex items-center gap-3 px-5 py-3.5 text-[11px] font-black uppercase tracking-widest text-text/60 hover:bg-text/5 hover:text-text transition-all"
+                                                        >
+                                                            <Eye className="w-3.5 h-3.5" /> View
+                                                        </button>
+                                                        <button
+                                                            onClick={() => handleDelete(m.id)}
+                                                            className="w-full flex items-center gap-3 px-5 py-3.5 text-[11px] font-black uppercase tracking-widest text-red-500 hover:bg-red-500/10 transition-all"
+                                                        >
+                                                            <Trash2 className="w-3.5 h-3.5" /> Delete
+                                                        </button>
+                                                    </div>
+                                                )}
+                                            </div>
                                         </div>
 
                                         <h3 className="text-xl font-black text-text mb-2 group-hover:text-accent transition-colors truncate">

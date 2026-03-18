@@ -3,7 +3,7 @@
 import { useEffect, useState, useCallback, useRef } from "react";
 import { useParams, useRouter } from "next/navigation";
 import {
-    getMeeting, patchTranscript, patchActionItem, deleteMeeting, loadAuth,
+    getMeeting, patchTranscript, patchActionItem, deleteMeeting, loadAuth, retryMeeting,
     type MeetingDetail, type ActionItem
 } from "@/lib/api";
 import {
@@ -35,6 +35,13 @@ export default function MeetingInsights() {
     const [audioProgress, setAudioProgress] = useState(0);
     const [audioDuration, setAudioDuration] = useState(0);
     const [currentTime, setCurrentTime] = useState(0);
+    const [retrying, setRetrying] = useState(false);
+    const [toast, setToast] = useState<{ msg: string; type: "error" | "success" } | null>(null);
+
+    const showToast = (msg: string, type: "error" | "success" = "error") => {
+        setToast({ msg, type });
+        setTimeout(() => setToast(null), 3500);
+    };
 
     const audioEl = useRef<HTMLAudioElement | null>(null);
 
@@ -84,8 +91,9 @@ export default function MeetingInsights() {
             await patchTranscript(meeting.id, transcriptEdit);
             setMeeting({ ...meeting, transcript: transcriptEdit });
             setIsEditingTranscript(false);
+            showToast("Transcript saved.", "success");
         } catch (err) {
-            alert("Failed to save transcript update.");
+            showToast("Failed to save transcript update.");
         }
     }
 
@@ -98,7 +106,7 @@ export default function MeetingInsights() {
                 action_items: meeting.action_items.map(t => t.id === task.id ? updated : t)
             });
         } catch (err) {
-            alert("Failed to update task.");
+            showToast("Failed to update task.");
         }
     }
 
@@ -110,6 +118,31 @@ export default function MeetingInsights() {
     function buildEmailDraft(m: MeetingDetail): string {
         const items = m.action_items.map((a, i) => `${i + 1}. ${a.description}${a.assignee ? ` (${a.assignee})` : ""}`).join("\n");
         return `Subject: Meeting Notes — ${m.title}\n\nHi team,\n\n${m.summary || "No summary available."}\n\nAction Items:\n${items || "None"}\n\nBest,\nCommunitAI`;
+    }
+
+    async function handleDelete() {
+        if (!meeting) return;
+        const auth = loadAuth();
+        if (!auth) return;
+        try {
+            await deleteMeeting(meeting.id, auth.user_id);
+            router.replace("/meetings");
+        } catch {
+            showToast("Failed to delete meeting.");
+        }
+    }
+
+    async function handleRetry() {
+        if (!meeting) return;
+        setRetrying(true);
+        try {
+            const updated = await retryMeeting(meeting.id);
+            setMeeting(updated);
+        } catch {
+            // ignore — polling will pick up any status change
+        } finally {
+            setRetrying(false);
+        }
     }
 
     async function handleCopy() {
@@ -172,7 +205,17 @@ export default function MeetingInsights() {
                         <Share2 className="w-4 h-4" />
                         SHARE RESULTS
                     </button>
-                    <button className="p-4 bg-red-500/5 text-red-500/20 hover:text-red-500 hover:bg-red-500/10 rounded-2xl transition-all duration-500 shadow-sm">
+                    {meeting.status.includes("failed") && (
+                        <button
+                            onClick={handleRetry}
+                            disabled={retrying}
+                            className="flex items-center gap-2 px-6 py-4 rounded-2xl font-black text-[10px] uppercase tracking-[0.2em] bg-yellow-500/10 text-yellow-500 border border-yellow-500/20 hover:bg-yellow-500/20 transition-all disabled:opacity-50"
+                        >
+                            {retrying ? <Loader2 className="w-4 h-4 animate-spin" /> : <Sparkles className="w-4 h-4" />}
+                            Retry
+                        </button>
+                    )}
+                    <button className="p-4 bg-red-500/5 text-red-500/20 hover:text-red-500 hover:bg-red-500/10 rounded-2xl transition-all duration-500 shadow-sm" onClick={handleDelete}>
                         <Trash2 className="w-6 h-6" />
                     </button>
                 </div>
@@ -476,6 +519,19 @@ export default function MeetingInsights() {
                                 </button>
                             </div>
                         </motion.div>
+                    </motion.div>
+                )}
+            </AnimatePresence>
+
+            {/* Toast */}
+            <AnimatePresence>
+                {toast && (
+                    <motion.div
+                        initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: 20 }}
+                        className={`fixed bottom-8 left-1/2 -translate-x-1/2 z-50 flex items-center gap-3 px-6 py-4 rounded-2xl shadow-2xl font-black text-xs uppercase tracking-widest ${toast.type === "error" ? "bg-red-500 text-white" : "bg-accent text-background"}`}
+                    >
+                        <AlertCircle className="w-4 h-4" />
+                        {toast.msg}
                     </motion.div>
                 )}
             </AnimatePresence>

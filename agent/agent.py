@@ -90,7 +90,11 @@ async def process_meeting(meeting_id: str, audio_key: str | None = None, retry_f
 
     # ── Transcription ────────────────────────────────────────────────────────
     if resume_from is None or resume_from == "transcribe":
-        audio_url = await get_audio_url(meeting_id)
+        # Prefer the audio_key passed directly (avoids presigned URL expiry issues)
+        if audio_key:
+            audio_url = audio_key
+        else:
+            audio_url = await get_audio_url(meeting_id)
         transcript = await transcribe(meeting_id, audio_url)
         if transcript is None:
             logger.error("Transcription failed for meeting %s; halting pipeline.", meeting_id)

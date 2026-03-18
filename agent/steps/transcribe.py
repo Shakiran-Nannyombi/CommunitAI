@@ -18,6 +18,7 @@ logger = logging.getLogger(__name__)
 GROQ_WHISPER_URL = "https://api.groq.com/openai/v1/audio/transcriptions"
 AUDIO_EXTENSIONS = ["mp3", "wav", "m4a", "aac", "webm", "ogg", "flac"]
 GROQ_SUPPORTED = {"flac", "mp3", "mp4", "mpeg", "mpga", "m4a", "ogg", "opus", "wav", "webm"}
+GROQ_MAX_BYTES = 24 * 1024 * 1024  # 25 MB limit — stay under with 24 MB
 
 
 def _get_spaces_client():
@@ -107,22 +108,39 @@ async def transcribe(meeting_id: str, audio_url: str) -> str | None:
         await update_meeting_status(meeting_id, "transcription_failed")
         return None
 
-    # Convert unsupported formats (e.g. aac) to mp3 before sending to Groq
-    if ext.lower() not in GROQ_SUPPORTED:
-        logger.info("Converting .%s to .mp3 for Groq Whisper (meeting %s)", ext, meeting_id)
+    # Convert unsupported formats (e.g. aac) to mp3 before sending to Groq.
+    # Also compress if the file exceeds Groq's 25 MB limit (common for long recordings).
+    needs_conversion = ext.lower() not in GROQ_SUPPORTED
+    needs_compression = len(audio_data) > GROQ_MAX_BYTES
+
+    if needs_conversion or needs_compression:
+        reason = "unsupported format" if needs_conversion else "file too large for Groq"
+        logger.info(
+            "Converting .%s to compressed mp3 (%s) for meeting %s",
+            ext, reason, meeting_id,
+        )
         try:
-            audio_data = _convert_to_mp3(audio_data, ext)
+            audio_data = _convert_to_mp3(audio_data, ext if needs_conversion else ext)
             ext = "mp3"
         except Exception as exc:
             logger.error("ffmpeg conversion failed for meeting %s: %s", meeting_id, exc)
             await update_meeting_status(meeting_id, "transcription_failed")
             return None
 
+    # Final size check — if still over limit after compression, fail cleanly
+    if len(audio_data) > GROQ_MAX_BYTES:
+        logger.error(
+            "Audio still exceeds 25 MB after compression for meeting %s (%d bytes)",
+            meeting_id, len(audio_data),
+        )
+        await update_meeting_status(meeting_id, "transcription_failed")
+        return None
+
     send_ext = ext
     send_data = audio_data
 
     async def call_groq_whisper() -> str:
-        async with httpx.AsyncClient(timeout=120.0) as client:
+        async with httpx.AsyncClient(timeout=300.0) as client:
             response = await client.post(
                 GROQ_WHISPER_URL,
                 headers={"Authorization": f"Bearer {settings.GROQ_API_KEY}"},

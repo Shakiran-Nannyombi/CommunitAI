@@ -106,7 +106,7 @@ async def get_meeting(
     return _build_detail(meeting)
 
 
-_FAILED_STATUSES = {"transcription_failed", "analysis_failed", "summarization_failed"}
+_FAILED_STATUSES = {"transcription_failed", "analysis_failed", "summarization_failed", "processing"}
 
 _ALLOWED_MIME_TYPES = {"audio/mpeg", "audio/wav", "audio/mp4", "audio/x-m4a", "audio/aac", "audio/x-aac", "audio/x-caf", "video/mp4", "audio/webm", "video/webm", "audio/ogg"}
 _ALLOWED_EXTENSIONS = {"mp3", "wav", "mp4", "m4a", "aac", "ogg", "flac", "webm"}
