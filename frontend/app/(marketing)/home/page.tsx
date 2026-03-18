@@ -1,180 +1,225 @@
+"use client";
+
 import Link from "next/link";
 import { LogoFull, LogoMark } from "@/components/Logo";
+import { motion, useScroll, useTransform } from "framer-motion";
+import { useEffect, useRef, useState } from "react";
+import {
+    Moon, Sun, Mic, Zap, CheckSquare, MessageSquare,
+    LayoutDashboard, BarChart3, ArrowRight, Play, Sparkles,
+    Users, Clock, TrendingUp, Shield
+} from "lucide-react";
+import { BackgroundBeams } from "@/components/BackgroundBeams";
 
+/* ─── Data ──────────────────────────────────────────────────────────────── */
 const FEATURES = [
-    { icon: "🎙", title: "Record Any Meeting", body: "Upload audio from your HOA, campus club, or community call. CommunitAI handles the rest." },
-    { icon: "⚡", title: "Instant AI Summary", body: "Powered by DigitalOcean Gradient AI. Get a clean summary seconds after your meeting ends." },
-    { icon: "✅", title: "Auto Action Items", body: "Every task, owner, and deadline is extracted automatically — no manual note-taking." },
-    { icon: "💬", title: "Generate Follow-ups", body: "One click drafts a personalised nudge for each person on the task list." },
-    { icon: "🏘️", title: "Multi-Community Workspaces", body: "Switch between your HOA, campus group, and sports club without losing context." },
-    { icon: "📊", title: "Community Health Score", body: "Sentiment analysis on every meeting so you know when morale needs attention." },
+    { icon: Mic, title: "Record Any Meeting", body: "Upload MP3, WAV, or M4A — or record live in the browser.", color: "#3b82f6", glow: "rgba(59,130,246,0.15)" },
+    { icon: Zap, title: "Instant AI Summary", body: "Powered by DigitalOcean Gradient AI. Clean summary in seconds.", color: "#42ae44", glow: "rgba(66,174,68,0.15)" },
+    { icon: CheckSquare, title: "Auto Action Items", body: "Every task, owner, and deadline extracted — zero manual effort.", color: "#f59e0b", glow: "rgba(245,158,11,0.15)" },
+    { icon: MessageSquare, title: "AI Follow-ups", body: "One click drafts a personalised nudge for every task owner.", color: "#a855f7", glow: "rgba(168,85,247,0.15)" },
+    { icon: LayoutDashboard, title: "Multi-Community", body: "Switch between HOA, campus group, and sports club seamlessly.", color: "#42ae44", glow: "rgba(66,174,68,0.15)" },
+    { icon: BarChart3, title: "Health Score", body: "Sentiment analysis on every meeting — know when morale dips.", color: "#ef4444", glow: "rgba(239,68,68,0.15)" },
+];
+
+const STATS = [
+    { value: "< 30s", label: "First summary", icon: Clock },
+    { value: "100%", label: "Auto extraction", icon: TrendingUp },
+    { value: "∞", label: "Communities", icon: Users },
+    { value: "0", label: "Manual notes", icon: Shield },
 ];
 
 const STEPS = [
-    { n: "01", title: "Upload your recording", body: "Drop in any MP3, WAV, or M4A from your meeting." },
-    { n: "02", title: "AI processes it", body: "Gradient AI transcribes, summarises, and extracts every action item." },
-    { n: "03", title: "Review & act", body: "Open your Command Centre, check tasks, and send follow-ups in one click." },
+    { n: "01", title: "Upload your recording", body: "Drop in any audio file or record directly in the browser." },
+    { n: "02", title: "Gradient AI processes it", body: "Transcription, summarisation, and action item extraction — all automatic." },
+    { n: "03", title: "Review & act", body: "Open your Command Centre, check tasks, send AI-drafted follow-ups." },
 ];
 
-const NAV_LINK: React.CSSProperties = { fontSize: "14px", color: "color-mix(in srgb, var(--text), transparent 40%)", textDecoration: "none", fontWeight: 500 };
-const BTN_PRIMARY: React.CSSProperties = {
-    fontSize: "15px", fontWeight: 700, color: "var(--background)",
-    background: "var(--accent)", borderRadius: "8px",
-    padding: "14px 32px", textDecoration: "none",
-    boxShadow: "0 4px 14px color-mix(in srgb, var(--accent), transparent 75%)",
-    display: "inline-block",
-};
-const BTN_SECONDARY: React.CSSProperties = {
-    fontSize: "15px", fontWeight: 600, color: "var(--text)",
-    background: "var(--background)", border: "1px solid color-mix(in srgb, var(--text), transparent 90%)",
-    borderRadius: "8px", padding: "14px 32px", textDecoration: "none",
-    display: "inline-block",
+/* ─── Animation variants ─────────────────────────────────────────────────── */
+const fadeUp = {
+    hidden: { opacity: 0, y: 32 },
+    show: (i: number) => ({
+        opacity: 1, y: 0,
+        transition: { delay: i * 0.08, duration: 0.6, ease: [0.16, 1, 0.3, 1] as any }
+    }),
 };
 
+/* ─── Mock terminal lines ────────────────────────────────────────────────── */
+const TERMINAL_LINES = [
+    { delay: 0.6, color: "#42ae44", text: "● CONNECTED  ·  WORKSPACES: 3  ·  OPEN TASKS: 7" },
+    { delay: 0.9, color: "#94a3b8", text: "▸ HOA Monthly Meeting — DONE — 4 action items" },
+    { delay: 1.1, color: "#94a3b8", text: "▸ Campus Tech Club — PROCESSING — transcribing..." },
+    { delay: 1.3, color: "#94a3b8", text: "▸ Sports Committee — DONE — summary ready" },
+    { delay: 1.6, color: "#42ae44", text: '⚡ Nudge → "Hey @john, book the venue by Friday!"' },
+];
+
+/* ─── Component ──────────────────────────────────────────────────────────── */
 export default function LandingPage() {
+    const [dark, setDark] = useState(true);
+    const heroRef = useRef<HTMLDivElement>(null);
+    const { scrollYProgress } = useScroll({ target: heroRef, offset: ["start start", "end start"] });
+    const heroY = useTransform(scrollYProgress, [0, 1], [0, 80]);
+
+    useEffect(() => {
+        const saved = localStorage.getItem("theme");
+        const prefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
+        const isDark = saved ? saved === "dark" : prefersDark;
+        setDark(isDark);
+        document.documentElement.classList.toggle("dark", isDark);
+    }, []);
+
+    function toggleTheme() {
+        const next = !dark;
+        setDark(next);
+        document.documentElement.classList.toggle("dark", next);
+        localStorage.setItem("theme", next ? "dark" : "light");
+    }
+
     return (
-        <div style={{ minHeight: "100dvh", background: "var(--background)" }}>
+        <div className="min-h-dvh bg-background text-text overflow-x-hidden antialiased">
+
+            {/* Ambient glow */}
+            <div aria-hidden className="pointer-events-none fixed inset-0 overflow-hidden">
+                <div style={{ position: "absolute", top: "-20%", left: "50%", transform: "translateX(-50%)", width: "900px", height: "600px", background: "radial-gradient(ellipse at center, rgba(66,174,68,0.12) 0%, transparent 70%)", filter: "blur(40px)" }} />
+                <div style={{ position: "absolute", bottom: "10%", right: "-10%", width: "500px", height: "500px", background: "radial-gradient(ellipse at center, rgba(59,130,246,0.08) 0%, transparent 70%)", filter: "blur(60px)" }} />
+            </div>
 
             {/* Nav */}
-            <nav style={{
-                position: "sticky", top: 0, zIndex: 50,
-                borderBottom: "1px solid color-mix(in srgb, var(--text), transparent 90%)",
-                background: "color-mix(in srgb, var(--background), transparent 5%)",
-                backdropFilter: "blur(8px)",
-                padding: "0 24px",
-                display: "flex", alignItems: "center", justifyContent: "space-between",
-                height: "64px",
-            }}>
-                <LogoFull size={28} variant="light" />
-                <div style={{ display: "flex", alignItems: "center", gap: "24px" }}>
-                    <Link href="/about" style={NAV_LINK}>About</Link>
-                    <Link href="/login" style={NAV_LINK}>Sign In</Link>
-                    <Link href="/login" style={{
-                        fontSize: "14px", fontWeight: 600, color: "var(--background)",
-                        background: "var(--accent)", borderRadius: "6px",
-                        padding: "8px 18px", textDecoration: "none",
-                    }}>Get Started</Link>
+            <nav className="sticky top-0 z-50 border-b border-text/8 backdrop-blur-xl" style={{ background: "color-mix(in srgb, var(--color-background) 85%, transparent)" }}>
+                <div className="max-w-6xl mx-auto px-6 h-16 flex items-center justify-between">
+                    <LogoFull size={26} variant="light" />
+                    <div className="flex items-center gap-5">
+                        <Link href="/about" className="text-sm font-medium text-text/50 hover:text-text transition-colors hidden sm:block">About</Link>
+                        <Link href="/login" className="text-sm font-medium text-text/50 hover:text-text transition-colors hidden sm:block">Sign In</Link>
+                        <button onClick={toggleTheme} aria-label="Toggle theme"
+                            className="w-9 h-9 rounded-xl border border-text/10 bg-text/5 hover:bg-text/10 flex items-center justify-center text-text/50 hover:text-text transition-all">
+                            {dark ? <Sun className="w-4 h-4" /> : <Moon className="w-4 h-4" />}
+                        </button>
+                        <Link href="/login" className="text-sm font-bold text-background bg-accent hover:bg-accent/90 rounded-xl px-5 py-2.5 transition-all shadow-lg shadow-accent/20">
+                            Get Started
+                        </Link>
+                    </div>
                 </div>
             </nav>
 
             {/* Hero */}
-            <section style={{ maxWidth: "900px", margin: "0 auto", padding: "96px 24px 80px", textAlign: "center" }}>
-                <div style={{
-                    display: "inline-flex", alignItems: "center", gap: "8px",
-                    background: "color-mix(in srgb, var(--accent), transparent 90%)", border: "1px solid color-mix(in srgb, var(--accent), transparent 80%)",
-                    borderRadius: "999px", padding: "6px 14px",
-                    fontSize: "12px", fontWeight: 600, color: "var(--accent)",
-                    marginBottom: "28px", letterSpacing: "0.05em",
-                }}>
-                    <span style={{ width: "6px", height: "6px", borderRadius: "50%", background: "var(--accent)", display: "inline-block" }} />
-                    POWERED BY DIGITALOCEAN GRADIENT AI
-                </div>
-                <h1 style={{
-                    fontSize: "clamp(36px, 6vw, 64px)", fontWeight: 800, lineHeight: 1.1,
-                    color: "var(--text)", marginBottom: "24px", letterSpacing: "-0.02em",
-                }}>
-                    Your AI Chief of Staff<br />
-                    <span style={{ color: "var(--accent)" }}>for every community you lead</span>
-                </h1>
-                <p style={{ fontSize: "18px", color: "color-mix(in srgb, var(--text), transparent 40%)", lineHeight: 1.7, maxWidth: "600px", margin: "0 auto 40px" }}>
-                    Record your meetings. Get instant summaries, action items, and AI-generated follow-ups — across all your communities in one place.
-                </p>
-                <div style={{ display: "flex", gap: "12px", justifyContent: "center", flexWrap: "wrap" }}>
-                    <Link href="/login" style={BTN_PRIMARY}>Try for free →</Link>
-                    <Link href="/about" style={BTN_SECONDARY}>Learn more</Link>
-                </div>
-            </section>
-
-            {/* Terminal preview */}
-            <section style={{ background: "#0a0a0a", padding: "48px 24px" }}>
-                <div style={{
-                    maxWidth: "800px", margin: "0 auto",
-                    border: "1px solid #1f1f1f", borderRadius: "10px",
-                    overflow: "hidden", fontFamily: "ui-monospace, monospace",
-                }}>
-                    <div style={{ background: "#111", padding: "10px 16px", display: "flex", gap: "6px", alignItems: "center" }}>
-                        <span style={{ width: "10px", height: "10px", borderRadius: "50%", background: "#ef4444" }} />
-                        <span style={{ width: "10px", height: "10px", borderRadius: "50%", background: "#f59e0b" }} />
-                        <span style={{ width: "10px", height: "10px", borderRadius: "50%", background: "#22c55e" }} />
-                        <span style={{ marginLeft: "12px", fontSize: "12px", color: "#52525b" }}>CommunitAI — Command Centre</span>
-                    </div>
-                    <div style={{ background: "#030303", padding: "24px", fontSize: "13px", color: "#4ade80", lineHeight: 2 }}>
-                        <p><span style={{ color: "#52525b" }}>●</span> DB CONNECTED &nbsp;&nbsp; WORKSPACES: <span style={{ color: "#a1a1aa" }}>3</span> &nbsp;&nbsp; OPEN TASKS: <span style={{ color: "#facc15" }}>7</span> &nbsp;&nbsp; MEETINGS: <span style={{ color: "#a1a1aa" }}>12</span></p>
-                        <p style={{ color: "#a1a1aa", marginTop: "8px" }}>▸ HOA Monthly Meeting — <span style={{ color: "#4ade80" }}>DONE</span> — 4 action items extracted</p>
-                        <p style={{ color: "#a1a1aa" }}>▸ Campus Tech Club — <span style={{ color: "#60a5fa" }}>PROC</span> — transcribing...</p>
-                        <p style={{ color: "#a1a1aa" }}>▸ Sports Committee — <span style={{ color: "#4ade80" }}>DONE</span> — summary ready</p>
-                        <p style={{ marginTop: "12px" }}>⚡ Gradient AI nudge → <span style={{ color: "#d4d4d8" }}>&quot;Hey @john, just a reminder to book the venue by Friday!&quot;</span></p>
-                    </div>
-                </div>
-            </section>
-
-            {/* Features */}
-            <section style={{ maxWidth: "1000px", margin: "0 auto", padding: "80px 24px" }}>
-                <h2 style={{ fontSize: "32px", fontWeight: 800, color: "var(--text)", textAlign: "center", marginBottom: "12px" }}>
-                    Everything a community leader needs
-                </h2>
-                <p style={{ textAlign: "center", color: "color-mix(in srgb, var(--text), transparent 40%)", fontSize: "16px", marginBottom: "56px" }}>
-                    Stop losing track of decisions and follow-ups across your groups.
-                </p>
-                <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))", gap: "24px" }}>
-                    {FEATURES.map(f => (
-                        <div key={f.title} style={{
-                            border: "1px solid color-mix(in srgb, var(--text), transparent 90%)", borderRadius: "10px",
-                            padding: "28px 24px", background: "color-mix(in srgb, var(--text), transparent 98%)",
-                        }}>
-                            <div style={{ fontSize: "28px", marginBottom: "12px" }}>{f.icon}</div>
-                            <h3 style={{ fontSize: "16px", fontWeight: 700, color: "var(--text)", marginBottom: "8px" }}>{f.title}</h3>
-                            <p style={{ fontSize: "14px", color: "color-mix(in srgb, var(--text), transparent 40%)", lineHeight: 1.6 }}>{f.body}</p>
+            <section ref={heroRef} className="relative overflow-hidden max-w-5xl mx-auto px-6 pt-28 pb-16 text-center">
+                <BackgroundBeams className="opacity-25" />
+                <motion.div style={{ y: heroY }}>
+                    <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} transition={{ duration: 0.5 }}>
+                        <div className="inline-flex items-center gap-2 rounded-full px-4 py-1.5 mb-8 text-[11px] font-bold uppercase tracking-widest" style={{ background: "rgba(66,174,68,0.1)", border: "1px solid rgba(66,174,68,0.25)", color: "var(--color-accent)" }}>
+                            <Sparkles className="w-3 h-3" />
+                            Powered by DigitalOcean Gradient AI
                         </div>
+                    </motion.div>
+
+                    <motion.h1
+                        initial={{ opacity: 0, y: 28 }} animate={{ opacity: 1, y: 0 }}
+                        transition={{ delay: 0.1, duration: 0.7, ease: [0.16, 1, 0.3, 1] as any }}
+                        className="text-5xl md:text-[72px] font-extrabold tracking-tight leading-[1.06] text-text mb-6"
+                    >
+                        Your AI Chief of Staff<br />
+                        <span style={{ color: "var(--color-accent)" }}>for every community</span>
+                    </motion.h1>
+
+                    <motion.p
+                        initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }}
+                        transition={{ delay: 0.2, duration: 0.55 }}
+                        className="text-lg text-text/55 leading-relaxed max-w-xl mx-auto mb-10"
+                    >
+                        Record your meetings. Get instant summaries, action items, and AI-generated follow-ups — across all your communities in one place.
+                    </motion.p>
+
+                    <motion.div
+                        initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }}
+                        transition={{ delay: 0.3, duration: 0.5 }}
+                        className="flex gap-3 justify-center flex-wrap mb-6"
+                    >
+                        <Link href="/login" className="inline-flex items-center gap-2 text-sm font-bold text-background bg-accent hover:bg-accent/90 rounded-xl px-8 py-4 transition-all shadow-xl shadow-accent/25">
+                            Try for free <ArrowRight className="w-4 h-4" />
+                        </Link>
+                        <Link href="/login?demo=1" className="inline-flex items-center gap-2 text-sm font-semibold text-text rounded-xl px-8 py-4 transition-all"
+                            style={{ border: "1px solid rgba(var(--text-rgb, 22,29,23), 0.14)" }}>
+                            <Play className="w-4 h-4" /> View demo
+                        </Link>
+                    </motion.div>
+                </motion.div>
+            </section>
+
+            {/* App mockup */}
+            <section className="px-6 pb-28">
+                <motion.div
+                    initial={{ opacity: 0, y: 48 }} animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 0.45, duration: 0.8, ease: [0.16, 1, 0.3, 1] as any }}
+                    className="max-w-4xl mx-auto"
+                >
+                    <div className="rounded-[2.5rem] p-1.5 bg-linear-to-br from-accent/40 via-accent/5 to-blue-500/20 shadow-2xl">
+                        <div className="rounded-[2.2rem] overflow-hidden bg-background">
+                            <div className="bg-text/5 border-b border-text/8 px-6 py-4 flex items-center gap-2.5">
+                                <span className="w-3 h-3 rounded-full bg-red-500/60" />
+                                <span className="w-3 h-3 rounded-full bg-amber-500/60" />
+                                <span className="w-3 h-3 rounded-full bg-accent/60" />
+                                <span className="ml-4 font-mono text-xs opacity-40">CommunitAI — Command Centre</span>
+                            </div>
+                            <div className="p-8 lg:p-12 font-mono text-sm leading-relaxed">
+                                {TERMINAL_LINES.map((line, i) => (
+                                    <motion.p key={i}
+                                        initial={{ opacity: 0, x: -10 }} animate={{ opacity: 1, x: 0 }}
+                                        transition={{ delay: line.delay }}
+                                        style={{ color: line.color }} className="mb-2">
+                                        {line.text}
+                                    </motion.p>
+                                ))}
+                                <motion.div animate={{ opacity: [0, 1, 0] }} transition={{ repeat: Infinity, duration: 0.8 }}
+                                    className="w-2 h-4 bg-accent mt-2" />
+                            </div>
+                        </div>
+                    </div>
+                </motion.div>
+            </section>
+
+            {/* Stats */}
+            <section className="border-y border-text/8 bg-text/2 py-20 px-6">
+                <div className="max-w-4xl mx-auto grid grid-cols-2 lg:grid-cols-4 gap-12 text-center">
+                    {STATS.map((s, i) => (
+                        <motion.div key={s.label} custom={i} variants={fadeUp} initial="hidden" whileInView="show" viewport={{ once: true }}>
+                            <s.icon className="w-5 h-5 mx-auto mb-3 text-accent opacity-60" />
+                            <p className="text-4xl font-black tracking-tight text-accent">{s.value}</p>
+                            <p className="text-[10px] font-black text-text/40 uppercase tracking-widest mt-2">{s.label}</p>
+                        </motion.div>
                     ))}
                 </div>
             </section>
 
-            {/* How it works */}
-            <section style={{ background: "color-mix(in srgb, var(--text), transparent 97%)", padding: "80px 24px" }}>
-                <div style={{ maxWidth: "800px", margin: "0 auto" }}>
-                    <h2 style={{ fontSize: "32px", fontWeight: 800, color: "var(--text)", textAlign: "center", marginBottom: "56px" }}>How it works</h2>
-                    <div style={{ display: "flex", flexDirection: "column", gap: "32px" }}>
-                        {STEPS.map(s => (
-                            <div key={s.n} style={{ display: "flex", gap: "24px", alignItems: "flex-start" }}>
-                                <div style={{
-                                    flexShrink: 0, width: "48px", height: "48px", borderRadius: "50%",
-                                    background: "color-mix(in srgb, var(--accent), transparent 90%)", border: "2px solid color-mix(in srgb, var(--accent), transparent 80%)",
-                                    display: "flex", alignItems: "center", justifyContent: "center",
-                                    fontSize: "13px", fontWeight: 800, color: "var(--accent)", fontFamily: "monospace",
-                                }}>{s.n}</div>
-                                <div>
-                                    <h3 style={{ fontSize: "17px", fontWeight: 700, color: "var(--text)", marginBottom: "6px" }}>{s.title}</h3>
-                                    <p style={{ fontSize: "14px", color: "color-mix(in srgb, var(--text), transparent 40%)", lineHeight: 1.6 }}>{s.body}</p>
-                                </div>
+            {/* Features */}
+            <section className="max-w-6xl mx-auto px-6 py-32">
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    {FEATURES.map((f, i) => (
+                        <motion.div key={f.title} custom={i} variants={fadeUp} initial="hidden" whileInView="show" viewport={{ once: true }}
+                            className="p-8 rounded-[2.5rem] bg-text/2 border border-text/8 hover:border-accent/40 transition-all duration-500 group">
+                            <div className="w-12 h-12 rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-500"
+                                style={{ background: f.glow, border: `1px solid ${f.color}20` }}>
+                                <f.icon className="w-6 h-6" style={{ color: f.color }} />
                             </div>
-                        ))}
-                    </div>
+                            <h3 className="text-base font-black text-text mb-3 tracking-tight">{f.title}</h3>
+                            <p className="text-sm text-text/45 leading-relaxed font-medium">{f.body}</p>
+                        </motion.div>
+                    ))}
                 </div>
             </section>
 
-            {/* CTA */}
-            <section style={{ padding: "80px 24px", textAlign: "center" }}>
-                <h2 style={{ fontSize: "36px", fontWeight: 800, color: "var(--text)", marginBottom: "16px" }}>
-                    Ready to run your communities smarter?
-                </h2>
-                <p style={{ fontSize: "16px", color: "color-mix(in srgb, var(--text), transparent 40%)", marginBottom: "36px" }}>Free to try. No credit card required.</p>
-                <Link href="/login" style={{ ...BTN_PRIMARY, fontSize: "16px", padding: "16px 40px" }}>
-                    Get started free →
-                </Link>
-            </section>
-
             {/* Footer */}
-            <footer style={{
-                borderTop: "1px solid color-mix(in srgb, var(--text), transparent 90%)", padding: "24px 24px",
-                display: "flex", justifyContent: "space-between", alignItems: "center",
-                flexWrap: "wrap", gap: "12px", fontSize: "13px", color: "color-mix(in srgb, var(--text), transparent 60%)",
-                maxWidth: "1000px", margin: "0 auto",
-            }}>
-                <span>© 2026 CommunitAI · Built for DigitalOcean Hackathon</span>
-                <div style={{ display: "flex", gap: "20px" }}>
-                    <Link href="/about" style={{ color: "color-mix(in srgb, var(--text), transparent 60%)", textDecoration: "none" }}>About</Link>
-                    <Link href="/login" style={{ color: "color-mix(in srgb, var(--text), transparent 60%)", textDecoration: "none" }}>Sign In</Link>
+            <footer className="border-t border-text/8 py-16 px-6">
+                <div className="max-w-6xl mx-auto flex flex-col md:flex-row items-center justify-between gap-10">
+                    <div className="flex items-center gap-4">
+                        <LogoMark size={32} />
+                        <div>
+                            <p className="text-lg font-black tracking-tight text-text">CommunitAI</p>
+                            <p className="text-xs font-bold text-text/30">AI Chief of Staff</p>
+                        </div>
+                    </div>
+                    <div className="text-[10px] font-black text-text/20 uppercase tracking-[0.3em]">
+                        © 2026 CommunitAI · Built for DigitalOcean Hackathon
+                    </div>
                 </div>
             </footer>
         </div>

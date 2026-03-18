@@ -1,4 +1,4 @@
-gradient-ai-adk
+gradient-adk
 gradient
 httpx
 openai
