@@ -154,3 +154,4 @@ Distributed under the MIT License. See [LICENSE](LICENSE) for more information.
 <img src="https://capsule-render.vercel.app/api?type=waving&color=0,4ADE80,60,166534,100,000000&height=120&section=footer&text=Built+for+communities.+Powered+by+AI.&fontSize=16&fontColor=4ADE80&fontAlignY=65&animation=fadeIn" width="100%"/>
 
 </div>
+</div>
