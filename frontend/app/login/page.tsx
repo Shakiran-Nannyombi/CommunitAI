@@ -49,127 +49,173 @@ export default function AuthPage() {
     }
 
     return (
-        <div className="min-h-screen bg-black flex items-center justify-center font-mono p-4">
+        <div style={{ minHeight: "100dvh", fontSize: "14px" }} className="bg-black flex items-center justify-center font-mono p-6">
             {/* Scanline overlay */}
-            <div className="fixed inset-0 pointer-events-none scanline opacity-30" />
+            <div className="fixed inset-0 pointer-events-none scanline opacity-20" />
 
-            <div className="w-full max-w-sm">
+            <div className="w-full relative z-10" style={{ maxWidth: "400px" }}>
                 {/* Header */}
-                <div className="mb-8 text-center">
-                    <p className="text-green-400 text-xl font-bold tracking-[0.3em] uppercase">
+                <div className="mb-10 text-center">
+                    <p style={{ fontSize: "22px", letterSpacing: "0.3em" }} className="text-green-400 font-bold uppercase">
                         CommunitAI
                     </p>
-                    <p className="text-zinc-600 text-xs mt-1 tracking-widest uppercase">
+                    <p style={{ fontSize: "11px", letterSpacing: "0.2em" }} className="text-zinc-500 mt-2 uppercase">
                         AI Chief of Staff
                     </p>
-                    <div className="mt-3 flex items-center justify-center gap-1.5 text-xs text-zinc-700">
-                        <span className="w-1.5 h-1.5 rounded-full bg-green-500 pulse-dot" />
-                        SYSTEM ONLINE
+                    <div className="mt-3 flex items-center justify-center gap-2" style={{ fontSize: "11px" }}>
+                        <span className="w-2 h-2 rounded-full bg-green-500 pulse-dot inline-block" />
+                        <span className="text-zinc-600 tracking-widest">SYSTEM ONLINE</span>
                     </div>
                 </div>
 
-                {/* Panel */}
-                <div className="panel rounded">
+                {/* Card */}
+                <div className="rounded-lg overflow-hidden" style={{ border: "1px solid #1f1f1f", background: "#050505" }}>
                     {/* Tab bar */}
-                    <div className="panel-header">
-                        <div className="flex gap-0">
-                            {(["login", "register"] as Mode[]).map(m => (
-                                <button
-                                    key={m}
-                                    onClick={() => { setMode(m); setError(""); }}
-                                    className={`px-4 py-1.5 text-xs uppercase tracking-widest border-b-2 transition ${mode === m
-                                            ? "border-green-500 text-green-400"
-                                            : "border-transparent text-zinc-600 hover:text-zinc-400"
-                                        }`}
-                                >
-                                    {m === "login" ? "Sign In" : "Register"}
-                                </button>
-                            ))}
-                        </div>
+                    <div style={{ borderBottom: "1px solid #1a1a1a", background: "#0a0a0a", padding: "0 16px" }} className="flex">
+                        {(["login", "register"] as Mode[]).map(m => (
+                            <button
+                                key={m}
+                                onClick={() => { setMode(m); setError(""); }}
+                                style={{
+                                    fontSize: "11px",
+                                    letterSpacing: "0.15em",
+                                    padding: "12px 16px",
+                                    borderBottom: mode === m ? "2px solid #22c55e" : "2px solid transparent",
+                                    color: mode === m ? "#4ade80" : "#52525b",
+                                    background: "none",
+                                    cursor: "pointer",
+                                    transition: "color 0.15s",
+                                }}
+                            >
+                                {m === "login" ? "SIGN IN" : "REGISTER"}
+                            </button>
+                        ))}
                     </div>
 
-                    <form onSubmit={handleSubmit} className="p-5 space-y-3">
-                        {mode === "register" && (
+                    <div style={{ padding: "24px" }}>
+                        <form onSubmit={handleSubmit} style={{ display: "flex", flexDirection: "column", gap: "16px" }}>
+                            {mode === "register" && (
+                                <div>
+                                    <label style={{ display: "block", fontSize: "11px", letterSpacing: "0.15em", color: "#52525b", marginBottom: "6px" }}>
+                                        DISPLAY NAME
+                                    </label>
+                                    <input
+                                        type="text"
+                                        value={name}
+                                        onChange={e => setName(e.target.value)}
+                                        placeholder="Your name"
+                                        style={{
+                                            width: "100%", background: "#000", border: "1px solid #27272a",
+                                            borderRadius: "4px", padding: "10px 12px", fontSize: "13px",
+                                            color: "#d4d4d8", outline: "none", fontFamily: "inherit",
+                                        }}
+                                        onFocus={e => e.target.style.borderColor = "#166534"}
+                                        onBlur={e => e.target.style.borderColor = "#27272a"}
+                                    />
+                                </div>
+                            )}
+
                             <div>
-                                <label className="block text-zinc-600 text-xs uppercase tracking-widest mb-1">
-                                    Display Name
+                                <label style={{ display: "block", fontSize: "11px", letterSpacing: "0.15em", color: "#52525b", marginBottom: "6px" }}>
+                                    EMAIL
                                 </label>
                                 <input
-                                    type="text"
-                                    value={name}
-                                    onChange={e => setName(e.target.value)}
-                                    placeholder="Your name"
-                                    className="w-full bg-black border border-zinc-800 rounded px-3 py-2 text-xs text-zinc-300 placeholder-zinc-700 focus:outline-none focus:border-green-700 transition"
+                                    type="email"
+                                    value={email}
+                                    onChange={e => setEmail(e.target.value)}
+                                    placeholder="you@example.com"
+                                    required
+                                    style={{
+                                        width: "100%", background: "#000", border: "1px solid #27272a",
+                                        borderRadius: "4px", padding: "10px 12px", fontSize: "13px",
+                                        color: "#d4d4d8", outline: "none", fontFamily: "inherit",
+                                    }}
+                                    onFocus={e => e.target.style.borderColor = "#166534"}
+                                    onBlur={e => e.target.style.borderColor = "#27272a"}
                                 />
                             </div>
-                        )}
 
-                        <div>
-                            <label className="block text-zinc-600 text-xs uppercase tracking-widest mb-1">
-                                Email
-                            </label>
-                            <input
-                                type="email"
-                                value={email}
-                                onChange={e => setEmail(e.target.value)}
-                                placeholder="you@example.com"
-                                required
-                                className="w-full bg-black border border-zinc-800 rounded px-3 py-2 text-xs text-zinc-300 placeholder-zinc-700 focus:outline-none focus:border-green-700 transition"
-                            />
-                        </div>
+                            <div>
+                                <label style={{ display: "block", fontSize: "11px", letterSpacing: "0.15em", color: "#52525b", marginBottom: "6px" }}>
+                                    PASSWORD
+                                </label>
+                                <input
+                                    type="password"
+                                    value={password}
+                                    onChange={e => setPassword(e.target.value)}
+                                    placeholder="••••••••"
+                                    required
+                                    minLength={6}
+                                    style={{
+                                        width: "100%", background: "#000", border: "1px solid #27272a",
+                                        borderRadius: "4px", padding: "10px 12px", fontSize: "13px",
+                                        color: "#d4d4d8", outline: "none", fontFamily: "inherit",
+                                    }}
+                                    onFocus={e => e.target.style.borderColor = "#166534"}
+                                    onBlur={e => e.target.style.borderColor = "#27272a"}
+                                />
+                            </div>
 
-                        <div>
-                            <label className="block text-zinc-600 text-xs uppercase tracking-widest mb-1">
-                                Password
-                            </label>
-                            <input
-                                type="password"
-                                value={password}
-                                onChange={e => setPassword(e.target.value)}
-                                placeholder="••••••••"
-                                required
-                                minLength={6}
-                                className="w-full bg-black border border-zinc-800 rounded px-3 py-2 text-xs text-zinc-300 placeholder-zinc-700 focus:outline-none focus:border-green-700 transition"
-                            />
-                        </div>
+                            {error && (
+                                <p style={{ fontSize: "12px", color: "#f87171", border: "1px solid #450a0a", background: "#0f0000", borderRadius: "4px", padding: "10px 12px" }}>
+                                    {error}
+                                </p>
+                            )}
 
-                        {error && (
-                            <p className="text-red-400 text-xs border border-red-900 bg-red-950/30 rounded px-3 py-2">
-                                {error}
-                            </p>
-                        )}
+                            <button
+                                type="submit"
+                                disabled={loading}
+                                style={{
+                                    width: "100%", background: loading ? "#14532d" : "#15803d",
+                                    border: "none", borderRadius: "4px", padding: "12px",
+                                    fontSize: "12px", fontWeight: "700", letterSpacing: "0.15em",
+                                    color: "#000", cursor: loading ? "not-allowed" : "pointer",
+                                    fontFamily: "inherit", transition: "background 0.15s",
+                                }}
+                                onMouseEnter={e => { if (!loading) (e.target as HTMLButtonElement).style.background = "#16a34a"; }}
+                                onMouseLeave={e => { if (!loading) (e.target as HTMLButtonElement).style.background = "#15803d"; }}
+                            >
+                                {loading ? "CONNECTING..." : mode === "login" ? "SIGN IN" : "CREATE ACCOUNT"}
+                            </button>
+                        </form>
 
-                        <button
-                            type="submit"
-                            disabled={loading}
-                            className="w-full bg-green-700 hover:bg-green-600 disabled:opacity-50 text-black font-bold text-xs uppercase tracking-widest py-2.5 rounded transition"
-                        >
-                            {loading ? "..." : mode === "login" ? "Sign In" : "Create Account"}
-                        </button>
-                    </form>
-
-                    {/* Divider */}
-                    <div className="px-5 pb-5">
-                        <div className="flex items-center gap-3 mb-3">
-                            <div className="flex-1 border-t border-zinc-900" />
-                            <span className="text-zinc-700 text-xs">or</span>
-                            <div className="flex-1 border-t border-zinc-900" />
+                        {/* Divider */}
+                        <div style={{ display: "flex", alignItems: "center", gap: "12px", margin: "20px 0" }}>
+                            <div style={{ flex: 1, borderTop: "1px solid #18181b" }} />
+                            <span style={{ fontSize: "11px", color: "#3f3f46" }}>or</span>
+                            <div style={{ flex: 1, borderTop: "1px solid #18181b" }} />
                         </div>
 
                         <button
                             onClick={handleDemo}
                             disabled={loading}
-                            className="w-full border border-zinc-800 hover:border-green-800 disabled:opacity-50 text-zinc-400 hover:text-green-400 text-xs uppercase tracking-widest py-2.5 rounded transition"
+                            style={{
+                                width: "100%", background: "none",
+                                border: "1px solid #27272a", borderRadius: "4px", padding: "12px",
+                                fontSize: "12px", letterSpacing: "0.15em", fontWeight: "600",
+                                color: "#71717a", cursor: loading ? "not-allowed" : "pointer",
+                                fontFamily: "inherit", transition: "all 0.15s",
+                            }}
+                            onMouseEnter={e => {
+                                const b = e.currentTarget;
+                                b.style.borderColor = "#166534";
+                                b.style.color = "#4ade80";
+                            }}
+                            onMouseLeave={e => {
+                                const b = e.currentTarget;
+                                b.style.borderColor = "#27272a";
+                                b.style.color = "#71717a";
+                            }}
                         >
-                            {loading ? "..." : "⚡ Try Demo Account"}
+                            {loading ? "CONNECTING..." : "⚡  TRY DEMO ACCOUNT"}
                         </button>
-                        <p className="text-zinc-700 text-xs text-center mt-2">
+                        <p style={{ fontSize: "11px", color: "#3f3f46", textAlign: "center", marginTop: "8px" }}>
                             Pre-loaded with sample meetings &amp; tasks
                         </p>
                     </div>
                 </div>
 
-                <p className="text-zinc-800 text-xs text-center mt-6 tracking-widest">
+                <p style={{ fontSize: "10px", color: "#27272a", textAlign: "center", marginTop: "24px", letterSpacing: "0.2em" }}>
                     COMMUNITAI · SECURE SESSION
                 </p>
             </div>
