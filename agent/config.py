@@ -19,7 +19,7 @@ class Settings(BaseSettings):
     GRADIENT_MODEL_ACCESS_KEY: str = ""
 
     class Config:
-        env_file = ".env"
+        env_file = ("agent/.env", ".env")
         extra = "ignore"
 
 
