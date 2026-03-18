@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import "./globals.css";
+import { ToastProvider } from "@/lib/toast-context";
 
 export const metadata: Metadata = {
     title: "CommunitAI",

@@ -1,92 +1,146 @@
-"""
-CommunitAI Agent Entrypoint
-Orchestrates the 4-step pipeline: transcribe → extract → analyze → summarize
-Supports RETRY_FROM to resume from a specific step.
-"""
-
-import asyncio
+"""CommunitAI Agent entrypoint — orchestrates the full AI processing pipeline."""
 import logging
 
-from agent.db import update_meeting_status
+from sqlalchemy import text
+
+from agent.db import AsyncSessionLocal, update_meeting_status
 from agent.steps.transcribe import transcribe
-from agent.steps.extract import extract
-from agent.steps.analyze import analyze
-from agent.steps.summarize import summarize
+from agent.steps.extract import extract_action_items
+from agent.steps.analyze import analyze_sentiment
+from agent.steps.summarize import generate_summary
 
 logger = logging.getLogger(__name__)
 
-# Step order — used for RETRY_FROM resume logic
-STEPS = ["transcribe", "extract", "analyze", "summarize"]
+# Try to import the ADK entrypoint decorator; fall back to a no-op identity
+# decorator if gradient_ai.adk is not installed (e.g. in local dev / tests).
+try:
+    from gradient_ai.adk import entrypoint
+except ImportError:  # pragma: no cover
+    def entrypoint(fn):  # type: ignore[misc]
+        """Identity decorator used when gradient_ai.adk is not available."""
+        return fn
 
-# Map step name → which steps to skip (already done)
-RETRY_FROM: dict[str, int] = {step: i for i, step in enumerate(STEPS)}
+
+# Maps a failed meeting status to the pipeline step that should be retried.
+RETRY_FROM = {
+    "transcription_failed": "transcribe",
+    "analysis_failed": "analyze",
+    "summarization_failed": "summarize",
+}
 
 
-async def process_meeting(meeting_id: str, audio_key: str, retry_from: str | None = None) -> None:
+async def get_audio_url(meeting_id: str) -> str:
+    """Query the meetings table and return the audio_url for the given meeting."""
+    async with AsyncSessionLocal() as session:
+        result = await session.execute(
+            text("SELECT audio_url FROM meetings WHERE id = :id"),
+            {"id": meeting_id},
+        )
+        row = result.mappings().first()
+        if row is None:
+            raise ValueError(f"Meeting {meeting_id} not found")
+        return row["audio_url"] or ""
+
+
+async def _get_meeting_status(meeting_id: str) -> str:
+    """Return the current status of a meeting from the database."""
+    async with AsyncSessionLocal() as session:
+        result = await session.execute(
+            text("SELECT status FROM meetings WHERE id = :id"),
+            {"id": meeting_id},
+        )
+        row = result.mappings().first()
+        if row is None:
+            raise ValueError(f"Meeting {meeting_id} not found")
+        return row["status"]
+
+
+@entrypoint
+async def process_meeting(meeting_id: str) -> dict:
+    """Orchestrate the full AI processing pipeline for a meeting.
+
+    Steps run sequentially: transcribe → extract_action_items →
+    analyze_sentiment → generate_summary.
+
+    On retry invocations the current meeting status is inspected and the
+    pipeline resumes from the failed step rather than restarting from scratch.
+
+    Returns {"status": "complete"} on success or {"status": "<failed_status>"}
+    when a step fails after all retries are exhausted.
     """
-    Run the full agent pipeline for a meeting.
+    # Determine which step to start from (supports retry resumption).
+    current_status = await _get_meeting_status(meeting_id)
+    resume_from = RETRY_FROM.get(current_status)  # None means start from the top
 
-    Args:
-        meeting_id: UUID string of the meeting row.
-        audio_key:  R2 object key for the uploaded audio file, e.g. "audio/abc123.webm"
-        retry_from: Optional step name to resume from ("transcribe"|"extract"|"analyze"|"summarize").
-                    Steps before this are assumed already complete.
-    """
-    start_index = RETRY_FROM.get(retry_from, 0) if retry_from else 0
-
-    await update_meeting_status(meeting_id, "processing")
-    logger.info("Starting pipeline for meeting %s from step index %d", meeting_id, start_index)
+    logger.info(
+        "process_meeting called for %s (current_status=%s, resume_from=%s)",
+        meeting_id,
+        current_status,
+        resume_from,
+    )
 
     transcript: str | None = None
 
-    try:
-        # Step 1 — Transcribe
-        if start_index <= 0:
-            logger.info("[%s] Step 1: transcribe", meeting_id)
-            transcript = await transcribe(meeting_id, audio_key)
-        else:
-            # Load existing transcript from DB for downstream steps
-            from agent.db import SessionLocal
-            from sqlalchemy import text
-            async with SessionLocal() as session:
-                row = await session.execute(
-                    text("SELECT content FROM transcripts WHERE meeting_id = :id"),
-                    {"id": meeting_id},
-                )
-                result = row.fetchone()
-                transcript = result[0] if result else ""
+    # ── Transcription ────────────────────────────────────────────────────────
+    if resume_from is None or resume_from == "transcribe":
+        audio_url = await get_audio_url(meeting_id)
+        transcript = await transcribe(meeting_id, audio_url)
+        if transcript is None:
+            logger.error("Transcription failed for meeting %s; halting pipeline.", meeting_id)
+            return {"status": "transcription_failed"}
+        resume_from = None  # clear so subsequent steps always run
 
-        # Step 2 — Extract action items
-        if start_index <= 1:
-            logger.info("[%s] Step 2: extract", meeting_id)
-            await extract(meeting_id, transcript)
+    # ── Action item extraction ────────────────────────────────────────────────
+    # If we resumed past transcription we need to fetch the existing transcript.
+    if transcript is None:
+        # Fetch transcript from Spaces (stored at transcripts/{meeting_id}.txt).
+        try:
+            import boto3
+            from agent.config import settings as _settings
 
-        # Step 3 — Analyze sentiment
-        if start_index <= 2:
-            logger.info("[%s] Step 3: analyze", meeting_id)
-            await analyze(meeting_id, transcript)
+            s3 = boto3.client(
+                "s3",
+                region_name=_settings.DO_SPACES_REGION,
+                endpoint_url=f"https://{_settings.DO_SPACES_REGION}.digitaloceanspaces.com",
+                aws_access_key_id=_settings.DO_SPACES_KEY,
+                aws_secret_access_key=_settings.DO_SPACES_SECRET,
+            )
+            obj = s3.get_object(
+                Bucket=_settings.DO_SPACES_BUCKET,
+                Key=f"transcripts/{meeting_id}.txt",
+            )
+            transcript = obj["Body"].read().decode("utf-8")
+        except Exception as exc:
+            logger.error(
+                "Could not retrieve existing transcript for meeting %s: %s",
+                meeting_id,
+                exc,
+            )
+            return {"status": "transcription_failed"}
 
-        # Step 4 — Summarize
-        if start_index <= 3:
-            logger.info("[%s] Step 4: summarize", meeting_id)
-            await summarize(meeting_id, transcript)
+    # resume_from == "analyze" means extraction was done; re-run from analyze onward.
+    # resume_from == "summarize" means extraction + analysis were done; only re-run summarize.
+    if resume_from is None or resume_from == "analyze":
+        await extract_action_items(meeting_id, transcript)
 
-        logger.info("[%s] Pipeline complete", meeting_id)
+    # ── Sentiment analysis ────────────────────────────────────────────────────
+    if resume_from is None or resume_from == "analyze":
+        result = await analyze_sentiment(meeting_id, transcript)
+        if result is None:
+            logger.error(
+                "Sentiment analysis failed for meeting %s; halting pipeline.", meeting_id
+            )
+            return {"status": "analysis_failed"}
 
-    except Exception as exc:
-        logger.error("[%s] Pipeline failed: %s", meeting_id, exc, exc_info=True)
-        raise
+    # ── Summarization ─────────────────────────────────────────────────────────
+    # Always runs (it's the last step and is the target when resume_from == "summarize").
+    summary = await generate_summary(meeting_id, transcript)
+    if summary is None:
+        logger.error(
+            "Summarization failed for meeting %s; halting pipeline.", meeting_id
+        )
+        return {"status": "summarization_failed"}
 
-
-if __name__ == "__main__":
-    import sys
-
-    if len(sys.argv) < 3:
-        print("Usage: python -m agent.agent <meeting_id> <audio_key> [retry_from_step]")
-        sys.exit(1)
-
-    _meeting_id = sys.argv[1]
-    _audio_key = sys.argv[2]
-    _retry_from = sys.argv[3] if len(sys.argv) > 3 else None
-
-    asyncio.run(process_meeting(_meeting_id, _audio_key, _retry_from))
+    await update_meeting_status(meeting_id, "complete")
+    logger.info("Pipeline complete for meeting %s.", meeting_id)
+    return {"status": "complete"}
