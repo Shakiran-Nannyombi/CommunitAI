@@ -22,7 +22,9 @@ const SidebarContext = createContext<SidebarContextProps | undefined>(undefined)
 
 export const useSidebar = () => {
     const context = useContext(SidebarContext);
-    if (!context) throw new Error("useSidebar must be used within a SidebarProvider");
+    if (!context) {
+        throw new Error("useSidebar must be used within a SidebarProvider");
+    }
     return context;
 };
 
@@ -38,8 +40,10 @@ export const SidebarProvider = ({
     animate?: boolean;
 }) => {
     const [openState, setOpenState] = useState(false);
+
     const open = openProp !== undefined ? openProp : openState;
     const setOpen = setOpenProp !== undefined ? setOpenProp : setOpenState;
+
     return (
         <SidebarContext.Provider value={{ open, setOpen, animate }}>
             {children}
@@ -83,10 +87,12 @@ export const DesktopSidebar = ({
     return (
         <motion.div
             className={cn(
-                "h-full px-3 py-4 hidden md:flex md:flex-col bg-[#0d0d0d] border-r border-white/5 flex-shrink-0",
+                "h-full px-4 py-6 hidden md:flex md:flex-col bg-(--background) border-r border-text/5 w-[280px] shrink-0 transition-colors",
                 className
             )}
-            animate={{ width: animate ? (open ? "240px" : "60px") : "240px" }}
+            animate={{
+                width: animate ? (open ? "280px" : "80px") : "280px",
+            }}
             onMouseEnter={() => setOpen(true)}
             onMouseLeave={() => setOpen(false)}
             {...props}
@@ -105,39 +111,43 @@ export const MobileSidebar = ({
     return (
         <>
             <div
-                className={cn("h-14 px-4 flex flex-row md:hidden items-center justify-between bg-[#0d0d0d] border-b border-white/5 w-full")}
+                className={cn(
+                    "h-14 px-4 py-4 flex flex-row md:hidden items-center justify-between bg-(--background) border-b border-text/5 w-full transition-colors"
+                )}
                 {...props}
             >
-                <div className="flex items-center gap-2">
-                    <span className="text-emerald-400 font-bold text-sm tracking-tight">CommunitAI</span>
+                <div className="flex justify-end z-20 w-full">
+                    <Menu
+                        className="text-text/70 cursor-pointer"
+                        onClick={() => setOpen(!open)}
+                    />
                 </div>
-                <Menu
-                    className="text-zinc-400 cursor-pointer hover:text-white transition"
-                    onClick={() => setOpen(!open)}
-                />
-            </div>
-            <AnimatePresence>
-                {open && (
-                    <motion.div
-                        initial={{ x: "-100%", opacity: 0 }}
-                        animate={{ x: 0, opacity: 1 }}
-                        exit={{ x: "-100%", opacity: 0 }}
-                        transition={{ duration: 0.25, ease: "easeInOut" }}
-                        className={cn(
-                            "fixed h-full w-72 inset-0 bg-[#0d0d0d] border-r border-white/5 p-6 z-[100] flex flex-col justify-between",
-                            className
-                        )}
-                    >
-                        <div
-                            className="absolute right-4 top-4 text-zinc-500 hover:text-white cursor-pointer transition"
-                            onClick={() => setOpen(!open)}
+                <AnimatePresence>
+                    {open && (
+                        <motion.div
+                            initial={{ x: "-100%", opacity: 0 }}
+                            animate={{ x: 0, opacity: 1 }}
+                            exit={{ x: "-100%", opacity: 0 }}
+                            transition={{
+                                duration: 0.3,
+                                ease: "easeInOut",
+                            }}
+                            className={cn(
+                                "fixed h-full w-full inset-0 bg-(--background) p-10 z-100 flex flex-col justify-between transition-colors",
+                                className
+                            )}
                         >
-                            <X size={18} />
-                        </div>
-                        {children}
-                    </motion.div>
-                )}
-            </AnimatePresence>
+                            <div
+                                className="absolute right-10 top-10 z-50 text-text/70 cursor-pointer"
+                                onClick={() => setOpen(!open)}
+                            >
+                                <X />
+                            </div>
+                            {children}
+                        </motion.div>
+                    )}
+                </AnimatePresence>
+            </div>
         </>
     );
 };
@@ -150,31 +160,29 @@ export const SidebarLink = ({
 }: {
     link: Links;
     className?: string;
-    active?: boolean;
     props?: LinkProps;
-}) => {
+    active?: boolean;
+} & Omit<React.AnchorHTMLAttributes<HTMLAnchorElement>, "href">) => {
     const { open, animate } = useSidebar();
     return (
         <Link
             href={link.href}
             className={cn(
-                "flex items-center gap-3 px-2 py-2 rounded-lg transition group/sidebar",
-                active
-                    ? "bg-emerald-500/10 text-emerald-400"
-                    : "text-zinc-400 hover:text-white hover:bg-white/5",
+                "flex items-center justify-start gap-3 group/sidebar py-2.5 px-3 rounded-xl transition-all duration-200",
+                active ? "bg-accent/10 text-accent font-semibold" : "text-text/60 hover:text-text hover:bg-text/5",
                 className
             )}
             {...props}
         >
-            <span className="flex-shrink-0 w-5 h-5 flex items-center justify-center">
+            <div className={cn("shrink-0 flex items-center justify-center transition-colors", active ? "text-accent" : "text-text/40 group-hover/sidebar:text-text/60")}>
                 {link.icon}
-            </span>
+            </div>
             <motion.span
                 animate={{
                     display: animate ? (open ? "inline-block" : "none") : "inline-block",
                     opacity: animate ? (open ? 1 : 0) : 1,
                 }}
-                className="text-sm whitespace-pre inline-block !p-0 !m-0 group-hover/sidebar:translate-x-0.5 transition duration-150"
+                className="text-sm tracking-tight whitespace-pre inline-block p-0! m-0! transition-opacity overflow-hidden"
             >
                 {link.label}
             </motion.span>
