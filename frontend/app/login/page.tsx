@@ -24,7 +24,7 @@ export default function AuthPage() {
                 ? await login(email, password)
                 : await register(email, password, name);
             saveAuth(user);
-            router.push("/");
+            router.push("/dashboard");
         } catch (err: unknown) {
             const msg = (err as { response?: { data?: { detail?: string } } })
                 ?.response?.data?.detail;
@@ -40,7 +40,7 @@ export default function AuthPage() {
         try {
             const user = await demoLogin();
             saveAuth(user);
-            router.push("/");
+            router.push("/dashboard");
         } catch {
             setError("Could not load demo account");
         } finally {
