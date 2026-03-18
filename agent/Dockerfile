@@ -16,6 +16,6 @@ COPY . /app/agent/
 
 ENV PYTHONPATH=/app
 
-EXPOSE 8001
+EXPOSE 8080
 
-CMD ["sh", "-c", "uvicorn agent.server:app --host 0.0.0.0 --port ${PORT:-8001}"]
+CMD ["sh", "-c", "uvicorn agent.server:app --host 0.0.0.0 --port ${PORT:-8080}"]

@@ -69,6 +69,15 @@ export default function MeetingInsights() {
         loadData();
     }, [id, router, loadData]);
 
+    // Poll every 4s while the meeting is still processing
+    useEffect(() => {
+        if (!meeting) return;
+        const inProgress = ["processing", "transcribed", "analyzed"].includes(meeting.status);
+        if (!inProgress) return;
+        const timer = setTimeout(() => loadData(), 4000);
+        return () => clearTimeout(timer);
+    }, [meeting, loadData]);
+
     async function handleSaveTranscript() {
         if (!meeting) return;
         try {
@@ -139,7 +148,14 @@ export default function MeetingInsights() {
                     <div className="space-y-1">
                         <h1 className="text-3xl font-black text-text tracking-tighter flex items-center gap-4">
                             {meeting.title}
-                            <span className="px-3 py-1 bg-accent/10 border border-accent/20 text-accent text-[9px] font-black uppercase tracking-[0.2em] rounded-full shadow-2xl shadow-accent/5">PROCESSED</span>
+                            <span className={`px-3 py-1 border text-[9px] font-black uppercase tracking-[0.2em] rounded-full shadow-2xl ${meeting.status === "complete"
+                                ? "bg-accent/10 border-accent/20 text-accent shadow-accent/5"
+                                : meeting.status.includes("failed")
+                                    ? "bg-red-500/10 border-red-500/20 text-red-500"
+                                    : "bg-yellow-500/10 border-yellow-500/20 text-yellow-500"
+                                }`}>
+                                {meeting.status === "complete" ? "PROCESSED" : meeting.status.replace(/_/g, " ").toUpperCase()}
+                            </span>
                         </h1>
                         <div className="flex items-center gap-6 text-[10px] font-black uppercase tracking-[0.3em] text-text/30">
                             <span className="flex items-center gap-2"><Calendar className="w-4 h-4" /> {new Date(meeting.created_at).toLocaleDateString("en-GB", { day: 'numeric', month: 'short', year: 'numeric' })}</span>
@@ -261,7 +277,11 @@ export default function MeetingInsights() {
                                             <div className="space-y-6">
                                                 <h3 className="text-3xl font-black text-text tracking-tighter">Meeting Context</h3>
                                                 <p className="text-2xl leading-relaxed text-text/60 font-semibold tracking-tight">
-                                                    {meeting.summary || "Generating abstract summary..."}
+                                                    {meeting.summary || (
+                                                        meeting.status === "complete"
+                                                            ? "No summary available."
+                                                            : <span className="flex items-center gap-3 text-xl text-text/30"><Loader2 className="w-5 h-5 animate-spin" /> AI is processing your audio...</span>
+                                                    )}
                                                 </p>
                                             </div>
 

@@ -11,7 +11,7 @@ services:
       deploy_on_push: true
     instance_size_slug: basic-xxs
     instance_count: 1
-    http_port: 8000
+    http_port: 8080
     envs:
       - key: DATABASE_URL
         scope: RUN_TIME
@@ -24,13 +24,13 @@ services:
         type: SECRET
       - key: DO_SPACES_REGION
         scope: RUN_TIME
-        value: auto
+        value: lon1
       - key: DO_SPACES_BUCKET
         scope: RUN_TIME
         value: communitai-storage
       - key: DO_SPACES_ENDPOINT
         scope: RUN_TIME
-        type: SECRET
+        value: https://lon1.digitaloceanspaces.com
       - key: AGENT_ENDPOINT_URL
         scope: RUN_TIME
         value: ${agent.PUBLIC_URL}
@@ -68,7 +68,7 @@ services:
       deploy_on_push: true
     instance_size_slug: basic-xxs
     instance_count: 1
-    http_port: 8001
+    http_port: 8080
     envs:
       - key: DATABASE_URL
         scope: RUN_TIME
@@ -81,13 +81,13 @@ services:
         type: SECRET
       - key: DO_SPACES_REGION
         scope: RUN_TIME
-        value: auto
+        value: lon1
       - key: DO_SPACES_BUCKET
         scope: RUN_TIME
         value: communitai-storage
       - key: DO_SPACES_ENDPOINT
         scope: RUN_TIME
-        type: SECRET
+        value: https://lon1.digitaloceanspaces.com
       - key: AGENT_API_KEY
         scope: RUN_TIME
         type: SECRET

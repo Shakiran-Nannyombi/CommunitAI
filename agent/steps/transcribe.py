@@ -1,4 +1,4 @@
-"""Transcription step: download audio from R2, convert if needed, transcribe via Groq Whisper."""
+"""Transcription step: download audio from DO Spaces, convert if needed, transcribe via Groq Whisper."""
 import logging
 import os
 import subprocess

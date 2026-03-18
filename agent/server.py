@@ -19,6 +19,11 @@ logger = logging.getLogger(__name__)
 app = FastAPI(title="CommunitAI Agent Server")
 
 
+@app.get("/health")
+async def health() -> dict:
+    return {"status": "ok"}
+
+
 class RunRequest(BaseModel):
     meeting_id: str
     audio_key: str | None = None  # e.g. "audio/<meeting_id>.mp3" — inferred if omitted

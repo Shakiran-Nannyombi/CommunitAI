@@ -11,22 +11,30 @@ from agent.steps.summarize import generate_summary
 
 logger = logging.getLogger(__name__)
 
-# Try to import the ADK entrypoint decorator; fall back to a no-op identity
-# decorator if gradient_adk is not installed (e.g. in local dev / tests).
-try:
-    from gradient_adk import entrypoint
-except ImportError:  # pragma: no cover
-    def entrypoint(fn):  # type: ignore[misc]
-        """Identity decorator used when gradient_adk is not available."""
-        return fn
-
-
 # Maps a failed meeting status to the pipeline step that should be retried.
 RETRY_FROM = {
     "transcription_failed": "transcribe",
     "analysis_failed": "analyze",
     "summarization_failed": "summarize",
 }
+
+
+# gradient_adk @entrypoint requires the function signature to be (data) or
+# (data, context). We expose a thin ADK-compatible wrapper below and keep
+# process_meeting with its natural signature for internal / server use.
+try:
+    from gradient_adk import entrypoint as _adk_entrypoint
+
+    @_adk_entrypoint
+    async def adk_process_meeting(data: dict, context=None) -> dict:  # type: ignore[misc]
+        """ADK-compatible entrypoint — delegates to process_meeting."""
+        meeting_id = data.get("meeting_id", "")
+        audio_key = data.get("audio_key")
+        retry_from = data.get("retry_from")
+        return await process_meeting(meeting_id, audio_key, retry_from)
+
+except ImportError:  # pragma: no cover
+    pass
 
 
 async def get_audio_url(meeting_id: str) -> str:
@@ -55,7 +63,6 @@ async def _get_meeting_status(meeting_id: str) -> str:
         return row["status"]
 
 
-@entrypoint
 async def process_meeting(meeting_id: str, audio_key: str | None = None, retry_from: str | None = None) -> dict:
     """Orchestrate the full AI processing pipeline for a meeting.
 

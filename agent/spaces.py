@@ -1,4 +1,4 @@
-"""Cloudflare R2 / S3-compatible storage helpers for the agent."""
+"""DigitalOcean Spaces (S3-compatible) storage helpers for the agent."""
 
 import boto3
 from botocore.exceptions import BotoCoreError, ClientError

@@ -67,6 +67,28 @@ The agent pipeline runs sequentially and is fault-tolerant — each step writes 
 
 ---
 
+## Storage — DigitalOcean Spaces
+
+All audio files, transcripts, summaries, and sentiment reports are stored in **DigitalOcean Spaces** (S3-compatible object storage).
+
+**Bucket setup:**
+1. Go to DigitalOcean → Spaces Object Storage → Create Bucket
+2. Choose a region (e.g. `lon1`) and a unique bucket name (e.g. `communitai-storage`)
+3. Go to Spaces → Manage Keys → Create Access Key scoped to your bucket
+4. Set the following env vars (backend and agent both need them):
+
+| Variable | Value |
+|---|---|
+| `DO_SPACES_KEY` | Access Key ID from step 3 |
+| `DO_SPACES_SECRET` | Secret Key from step 3 |
+| `DO_SPACES_REGION` | Your bucket region, e.g. `lon1` |
+| `DO_SPACES_BUCKET` | Your bucket name, e.g. `communitai-storage` |
+| `DO_SPACES_ENDPOINT` | `https://<region>.digitaloceanspaces.com` — e.g. `https://lon1.digitaloceanspaces.com` |
+
+> The endpoint is the **base regional URL** — do not include the bucket name in it.
+
+---
+
 ## Local Development
 
 ### Prerequisites
@@ -141,18 +163,18 @@ python3 -m pytest backend/tests/ -q
 | Variable | Description |
 |---|---|
 | `DATABASE_URL` | PostgreSQL async connection string (`postgresql+asyncpg://...`) |
-| `DO_SPACES_KEY` | DigitalOcean Spaces access key |
-| `DO_SPACES_SECRET` | DigitalOcean Spaces secret |
-| `DO_SPACES_REGION` | Spaces region (e.g. `nyc3`) |
-| `DO_SPACES_BUCKET` | Spaces bucket name |
-| `DO_SPACES_ENDPOINT` | Spaces endpoint URL |
+| `DO_SPACES_KEY` | DigitalOcean Spaces access key ID |
+| `DO_SPACES_SECRET` | DigitalOcean Spaces secret key |
+| `DO_SPACES_REGION` | Spaces bucket region, e.g. `lon1`, `nyc3`, `sfo3` |
+| `DO_SPACES_BUCKET` | Spaces bucket name, e.g. `communitai-storage` |
+| `DO_SPACES_ENDPOINT` | Base regional endpoint, e.g. `https://lon1.digitaloceanspaces.com` |
 | `GRADIENT_API_KEY` | DigitalOcean Gradient AI API key |
 | `GRADIENT_MODEL_ACCESS_KEY` | Gradient AI model access key |
 | `GRADIENT_INFERENCE_URL` | Gradient AI inference endpoint |
 | `GRADIENT_INFERENCE_MODEL` | Model ID to use for inference |
 | `GROQ_API_KEY` | Groq API key (Whisper transcription) |
-| `AGENT_ENDPOINT_URL` | ADK agent base URL |
-| `AGENT_API_KEY` | ADK agent API key |
+| `AGENT_ENDPOINT_URL` | Agent service base URL |
+| `AGENT_API_KEY` | Agent API key |
 | `SECRET_KEY` | JWT signing secret |
 | `DEMO_EMAIL` | Demo account email (default: `demo@communitai.app`) |
 | `DEMO_PASSWORD` | Demo account password |
@@ -169,7 +191,14 @@ python3 -m pytest backend/tests/ -q
 
 Backend and agent are deployed on **DigitalOcean App Platform** using Dockerfiles. Frontend is deployed on **Vercel**.
 
-Each service has its own `Dockerfile`. The backend copies source into `/app/backend/` and sets `PYTHONPATH=/app` so all `backend.*` imports resolve correctly inside the container.
+Each service has its own `Dockerfile`. The backend copies source into `/app/backend/` and sets `PYTHONPATH=/app` so all `backend.*` imports resolve correctly inside the container. The agent does the same under `/app/agent/`.
+
+Both services listen on `$PORT` (injected by DO as `8080`) and declare `http_port: 8080` in `app.yaml`.
+
+**Vercel env var:**
+```
+NEXT_PUBLIC_API_URL=https://<your-backend>.ondigitalocean.app/api
+```
 
 ---
 
