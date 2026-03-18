@@ -90,7 +90,20 @@ export default function RecordPage() {
         try {
             let stream: MediaStream;
             if (audioMode === "system") {
-                stream = await navigator.mediaDevices.getDisplayMedia({ audio: true, video: false });
+                // getDisplayMedia requires video:true in most browsers
+                // We capture with video then immediately remove video tracks
+                const displayStream = await navigator.mediaDevices.getDisplayMedia({
+                    audio: true,
+                    video: true
+                });
+                // Remove video tracks — we only want audio
+                displayStream.getVideoTracks().forEach(t => t.stop());
+                const audioTracks = displayStream.getAudioTracks();
+                if (audioTracks.length === 0) {
+                    setUploadError("No audio captured. Make sure to check 'Share audio' or 'Share tab audio' in the browser dialog.");
+                    return;
+                }
+                stream = new MediaStream(audioTracks);
             } else {
                 stream = await navigator.mediaDevices.getUserMedia({ audio: true });
             }
@@ -127,10 +140,14 @@ export default function RecordPage() {
             timerRef.current = setInterval(() => setElapsed(s => s + 1), 1000);
         } catch (err: unknown) {
             const name = err instanceof Error ? err.name : "";
-            if (name === "NotAllowedError") {
-                setUploadError("Permission denied — please allow screen/microphone access.");
+            if (name === "NotAllowedError" || name === "PermissionDeniedError") {
+                setUploadError("Permission denied. Please allow microphone/screen access and try again.");
+            } else if (name === "NotSupportedError") {
+                setUploadError("Your browser doesn't support this recording mode. Try 'Mic Only' or use Manual Upload instead.");
+            } else if (name === "NotFoundError") {
+                setUploadError("No microphone found. Please connect a microphone and try again.");
             } else {
-                setUploadError("Could not start recording. Please try again.");
+                setUploadError("Could not start recording — try 'Mic Only' mode or use Manual Upload.");
             }
         }
     }
@@ -198,7 +215,7 @@ export default function RecordPage() {
 
                         <div className="grid grid-cols-1 lg:grid-cols-2 gap-10">
                             {/* Native Recorder Card */}
-                            <div className={`glass-card rounded-4xl p-10 border-2 transition-all duration-700 shadow-premium hover:shadow-premium-hover ${supported ? 'border-accent/20 bg-accent/3 group select-none' : 'border-text/5 bg-text/2 opacity-50 grayscale pointer-events-none'}`}>
+                            <div className="glass-card rounded-4xl p-10 border-2 border-accent/20 bg-accent/3 transition-all duration-700 shadow-premium hover:shadow-premium-hover group select-none">
                                 <h3 className="text-2xl font-black text-text mb-4 tracking-tight">Native Recorder</h3>
                                 <p className="text-sm text-text/40 mb-10 font-semibold italic leading-relaxed">High-fidelity capture directly from your browser's internal engine.</p>
 
@@ -207,21 +224,26 @@ export default function RecordPage() {
                                         {(["system", "microphone"] as AudioMode[]).map(mode => (
                                             <button
                                                 key={mode}
-                                                disabled={!supported}
                                                 onClick={() => setAudioMode(mode)}
                                                 className={`flex-1 py-4 rounded-2xl font-black text-[10px] uppercase tracking-widest transition-all border ${audioMode === mode
                                                     ? 'bg-accent text-background border-accent shadow-lg shadow-accent/20'
                                                     : 'bg-background text-text/40 border-text/10'
                                                     }`}
                                             >
-                                                {mode === "system" ? <span className="flex items-center justify-center gap-2"><Monitor className="w-3.5 h-3.5" /> System</span>
+                                                {mode === "system"
+                                                    ? <span className="flex items-center justify-center gap-2"><Monitor className="w-3.5 h-3.5" /> System</span>
                                                     : <span className="flex items-center justify-center gap-2"><Radio className="w-3.5 h-3.5" /> Mic Only</span>}
                                             </button>
                                         ))}
                                     </div>
 
+                                    {audioMode === "system" && (
+                                        <p className="text-[10px] text-text/30 font-bold text-center -mt-2">
+                                            Chrome only · check &quot;Share audio&quot; in the dialog
+                                        </p>
+                                    )}
+
                                     <button
-                                        disabled={!supported}
                                         onClick={startRecording}
                                         className="w-full py-5 bg-text text-background rounded-2xl font-black text-xs uppercase tracking-widest hover:scale-[1.02] active:scale-95 transition-all flex items-center justify-center gap-3 group"
                                     >
@@ -230,7 +252,6 @@ export default function RecordPage() {
                                         <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
                                     </button>
                                 </div>
-                                {!supported && <p className="mt-4 text-[10px] text-red-400 font-black uppercase text-center">Browser unsupported</p>}
                             </div>
 
                             {/* Upload Card */}

@@ -101,7 +101,7 @@ async def process_meeting(meeting_id: str, audio_key: str | None = None, retry_f
             s3 = boto3.client(
                 "s3",
                 region_name=_settings.DO_SPACES_REGION,
-                endpoint_url=f"https://{_settings.DO_SPACES_REGION}.digitaloceanspaces.com",
+                endpoint_url=_settings.DO_SPACES_ENDPOINT,
                 aws_access_key_id=_settings.DO_SPACES_KEY,
                 aws_secret_access_key=_settings.DO_SPACES_SECRET,
             )

@@ -267,12 +267,12 @@ export default function MeetingInsights() {
 
                                             <div className="grid grid-cols-2 gap-8">
                                                 <div className="p-8 glass-card rounded-4xl bg-accent/5">
-                                                    <h4 className="text-[10px] font-black uppercase tracking-[0.3em] text-accent mb-3">Key Theme</h4>
-                                                    <p className="text-lg font-black text-text">Community Growth & Retention</p>
+                                                    <h4 className="text-[10px] font-black uppercase tracking-[0.3em] text-accent mb-3">Status</h4>
+                                                    <p className="text-lg font-black text-text capitalize">{meeting.status.replace(/_/g, " ")}</p>
                                                 </div>
                                                 <div className="p-8 glass-card rounded-4xl bg-blue-500/5">
-                                                    <h4 className="text-[10px] font-black uppercase tracking-[0.3em] text-blue-500 mb-3">Top Speaker</h4>
-                                                    <p className="text-lg font-black text-text">Jane Cooper (42% airtime)</p>
+                                                    <h4 className="text-[10px] font-black uppercase tracking-[0.3em] text-blue-500 mb-3">Action Items</h4>
+                                                    <p className="text-lg font-black text-text">{meeting.action_items.length} detected</p>
                                                 </div>
                                             </div>
                                         </motion.div>
@@ -340,7 +340,9 @@ export default function MeetingInsights() {
                                                         {meeting.sentiment?.classification || "Neutral"}
                                                     </p>
                                                 </div>
-                                                <p className="text-xl text-text/40 font-semibold max-w-sm mx-auto leading-relaxed">The community seems energized and focused on the new roadmap features.</p>
+                                                <p className="text-xl text-text/40 font-semibold max-w-sm mx-auto leading-relaxed">
+                                                    Sentiment analysis from your meeting transcript.
+                                                </p>
                                             </div>
 
                                             <div className="grid grid-cols-1 md:grid-cols-2 gap-8">

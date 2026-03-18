@@ -50,9 +50,17 @@ def _parse_action_items(raw: str) -> list[dict]:
 
 async def _persist_action_items(meeting_id: str, items: list[dict]) -> list[dict]:
     """Insert action items into the action_items table; return persisted dicts."""
+    from datetime import date
     persisted = []
     async with AsyncSessionLocal() as session:
         for item in items:
+            # Convert due_date string to date object if present
+            due_date = item.get("due_date")
+            if isinstance(due_date, str):
+                try:
+                    due_date = date.fromisoformat(due_date)
+                except (ValueError, TypeError):
+                    due_date = None
             result = await session.execute(
                 text(
                     """
@@ -65,7 +73,7 @@ async def _persist_action_items(meeting_id: str, items: list[dict]) -> list[dict
                     "meeting_id": meeting_id,
                     "description": item["description"],
                     "assignee": item["assignee"],
-                    "due_date": item.get("due_date"),
+                    "due_date": due_date,
                 },
             )
             row = result.mappings().one()

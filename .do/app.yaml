@@ -4,16 +4,14 @@ region: nyc
 services:
   # ── Backend API ────────────────────────────────────────────────────────────
   - name: backend
-    source_dir: backend
+    source_dir: /
+    dockerfile_path: backend/Dockerfile
     github:
       branch: main
       deploy_on_push: true
-    run_command: uvicorn main:app --host 0.0.0.0 --port $PORT
-    build_command: pip install -r requirements.txt
-    environment_slug: python
     instance_size_slug: basic-xxs
     instance_count: 1
-    http_port: 8080
+    http_port: 8000
     envs:
       - key: DATABASE_URL
         scope: RUN_TIME
@@ -63,16 +61,14 @@ services:
 
   # ── Agent (AI Pipeline) ────────────────────────────────────────────────────
   - name: agent
-    source_dir: agent
+    source_dir: /
+    dockerfile_path: agent/Dockerfile
     github:
       branch: main
       deploy_on_push: true
-    run_command: uvicorn server:app --host 0.0.0.0 --port $PORT
-    build_command: pip install -r requirements.txt
-    environment_slug: python
     instance_size_slug: basic-xxs
     instance_count: 1
-    http_port: 8080
+    http_port: 8001
     envs:
       - key: DATABASE_URL
         scope: RUN_TIME
