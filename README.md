@@ -3,9 +3,7 @@
 <!-- Animated wave header -->
 <img src="https://capsule-render.vercel.app/api?type=waving&color=0,000000,60,166534,100,4ADE80&height=200&section=header&text=CommunitAI&fontSize=72&fontColor=4ADE80&fontAlignY=38&animation=fadeIn&desc=Record.%20Transcribe.%20Act.&descAlignY=58&descSize=20&descColor=86efac" width="100%"/>
 
-<div align="center">
 <img src="assets/logo.svg" alt="CommunitAI Platform" width="25%" style="border-radius: 12px;"/>
-</div>
 
 <!-- Typing animation -->
 [![Typing SVG](https://readme-typing-svg.demolab.com?font=Fira+Code&weight=700&size=22&pause=1000&color=4ADE80&background=00000000&center=true&vCenter=true&multiline=false&width=700&height=50&lines=Upload+a+recording...;Get+action+items+automatically;Understand+community+sentiment;Share+Slack-ready+summaries;Powered+by+Gradient+AI+%26+Whisper)](https://git.io/typing-svg)
@@ -22,8 +20,8 @@
 
 <br/>
 
-<div align="center">
 <img src="https://raw.githubusercontent.com/andreasbm/readme/master/assets/lines/grass.png" width="100%"/>
+
 </div>
 
 <br/>
@@ -150,7 +148,6 @@ See [`docs/deployment.md`](docs/deployment.md) for DigitalOcean App Platform, Ma
 Distributed under the MIT License. See [LICENSE](LICENSE) for more information.
 
 <div align="center">
-
 <br/>
 
 <!-- Animated footer wave -->
