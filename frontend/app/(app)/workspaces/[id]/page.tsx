@@ -91,31 +91,33 @@ export default function WorkspacePage() {
     );
 
     return (
-        <div className="flex min-h-screen w-full bg-black text-white font-mono flex-col">
-            {/* Header */}
-            <header className="border-b border-zinc-800 px-6 py-3 flex items-center gap-4 flex-shrink-0">
-                <button onClick={() => router.push("/")} className="text-zinc-600 hover:text-green-400 transition text-sm">
-                    back
-                </button>
-                <span className="text-zinc-800">|</span>
-                <span className="text-green-400 font-bold text-sm tracking-widest uppercase">CommunitAI</span>
-                <span className="text-zinc-700">/</span>
-                <span className="text-zinc-300 text-sm">{workspace.icon_emoji} {workspace.name}</span>
-            </header>
+        <div className="flex flex-col min-h-screen">
+            {/* Header Area */}
+            <div className="px-10 py-10 pb-6">
+                <div className="flex items-center gap-6">
+                    <div className="w-16 h-16 rounded-4xl bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center text-3xl shadow-xl shadow-emerald-500/5">
+                        {workspace.icon_emoji}
+                    </div>
+                    <div>
+                        <h1 className="text-4xl font-bold text-white tracking-tight">{workspace.name}</h1>
+                        <p className="text-sm font-semibold text-zinc-500 uppercase tracking-widest mt-1">Workspace Overview</p>
+                    </div>
+                </div>
+            </div>
 
             {/* Tab bar */}
-            <nav className="flex-shrink-0 border-b border-zinc-900 bg-[#030303] px-6 flex gap-0">
+            <nav className="shrink-0 border-b border-white/5 bg-transparent px-10 flex gap-8">
                 {(["meetings", "planner", "impact"] as Tab[]).map(t => (
                     <button key={t} onClick={() => setTab(t)}
-                        className={`px-4 py-2 text-xs uppercase tracking-widest border-b-2 transition ${tab === t ? "border-green-500 text-green-400" : "border-transparent text-zinc-600 hover:text-zinc-400"}`}
+                        className={`pb-4 text-xs font-bold uppercase tracking-widest border-b-2 transition-all duration-300 ${tab === t ? "border-emerald-500 text-emerald-400" : "border-transparent text-zinc-600 hover:text-zinc-400"}`}
                     >
-                        {t === "meetings" ? "🎙 Meetings" : t === "planner" ? "⚡ Planner" : "📊 Impact"}
+                        {t === "meetings" ? "Meetings" : t === "planner" ? "Planner" : "Impact"}
                     </button>
                 ))}
             </nav>
 
             {/* Content */}
-            <main className="flex-1 overflow-auto p-6 max-w-4xl w-full mx-auto space-y-6">
+            <main className="flex-1 overflow-auto p-10 max-w-6xl w-full space-y-10">
                 {tab === "meetings" && (
                     <section className="bg-zinc-950 border border-zinc-800 rounded">
                         <div className="px-4 py-2.5 border-b border-zinc-800 flex items-center justify-between">
@@ -133,7 +135,7 @@ export default function WorkspacePage() {
                                             className="flex items-center justify-between px-4 py-3 hover:bg-zinc-900/40 transition"
                                         >
                                             <span className="text-sm text-zinc-300 truncate">{m.title}</span>
-                                            <div className="flex items-center gap-3 flex-shrink-0 ml-4">
+                                            <div className="flex items-center gap-3 shrink-0 ml-4">
                                                 <span className="text-xs text-zinc-600">
                                                     {new Date(m.created_at).toLocaleDateString()}
                                                 </span>

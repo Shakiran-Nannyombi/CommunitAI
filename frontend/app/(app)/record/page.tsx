@@ -199,19 +199,12 @@ export default function RecordPage() {
     if (supported === null) return null;
 
     return (
-        <div className="flex min-h-screen w-full bg-black text-white font-mono flex-col">
-            {/* Header */}
-            <header className="border-b border-zinc-800 px-6 py-3 flex items-center gap-4 flex-shrink-0">
-                <button onClick={() => router.push("/")} className="text-zinc-600 hover:text-green-400 transition text-sm">
-                    back
-                </button>
-                <span className="text-zinc-800">|</span>
-                <span className="text-green-400 font-bold text-sm tracking-widest uppercase">CommunitAI</span>
-                <span className="text-zinc-700">/</span>
-                <span className="text-zinc-300 text-sm">Record</span>
-            </header>
-
-            <main className="flex-1 flex flex-col items-center justify-start p-6 max-w-2xl w-full mx-auto space-y-6">
+        <div className="flex flex-col min-h-screen">
+            <main className="flex-1 flex flex-col items-center justify-start p-10 max-w-3xl w-full mx-auto space-y-8">
+                <div className="w-full">
+                    <h1 className="text-3xl font-bold text-white tracking-tight">Record Meeting</h1>
+                    <p className="text-zinc-500 mt-2">Capture your community discussions and generate instant insights.</p>
+                </div>
 
                 {/* ── Unsupported: error banner + fallback form ── */}
                 {!supported && (

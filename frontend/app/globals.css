@@ -93,10 +93,10 @@ body {
 .app-root {
     background: var(--app-bg);
     color: var(--app-text-muted);
-    font-family: var(--font-mono);
+    font-family: var(--font-sans);
     font-size: var(--text-sm);
     /* 14px — comfortable terminal density */
-    line-height: 1.4;
+    line-height: 1.5;
     color-scheme: dark;
 }
 

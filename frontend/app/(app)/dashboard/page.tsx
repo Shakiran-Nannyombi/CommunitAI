@@ -1,14 +1,26 @@
 "use client";
 
 import { useEffect, useState, useCallback } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import {
     getWorkspaces, createWorkspace, getMeetings, createMeeting, uploadAudio,
     getGlobalTasks, completeActionItem, generateNudge, clearAuth, loadAuth,
-    type Workspace, type GlobalActionItem, type AuthUser,
+    type Workspace, type GlobalActionItem, type AuthUser, MeetingListItem
 } from "@/lib/api";
 import { OverviewTab, TasksTab, MeetingsTab } from "./_components";
-import { LogoMark } from "@/components/Logo";
+import {
+    Zap,
+    LayoutDashboard,
+    CheckSquare,
+    Mic,
+    Plus,
+    LogOut,
+    Loader2,
+    PlusCircle,
+    Sparkles,
+    Copy,
+    X
+} from "lucide-react";
 
 const PROCESSING = new Set(["pending", "processing", "transcribed"]);
 
@@ -19,41 +31,36 @@ export default function CommandCentre() {
     const [user, setUser] = useState<AuthUser | null>(null);
     const [workspaces, setWorkspaces] = useState<Workspace[]>([]);
     const [activeWs, setActiveWs] = useState<Workspace | null>(null);
-    const [tab, setTab] = useState<Tab>("overview");
+    const searchParams = useSearchParams();
+    const tab = (searchParams.get("tab") as Tab) || "overview";
+
+    const setTab = useCallback((t: Tab) => {
+        const params = new URLSearchParams(searchParams);
+        params.set("tab", t);
+        router.push(`/dashboard?${params.toString()}`);
+    }, [router, searchParams]);
+
     const [meetings, setMeetings] = useState<MeetingListItem[]>([]);
     const [tasks, setTasks] = useState<GlobalActionItem[]>([]);
     const [loading, setLoading] = useState(true);
-    const [clock, setClock] = useState("");
 
-    // Upload form
     const [title, setTitle] = useState("");
     const [file, setFile] = useState<File | null>(null);
     const [uploading, setUploading] = useState(false);
     const [uploadErr, setUploadErr] = useState("");
 
-    // Workspace form
     const [wsName, setWsName] = useState("");
-    const [wsEmoji, setWsEmoji] = useState("🏘️");
+    const [wsEmoji, setWsEmoji] = useState("folder"); // Default icon name
     const [showWsForm, setShowWsForm] = useState(false);
 
-    // Nudge modal
     const [nudgeMsg, setNudgeMsg] = useState("");
     const [nudgeLoading, setNudgeLoading] = useState<string | null>(null);
 
-    // Auth check on mount
     useEffect(() => {
         const auth = loadAuth();
         if (!auth) { router.replace("/login"); return; }
         setUser(auth);
     }, [router]);
-
-    // Live clock
-    useEffect(() => {
-        const tick = () => setClock(new Date().toLocaleTimeString("en-US", { hour12: false }));
-        tick();
-        const t = setInterval(tick, 1000);
-        return () => clearInterval(t);
-    }, []);
 
     const loadAll = useCallback(async (uid: string) => {
         const [ws, t] = await Promise.all([getWorkspaces(uid), getGlobalTasks(uid)]);
@@ -67,17 +74,9 @@ export default function CommandCentre() {
         setMeetings(data);
     }, []);
 
-    useEffect(() => {
-        if (!user) return;
-        loadAll(user.user_id);
-    }, [user, loadAll]);
+    useEffect(() => { if (user) loadAll(user.user_id); }, [user, loadAll]);
+    useEffect(() => { if (user) loadMeetings(user.user_id, activeWs?.id); }, [user, activeWs, loadMeetings]);
 
-    useEffect(() => {
-        if (!user) return;
-        loadMeetings(user.user_id, activeWs?.id);
-    }, [user, activeWs, loadMeetings]);
-
-    // Poll processing meetings
     useEffect(() => {
         if (!user) return;
         const hasProcessing = meetings.some(m => PROCESSING.has(m.status));
@@ -86,10 +85,7 @@ export default function CommandCentre() {
         return () => clearInterval(t);
     }, [meetings, user, activeWs, loadMeetings]);
 
-    function handleLogout() {
-        clearAuth();
-        router.push("/home");
-    }
+    function handleLogout() { clearAuth(); router.push("/home"); }
 
     async function handleUpload(e: React.FormEvent) {
         e.preventDefault();
@@ -109,7 +105,7 @@ export default function CommandCentre() {
         e.preventDefault();
         if (!wsName.trim() || !user) return;
         await createWorkspace(wsName.trim(), wsEmoji, user.user_id);
-        setWsName(""); setWsEmoji("🏘️"); setShowWsForm(false);
+        setWsName(""); setWsEmoji("folder"); setShowWsForm(false);
         await loadAll(user.user_id);
     }
 
@@ -129,91 +125,79 @@ export default function CommandCentre() {
     const filteredTasks = activeWs ? tasks.filter(t => t.workspace_id === activeWs.id) : tasks;
     const processingMeetings = meetings.filter(m => PROCESSING.has(m.status));
 
-    if (!user) return null; // redirecting
+    if (!user) return null;
+
+    const TABS_INFO: { id: Tab; label: string; icon: any }[] = [
+        { id: "overview", label: "Overview", icon: LayoutDashboard },
+        { id: "tasks", label: "Tasks", icon: CheckSquare },
+        { id: "meetings", label: "Meetings", icon: Mic },
+    ];
 
     return (
-        <div className="flex h-screen w-full bg-black font-mono overflow-hidden">
-            {/* ── Workspace Sidebar ── */}
-            <aside className="w-14 flex-shrink-0 bg-[#030303] border-r border-zinc-900 flex flex-col items-center py-3 gap-2">
-                <button
-                    onClick={() => { setActiveWs(null); setTab("overview"); }}
-                    title="All Communities"
-                    className={`w-9 h-9 rounded flex items-center justify-center text-base transition border ${activeWs === null ? "border-green-600 text-green-400 bg-green-950/40" : "border-zinc-800 text-zinc-600 hover:border-zinc-600 hover:text-zinc-400"
-                        }`}
-                >⚡</button>
-                <div className="w-6 border-t border-zinc-900" />
-                {workspaces.map(ws => (
-                    <button
-                        key={ws.id}
-                        onClick={() => { setActiveWs(ws); setTab("meetings"); router.push(`/workspaces/${ws.id}`); }}
-                        title={ws.name}
-                        className={`w-9 h-9 rounded flex items-center justify-center text-base transition border ${activeWs?.id === ws.id ? "border-green-600 bg-green-950/40" : "border-zinc-800 text-zinc-600 hover:border-zinc-600"
-                            }`}
-                    >{ws.icon_emoji}</button>
-                ))}
-                <button
-                    onClick={() => setShowWsForm(v => !v)}
-                    title="New Community"
-                    className="w-9 h-9 rounded border border-dashed border-zinc-800 hover:border-zinc-600 flex items-center justify-center text-zinc-700 hover:text-zinc-400 transition text-lg"
-                >+</button>
-                {/* Spacer + logout at bottom */}
-                <div className="flex-1" />
-                <button onClick={handleLogout} title="Sign out" className="w-9 h-9 rounded border border-zinc-900 hover:border-red-900 flex items-center justify-center text-zinc-700 hover:text-red-500 transition text-xs">
-                    ⏻
-                </button>
-            </aside>
-
-            {/* ── Main Panel ── */}
-            <div className="flex-1 flex flex-col min-w-0 overflow-hidden">
-                {/* Top bar */}
-                <header className="flex-shrink-0 border-b border-zinc-900 bg-[#030303] px-4 py-2 flex items-center justify-between">
-                    <div className="flex items-center gap-3">
-                        <LogoMark size={22} color="#4ade80" />
-                        <span className="text-green-400 font-bold text-xs tracking-[0.25em] uppercase">CommunitAI</span>
-                        {activeWs && <><span className="text-zinc-800">/</span><span className="text-zinc-500 text-xs">{activeWs.icon_emoji} {activeWs.name}</span></>}
+        <div className="flex flex-col h-screen">
+            {/* Header */}
+            <header className="shrink-0 border-b border-white/5 bg-[#0d0d0d]/80 backdrop-blur-md px-10 py-6 flex items-center justify-between">
+                <div className="flex items-center gap-4">
+                    <div className="w-12 h-12 rounded-2xl bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center shadow-lg shadow-emerald-500/5">
+                        {(() => {
+                            const Icon = TABS_INFO.find(t => t.id === tab)?.icon || LayoutDashboard;
+                            return <Icon className="w-6 h-6 text-emerald-400" />;
+                        })()}
                     </div>
-                    <div className="flex items-center gap-4 text-xs text-zinc-500">
-                        {processingMeetings.length > 0 && (
-                            <span className="text-blue-500 flex items-center gap-1">
-                                <span className="w-1.5 h-1.5 rounded-full bg-blue-500 animate-pulse" />
-                                {processingMeetings.length} processing
-                            </span>
-                        )}
-                        <span className="text-zinc-400">{user.is_demo ? "DEMO" : user.display_name || user.email}</span>
-                        <span className="text-green-600 font-bold tabular-nums">{clock}</span>
+                    <div>
+                        <h1 className="text-xl font-bold text-white tracking-tight capitalize">
+                            {TABS_INFO.find(t => t.id === tab)?.label ?? "Dashboard"}
+                        </h1>
+                        <div className="flex items-center gap-2 mt-0.5">
+                            <span className="w-1.5 h-1.5 rounded-full bg-emerald-500/50" />
+                            <p className="text-xs font-semibold text-zinc-500 uppercase tracking-widest">
+                                {tab === "overview" ? `${workspaces.length} Workspaces · ${pendingTasks.length} Open Tasks` : tab === "tasks" ? `${pendingTasks.length} Open · ${tasks.length} Total` : `${meetings.length} Meetings total`}
+                            </p>
+                        </div>
                     </div>
-                </header>
+                </div>
+                <div className="flex items-center gap-4">
+                    {processingMeetings.length > 0 && (
+                        <div className="flex items-center gap-2 text-xs font-bold text-blue-400 bg-blue-500/10 border border-blue-500/20 px-4 py-2 rounded-full">
+                            <span className="w-2 h-2 rounded-full bg-blue-400 animate-pulse" />
+                            {processingMeetings.length} Processing
+                        </div>
+                    )}
+                    <button onClick={() => setTab("meetings")}
+                        className="flex items-center gap-2 text-sm font-bold px-6 py-2.5 rounded-2xl bg-emerald-500 text-black hover:bg-emerald-400 transition-all duration-300 shadow-xl shadow-emerald-500/20 active:scale-95">
+                        <PlusCircle className="w-5 h-5" />
+                        New Meeting
+                    </button>
+                </div>
+            </header>
 
-                {/* Tab bar */}
-                <nav className="flex-shrink-0 border-b border-zinc-900 bg-[#030303] px-4 flex gap-0">
-                    {(["overview", "tasks", "meetings"] as Tab[]).map(t => (
-                        <button key={t} onClick={() => setTab(t)}
-                            className={`px-4 py-2 text-xs uppercase tracking-widest border-b-2 transition ${tab === t ? "border-green-500 text-green-400" : "border-transparent text-zinc-600 hover:text-zinc-400"
-                                }`}
-                        >
-                            {t === "overview" ? "⚡ Overview" : t === "tasks" ? "✓ Tasks" : "🎙 Meetings"}
-                        </button>
-                    ))}
-                </nav>
 
                 {/* Content */}
-                <main className="flex-1 overflow-auto p-4">
+                <main className="flex-1 overflow-auto p-12">
                     {loading ? (
-                        <p className="text-zinc-700 text-xs">Connecting to data feed<span className="blink">_</span></p>
+                        <div className="flex flex-col items-center justify-center h-full">
+                            <div className="relative">
+                                <div className="w-12 h-12 border-4 border-emerald-500/10 border-t-emerald-500 rounded-full animate-spin" />
+                                <div className="absolute inset-0 flex items-center justify-center">
+                                    <Zap className="w-4 h-4 text-emerald-500/50" />
+                                </div>
+                            </div>
+                            <p className="text-sm font-medium text-zinc-400 mt-6 animate-pulse">Initializing your cockpit…</p>
+                        </div>
                     ) : (
                         <>
-                            {tab === "overview" && <OverviewTab
+                            {tab === "overview" && !activeWs && <OverviewTab
                                 workspaces={workspaces} meetings={meetings} pendingTasks={pendingTasks}
                                 onComplete={handleComplete} onNudge={handleNudge} nudgeLoading={nudgeLoading}
                                 title={title} setTitle={setTitle} file={file} setFile={setFile}
                                 uploading={uploading} uploadErr={uploadErr} onUpload={handleUpload}
                                 activeWs={activeWs}
                             />}
-                            {tab === "tasks" && <TasksTab
+                            {tab === "tasks" && !activeWs && <TasksTab
                                 tasks={filteredTasks} activeWs={activeWs}
                                 onComplete={handleComplete} onNudge={handleNudge} nudgeLoading={nudgeLoading}
                             />}
-                            {tab === "meetings" && <MeetingsTab
+                            {tab === "meetings" && !activeWs && <MeetingsTab
                                 meetings={meetings} activeWs={activeWs}
                                 title={title} setTitle={setTitle} file={file} setFile={setFile}
                                 uploading={uploading} uploadErr={uploadErr} onUpload={handleUpload}
@@ -222,51 +206,60 @@ export default function CommandCentre() {
                     )}
                 </main>
 
-                {/* Status bar */}
-                <footer className="flex-shrink-0 border-t border-zinc-900 bg-[#030303] px-4 py-1.5 flex items-center gap-6 text-xs text-zinc-500">
-                    <span><span className="text-green-600">●</span> DB CONNECTED</span>
-                    <span>WORKSPACES: <span className="text-zinc-400">{workspaces.length}</span></span>
-                    <span>OPEN TASKS: <span className="text-yellow-600">{pendingTasks.length}</span></span>
-                    <span>MEETINGS: <span className="text-zinc-400">{meetings.length}</span></span>
-                    <div className="flex-1" />
-                    <span className="text-zinc-600">CommunitAI v1.0 · DigitalOcean Gradient AI</span>
-                </footer>
-            </div>
-
             {/* ── New Workspace Modal ── */}
             {showWsForm && (
-                <div className="fixed inset-0 bg-black/80 flex items-center justify-center z-50" onClick={() => setShowWsForm(false)}>
+                <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50"
+                    onClick={() => setShowWsForm(false)}>
                     <form onSubmit={handleCreateWs} onClick={e => e.stopPropagation()}
-                        className="panel rounded w-72 p-5 space-y-3">
-                        <p className="text-xs text-zinc-400 uppercase tracking-widest">New Community</p>
-                        <div className="flex gap-2">
-                            <input value={wsEmoji} onChange={e => setWsEmoji(e.target.value)}
-                                className="w-12 bg-black border border-zinc-800 rounded px-2 py-2 text-center text-base focus:outline-none focus:border-green-700"
-                                maxLength={2} />
-                            <input value={wsName} onChange={e => setWsName(e.target.value)}
-                                placeholder="Community name" required
-                                className="flex-1 bg-black border border-zinc-800 rounded px-3 py-2 text-xs text-zinc-300 placeholder-zinc-700 focus:outline-none focus:border-green-700" />
+                        className="bg-[#141414] border border-white/10 rounded-xl w-80 p-5 shadow-2xl space-y-4">
+                        <div>
+                            <h2 className="text-sm font-semibold text-white">New Workspace</h2>
+                            <p className="text-xs text-zinc-500 mt-0.5">Create a space for your team or project</p>
                         </div>
-                        <button type="submit" className="w-full bg-green-700 hover:bg-green-600 text-black font-bold text-xs uppercase tracking-widest py-2 rounded transition">
-                            Create
-                        </button>
+                        <div className="flex gap-2">
+                            <div className="w-12 bg-[#0d0d0d] border border-white/5 rounded-xl flex items-center justify-center text-zinc-400">
+                                <LayoutDashboard className="w-5 h-5" />
+                            </div>
+                            <input value={wsName} onChange={e => setWsName(e.target.value)}
+                                placeholder="Workspace name" required
+                                className="flex-1 bg-[#0d0d0d] border border-white/5 rounded-xl px-4 py-3 text-sm text-zinc-200 placeholder-zinc-600 focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500/40 transition-all duration-200" />
+                        </div>
+                        <div className="flex gap-2">
+                            <button type="button" onClick={() => setShowWsForm(false)}
+                                className="flex-1 py-2.5 rounded-lg border border-white/10 text-sm text-zinc-400 hover:text-white hover:bg-white/5 transition">
+                                Cancel
+                            </button>
+                            <button type="submit"
+                                className="flex-1 py-2.5 rounded-lg bg-emerald-500 hover:bg-emerald-400 text-black font-semibold text-sm transition">
+                                Create
+                            </button>
+                        </div>
                     </form>
                 </div>
             )}
 
             {/* ── Nudge Modal ── */}
             {nudgeMsg && (
-                <div className="fixed inset-0 bg-black/80 flex items-center justify-center z-50" onClick={() => setNudgeMsg("")}>
-                    <div onClick={e => e.stopPropagation()} className="panel border-green-900 rounded w-96 p-5 space-y-3">
-                        <p className="text-xs text-green-500 uppercase tracking-widest">⚡ Gradient AI · Generated Nudge</p>
-                        <p className="text-xs text-zinc-300 leading-relaxed whitespace-pre-wrap border border-zinc-800 rounded p-3 bg-black">{nudgeMsg}</p>
+                <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50"
+                    onClick={() => setNudgeMsg("")}>
+                    <div onClick={e => e.stopPropagation()}
+                        className="bg-[#141414] border border-white/10 rounded-xl w-[420px] p-5 shadow-2xl space-y-4">
+                        <div className="flex items-center gap-2.5">
+                            <div className="w-8 h-8 rounded-lg bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center text-emerald-400 shadow-inner">
+                                <Sparkles className="w-4 h-4" />
+                            </div>
+                            <h2 className="text-base font-bold text-white tracking-tight">AI Insights</h2>
+                        </div>
+                        <p className="text-sm text-zinc-300 leading-relaxed bg-[#0d0d0d] border border-white/5 rounded-lg p-4 whitespace-pre-wrap">
+                            {nudgeMsg}
+                        </p>
                         <div className="flex gap-2">
                             <button onClick={() => navigator.clipboard.writeText(nudgeMsg)}
-                                className="flex-1 bg-green-700 hover:bg-green-600 text-black font-bold text-xs uppercase tracking-widest py-2 rounded transition">
+                                className="flex-1 py-2.5 rounded-lg bg-emerald-500 hover:bg-emerald-400 text-black font-semibold text-sm transition">
                                 Copy
                             </button>
                             <button onClick={() => setNudgeMsg("")}
-                                className="px-4 border border-zinc-800 hover:border-zinc-600 text-zinc-500 text-xs py-2 rounded transition">
+                                className="px-4 py-2.5 rounded-lg border border-white/10 text-sm text-zinc-400 hover:text-white hover:bg-white/5 transition">
                                 Close
                             </button>
                         </div>

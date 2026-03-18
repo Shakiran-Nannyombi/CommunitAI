@@ -254,13 +254,13 @@ export default function MeetingPage() {
     }
 
     if (loading) return (
-        <div className="flex min-h-screen bg-black text-white font-mono items-center justify-center">
-            <span className="text-zinc-600 text-sm">Loading...</span>
+        <div className="flex flex-col items-center justify-center p-20 text-center">
+            <span className="text-zinc-600 text-sm">Loading workspace dashboard...</span>
         </div>
     );
 
     if (!meeting) return (
-        <div className="flex min-h-screen bg-black text-white font-mono items-center justify-center">
+        <div className="flex flex-col items-center justify-center p-20 text-center">
             <span className="text-red-400 text-sm">Meeting not found</span>
         </div>
     );
@@ -271,26 +271,26 @@ export default function MeetingPage() {
     const sentiment = meeting.sentiment;
 
     return (
-        <div className="flex min-h-screen w-full bg-black text-white font-mono flex-col">
-            <header className="border-b border-zinc-800 px-6 py-3 flex items-center gap-4 flex-shrink-0">
-                <button onClick={() => router.push("/")} className="text-zinc-600 hover:text-green-400 transition text-sm">
-                    back
-                </button>
-                <span className="text-zinc-800">|</span>
-                <span className="text-green-400 font-bold text-sm tracking-widest uppercase">CommunitAI</span>
-                <span className="text-zinc-700">/</span>
-                <span className="text-zinc-300 text-sm truncate">{meeting.title}</span>
-                <span className={`ml-auto text-xs px-2 py-0.5 rounded border ${STATUS_COLOR[meeting.status] ?? "text-zinc-400 border-zinc-700"}`}>
-                    {isProcessing ? (
-                        <span className="flex items-center gap-1.5">
-                            <span className="w-1.5 h-1.5 rounded-full bg-blue-400 animate-pulse" />
-                            {meeting.status}
-                        </span>
-                    ) : meeting.status.replace(/_/g, " ")}
-                </span>
-            </header>
-
-            <main className="flex-1 overflow-auto p-6 max-w-4xl w-full mx-auto space-y-4">
+        <div className="flex flex-col min-h-screen">
+            <main className="flex-1 overflow-auto p-10 max-w-5xl w-full mx-auto space-y-8">
+                <div className="flex flex-col md:flex-row md:items-end justify-between gap-4">
+                    <div>
+                        <div className="flex items-center gap-2 mb-2">
+                            <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full border ${STATUS_COLOR[meeting.status] ?? "text-zinc-400 border-zinc-700"} uppercase tracking-widest`}>
+                                {isProcessing ? (
+                                    <span className="flex items-center gap-1.5">
+                                        <span className="w-1.5 h-1.5 rounded-full bg-blue-400 animate-pulse" />
+                                        {meeting.status}
+                                    </span>
+                                ) : meeting.status.replace(/_/g, " ")}
+                            </span>
+                            <span className="text-[10px] font-bold text-zinc-600 uppercase tracking-widest">
+                                {new Date(meeting.created_at).toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' })}
+                            </span>
+                        </div>
+                        <h1 className="text-4xl font-bold text-white tracking-tight leading-tight">{meeting.title}</h1>
+                    </div>
+                </div>
                 <div className="flex items-center gap-4 text-xs text-zinc-600">
                     <span>{new Date(meeting.created_at).toLocaleString()}</span>
                     {meeting.action_items.length > 0 && (
@@ -323,7 +323,7 @@ export default function MeetingPage() {
 
                 {isProcessing && (
                     <div className="bg-zinc-950 border border-zinc-800 rounded p-4 flex items-center gap-3">
-                        <div className="w-4 h-4 border-2 border-green-400 border-t-transparent rounded-full animate-spin flex-shrink-0" />
+                        <div className="w-4 h-4 border-2 border-green-400 border-t-transparent rounded-full animate-spin shrink-0" />
                         <p className="text-sm text-zinc-400">Processing your meeting - this may take a minute.</p>
                     </div>
                 )}
@@ -435,7 +435,7 @@ export default function MeetingPage() {
                                     <div className="flex items-start gap-3">
                                         <button
                                             onClick={() => handleComplete(item)}
-                                            className={`mt-0.5 w-4 h-4 rounded border flex-shrink-0 flex items-center justify-center transition ${item.completed ? "bg-green-600 border-green-600" : "border-zinc-600 hover:border-green-500"}`}
+                                            className={`mt-0.5 w-4 h-4 rounded border shrink-0 flex items-center justify-center transition ${item.completed ? "bg-green-600 border-green-600" : "border-zinc-600 hover:border-green-500"}`}
                                         >
                                             {item.completed && <span className="text-white text-[10px]">v</span>}
                                         </button>
@@ -449,7 +449,7 @@ export default function MeetingPage() {
                                                 <p className="text-xs text-red-400 mt-1">{itemError[item.id]}</p>
                                             )}
                                         </div>
-                                        <div className="flex items-center gap-1 flex-shrink-0">
+                                        <div className="flex items-center gap-1 shrink-0">
                                             {!item.completed && (
                                                 <button
                                                     onClick={() => handleNudge(item)}
