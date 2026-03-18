@@ -1,5 +1,4 @@
 import type { Metadata } from "next";
-import "../globals.css";
 
 export const metadata: Metadata = {
     title: "CommunitAI — AI Chief of Staff for Community Leaders",
@@ -8,7 +7,7 @@ export const metadata: Metadata = {
 
 export default function MarketingLayout({ children }: { children: React.ReactNode }) {
     return (
-        <div style={{ fontFamily: "system-ui, -apple-system, sans-serif", background: "#fff", color: "#111" }}>
+        <div className="mkt-root">
             {children}
         </div>
     );

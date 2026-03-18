@@ -68,11 +68,11 @@ export function TaskRow({ item, onComplete, onNudge, nudgeLoading, showMeta = fa
                 <p className={`text-xs text-zinc-300 ${item.completed ? "line-through" : ""}`}>{item.description}</p>
                 <div className="flex flex-wrap items-center gap-x-2 mt-0.5">
                     {showMeta && item.workspace_name && (
-                        <span className="text-xs text-green-700">{item.workspace_emoji} {item.workspace_name}</span>
+                        <span className="text-xs text-green-600">{item.workspace_emoji} {item.workspace_name}</span>
                     )}
-                    {showMeta && <span className="text-xs text-zinc-700">{item.meeting_title}</span>}
-                    <span className="text-xs text-zinc-600">@{item.assignee}</span>
-                    {item.due_date && <span className="text-xs text-yellow-700">due {item.due_date}</span>}
+                    {showMeta && <span className="text-xs text-zinc-500">{item.meeting_title}</span>}
+                    <span className="text-xs text-zinc-500">@{item.assignee}</span>
+                    {item.due_date && <span className="text-xs text-yellow-600">due {item.due_date}</span>}
                 </div>
             </div>
             {!item.completed && (
@@ -109,8 +109,8 @@ export function OverviewTab({ workspaces, meetings, pendingTasks, onComplete, on
                         { label: "MEETINGS", value: meetings.length, color: "text-blue-400" },
                     ].map(s => (
                         <div key={s.label} className="panel rounded p-3">
-                            <p className={`text-lg font-bold tabular-nums ${s.color}`}>{s.value}</p>
-                            <p className="text-xs text-zinc-700 uppercase tracking-widest mt-0.5">{s.label}</p>
+                            <p className={`text-xl font-bold tabular-nums ${s.color}`}>{s.value}</p>
+                            <p className="text-xs text-zinc-500 uppercase tracking-widest mt-0.5">{s.label}</p>
                         </div>
                     ))}
                 </div>
@@ -118,18 +118,18 @@ export function OverviewTab({ workspaces, meetings, pendingTasks, onComplete, on
                 {/* Lead's Inbox — recent meetings */}
                 <div className="panel rounded">
                     <div className="panel-header">
-                        <span className="text-xs text-zinc-500 uppercase tracking-widest">Lead&apos;s Inbox</span>
-                        <span className="text-xs text-zinc-700">{meetings.filter(m => m.status === "complete").length} ready</span>
+                        <span className="text-xs text-zinc-400 uppercase tracking-widest">Lead&apos;s Inbox</span>
+                        <span className="text-xs text-zinc-500">{meetings.filter(m => m.status === "complete").length} ready</span>
                     </div>
                     <div className="divide-y divide-zinc-900">
                         {recentMeetings.length === 0 ? (
-                            <p className="text-xs text-zinc-700 p-3">No meetings yet.</p>
+                            <p className="text-xs text-zinc-500 p-3">No meetings yet.</p>
                         ) : recentMeetings.map(m => (
                             <Link key={m.id} href={`/meetings/${m.id}`}
                                 className="flex items-center justify-between px-3 py-2 hover:bg-zinc-950 transition group">
                                 <div className="min-w-0">
-                                    <p className="text-xs text-zinc-400 group-hover:text-green-400 transition truncate">{m.title}</p>
-                                    <p className="text-xs text-zinc-700">{new Date(m.created_at).toLocaleDateString()}</p>
+                                    <p className="text-xs text-zinc-300 group-hover:text-green-400 transition truncate">{m.title}</p>
+                                    <p className="text-xs text-zinc-500">{new Date(m.created_at).toLocaleDateString()}</p>
                                 </div>
                                 <span className="text-xs ml-2 flex-shrink-0 flex items-center gap-1" style={{ color: STATUS_COLOR[m.status] ?? "#71717a" }}>
                                     {PROCESSING.has(m.status) && <span className="w-1.5 h-1.5 rounded-full animate-pulse" style={{ background: STATUS_COLOR[m.status] }} />}
@@ -151,21 +151,21 @@ export function OverviewTab({ workspaces, meetings, pendingTasks, onComplete, on
             {/* Right column — action items table */}
             <div className="panel rounded flex flex-col min-h-0">
                 <div className="panel-header flex-shrink-0">
-                    <span className="text-xs text-zinc-500 uppercase tracking-widest">Unified Action Items</span>
-                    <span className="text-xs text-zinc-700">{pendingTasks.length} open</span>
+                    <span className="text-xs text-zinc-400 uppercase tracking-widest">Unified Action Items</span>
+                    <span className="text-xs text-zinc-500">{pendingTasks.length} open</span>
                 </div>
                 {/* Table header */}
-                <div className="grid grid-cols-[1fr_auto_auto_auto] gap-2 px-3 py-1.5 border-b border-zinc-900 text-xs text-zinc-700 uppercase tracking-widest flex-shrink-0">
+                <div className="grid grid-cols-[1fr_auto_auto_auto] gap-2 px-3 py-1.5 border-b border-zinc-900 text-xs text-zinc-500 uppercase tracking-widest flex-shrink-0">
                     <span>Task</span><span>Source</span><span>Assignee</span><span>Action</span>
                 </div>
                 <div className="flex-1 overflow-auto divide-y divide-zinc-900">
                     {pendingTasks.length === 0 ? (
-                        <p className="text-xs text-zinc-700 p-3">All clear ✓</p>
+                        <p className="text-xs text-zinc-500 p-3">All clear ✓</p>
                     ) : pendingTasks.map(item => (
                         <div key={item.id} className="grid grid-cols-[1fr_auto_auto_auto] gap-2 px-3 py-2 items-center tr-hover">
-                            <p className="text-xs text-zinc-400 truncate">{item.description}</p>
-                            <span className="text-xs text-zinc-700 truncate max-w-24">{item.workspace_emoji} {item.workspace_name ?? "—"}</span>
-                            <span className="text-xs text-zinc-600">@{item.assignee}</span>
+                            <p className="text-xs text-zinc-300 truncate">{item.description}</p>
+                            <span className="text-xs text-zinc-500 truncate max-w-24">{item.workspace_emoji} {item.workspace_name ?? "—"}</span>
+                            <span className="text-xs text-zinc-400">@{item.assignee}</span>
                             <div className="flex gap-1">
                                 <button onClick={() => onComplete(item.id)}
                                     className="text-xs px-1.5 py-0.5 rounded border border-zinc-800 hover:border-green-800 text-zinc-600 hover:text-green-500 transition">✓</button>
@@ -191,23 +191,23 @@ export function TasksTab({ tasks, activeWs, onComplete, onNudge, nudgeLoading }:
     return (
         <div className="panel rounded">
             <div className="panel-header">
-                <span className="text-xs text-zinc-500 uppercase tracking-widest">
+                <span className="text-xs text-zinc-400 uppercase tracking-widest">
                     Master Task List {activeWs ? `· ${activeWs.icon_emoji} ${activeWs.name}` : "· All Communities"}
                 </span>
-                <span className="text-xs text-zinc-700">{tasks.filter(t => !t.completed).length} open / {tasks.length} total</span>
+                <span className="text-xs text-zinc-500">{tasks.filter(t => !t.completed).length} open / {tasks.length} total</span>
             </div>
-            <div className="grid grid-cols-[1fr_auto_auto_auto_auto] gap-2 px-3 py-1.5 border-b border-zinc-900 text-xs text-zinc-700 uppercase tracking-widest">
+            <div className="grid grid-cols-[1fr_auto_auto_auto_auto] gap-2 px-3 py-1.5 border-b border-zinc-900 text-xs text-zinc-500 uppercase tracking-widest">
                 <span>Task</span><span>Community</span><span>Meeting</span><span>Assignee</span><span>Action</span>
             </div>
             <div className="divide-y divide-zinc-900">
                 {tasks.length === 0 ? (
-                    <p className="text-xs text-zinc-700 p-3">No tasks found.</p>
+                    <p className="text-xs text-zinc-500 p-3">No tasks found.</p>
                 ) : tasks.map(item => (
                     <div key={item.id} className={`grid grid-cols-[1fr_auto_auto_auto_auto] gap-2 px-3 py-2 items-center tr-hover ${item.completed ? "opacity-30" : ""}`}>
-                        <p className={`text-xs text-zinc-400 truncate ${item.completed ? "line-through" : ""}`}>{item.description}</p>
-                        <span className="text-xs text-green-800 truncate max-w-20">{item.workspace_emoji} {item.workspace_name ?? "—"}</span>
-                        <span className="text-xs text-zinc-700 truncate max-w-24">{item.meeting_title}</span>
-                        <span className="text-xs text-zinc-600">@{item.assignee}</span>
+                        <p className={`text-xs text-zinc-300 truncate ${item.completed ? "line-through" : ""}`}>{item.description}</p>
+                        <span className="text-xs text-green-700 truncate max-w-20">{item.workspace_emoji} {item.workspace_name ?? "—"}</span>
+                        <span className="text-xs text-zinc-500 truncate max-w-24">{item.meeting_title}</span>
+                        <span className="text-xs text-zinc-400">@{item.assignee}</span>
                         <div className="flex gap-1">
                             {!item.completed && <>
                                 <button onClick={() => onComplete(item.id)}
@@ -241,22 +241,22 @@ export function MeetingsTab({ meetings, activeWs, title, setTitle, file, setFile
             </div>
             <div className="panel rounded">
                 <div className="panel-header">
-                    <span className="text-xs text-zinc-500 uppercase tracking-widest">
+                    <span className="text-xs text-zinc-400 uppercase tracking-widest">
                         {activeWs ? `${activeWs.icon_emoji} ${activeWs.name}` : "All Meetings"}
                     </span>
-                    <span className="text-xs text-zinc-700">{meetings.length} total</span>
+                    <span className="text-xs text-zinc-500">{meetings.length} total</span>
                 </div>
-                <div className="grid grid-cols-[1fr_auto_auto] gap-2 px-3 py-1.5 border-b border-zinc-900 text-xs text-zinc-700 uppercase tracking-widest">
+                <div className="grid grid-cols-[1fr_auto_auto] gap-2 px-3 py-1.5 border-b border-zinc-900 text-xs text-zinc-500 uppercase tracking-widest">
                     <span>Title</span><span>Date</span><span>Status</span>
                 </div>
                 <div className="divide-y divide-zinc-900">
                     {meetings.length === 0 ? (
-                        <p className="text-xs text-zinc-700 p-3">No meetings yet.</p>
+                        <p className="text-xs text-zinc-500 p-3">No meetings yet.</p>
                     ) : meetings.map(m => (
                         <Link key={m.id} href={`/meetings/${m.id}`}
                             className="grid grid-cols-[1fr_auto_auto] gap-2 px-3 py-2 items-center tr-hover group">
-                            <p className="text-xs text-zinc-400 group-hover:text-green-400 transition truncate">{m.title}</p>
-                            <span className="text-xs text-zinc-700 tabular-nums">{new Date(m.created_at).toLocaleDateString()}</span>
+                            <p className="text-xs text-zinc-300 group-hover:text-green-400 transition truncate">{m.title}</p>
+                            <span className="text-xs text-zinc-500 tabular-nums">{new Date(m.created_at).toLocaleDateString()}</span>
                             <span className="text-xs flex items-center gap-1" style={{ color: STATUS_COLOR[m.status] ?? "#71717a" }}>
                                 {PROCESSING.has(m.status) && <span className="w-1.5 h-1.5 rounded-full animate-pulse" style={{ background: STATUS_COLOR[m.status] }} />}
                                 {STATUS_LABEL[m.status] ?? m.status}

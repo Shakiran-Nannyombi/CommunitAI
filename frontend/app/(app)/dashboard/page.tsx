@@ -8,6 +8,7 @@ import {
     type Workspace, type GlobalActionItem, type AuthUser,
 } from "@/lib/api";
 import { OverviewTab, TasksTab, MeetingsTab } from "./_components";
+import { LogoMark } from "@/components/Logo";
 
 const PROCESSING = new Set(["pending", "processing", "transcribed"]);
 
@@ -167,17 +168,18 @@ export default function CommandCentre() {
                 {/* Top bar */}
                 <header className="flex-shrink-0 border-b border-zinc-900 bg-[#030303] px-4 py-2 flex items-center justify-between">
                     <div className="flex items-center gap-3">
+                        <LogoMark size={22} color="#4ade80" />
                         <span className="text-green-400 font-bold text-xs tracking-[0.25em] uppercase">CommunitAI</span>
                         {activeWs && <><span className="text-zinc-800">/</span><span className="text-zinc-500 text-xs">{activeWs.icon_emoji} {activeWs.name}</span></>}
                     </div>
-                    <div className="flex items-center gap-4 text-xs text-zinc-700">
+                    <div className="flex items-center gap-4 text-xs text-zinc-500">
                         {processingMeetings.length > 0 && (
                             <span className="text-blue-500 flex items-center gap-1">
                                 <span className="w-1.5 h-1.5 rounded-full bg-blue-500 animate-pulse" />
                                 {processingMeetings.length} processing
                             </span>
                         )}
-                        <span className="text-zinc-600">{user.is_demo ? "DEMO" : user.display_name || user.email}</span>
+                        <span className="text-zinc-400">{user.is_demo ? "DEMO" : user.display_name || user.email}</span>
                         <span className="text-green-600 font-bold tabular-nums">{clock}</span>
                     </div>
                 </header>
@@ -221,13 +223,13 @@ export default function CommandCentre() {
                 </main>
 
                 {/* Status bar */}
-                <footer className="flex-shrink-0 border-t border-zinc-900 bg-[#030303] px-4 py-1 flex items-center gap-6 text-xs text-zinc-700">
-                    <span><span className="text-green-700">●</span> DB CONNECTED</span>
-                    <span>WORKSPACES: <span className="text-zinc-500">{workspaces.length}</span></span>
-                    <span>OPEN TASKS: <span className="text-yellow-700">{pendingTasks.length}</span></span>
-                    <span>MEETINGS: <span className="text-zinc-500">{meetings.length}</span></span>
+                <footer className="flex-shrink-0 border-t border-zinc-900 bg-[#030303] px-4 py-1.5 flex items-center gap-6 text-xs text-zinc-500">
+                    <span><span className="text-green-600">●</span> DB CONNECTED</span>
+                    <span>WORKSPACES: <span className="text-zinc-400">{workspaces.length}</span></span>
+                    <span>OPEN TASKS: <span className="text-yellow-600">{pendingTasks.length}</span></span>
+                    <span>MEETINGS: <span className="text-zinc-400">{meetings.length}</span></span>
                     <div className="flex-1" />
-                    <span className="text-zinc-800">CommunitAI v1.0 · DigitalOcean Gradient AI</span>
+                    <span className="text-zinc-600">CommunitAI v1.0 · DigitalOcean Gradient AI</span>
                 </footer>
             </div>
 

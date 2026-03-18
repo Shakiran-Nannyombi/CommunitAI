@@ -1,12 +1,5 @@
 import Link from "next/link";
-
-const TEAM = [
-    {
-        name: "CommunitAI",
-        role: "DigitalOcean Hackathon Project",
-        bio: "Built to solve a real problem: community leaders drowning in meeting notes, scattered action items, and missed follow-ups.",
-    },
-];
+import { LogoFull } from "@/components/Logo";
 
 const STACK = [
     { label: "AI Inference", value: "DigitalOcean Gradient AI (llama3.3-70b-instruct)" },
@@ -17,11 +10,13 @@ const STACK = [
     { label: "Auth", value: "JWT + bcrypt" },
 ];
 
+const NAV_LINK: React.CSSProperties = { fontSize: "14px", color: "#6b7280", textDecoration: "none", fontWeight: 500 };
+
 export default function AboutPage() {
     return (
         <div style={{ minHeight: "100dvh", background: "#fff" }}>
 
-            {/* ── Nav ── */}
+            {/* Nav */}
             <nav style={{
                 position: "sticky", top: 0, zIndex: 50,
                 borderBottom: "1px solid #e5e7eb",
@@ -29,14 +24,14 @@ export default function AboutPage() {
                 backdropFilter: "blur(8px)",
                 padding: "0 24px",
                 display: "flex", alignItems: "center", justifyContent: "space-between",
-                height: "60px",
+                height: "64px",
             }}>
-                <Link href="/home" style={{ fontWeight: 800, fontSize: "18px", letterSpacing: "0.05em", color: "#111", textDecoration: "none" }}>
-                    Communit<span style={{ color: "#16a34a" }}>AI</span>
+                <Link href="/home" style={{ textDecoration: "none" }}>
+                    <LogoFull size={28} variant="light" />
                 </Link>
                 <div style={{ display: "flex", alignItems: "center", gap: "24px" }}>
-                    <Link href="/home" style={{ fontSize: "14px", color: "#6b7280", textDecoration: "none", fontWeight: 500 }}>Home</Link>
-                    <Link href="/login" style={{ fontSize: "14px", color: "#6b7280", textDecoration: "none", fontWeight: 500 }}>Sign In</Link>
+                    <Link href="/home" style={NAV_LINK}>Home</Link>
+                    <Link href="/login" style={NAV_LINK}>Sign In</Link>
                     <Link href="/login" style={{
                         fontSize: "14px", fontWeight: 600, color: "#fff",
                         background: "#16a34a", borderRadius: "6px",
@@ -45,7 +40,7 @@ export default function AboutPage() {
                 </div>
             </nav>
 
-            {/* ── Hero ── */}
+            {/* Hero */}
             <section style={{ maxWidth: "720px", margin: "0 auto", padding: "80px 24px 60px", textAlign: "center" }}>
                 <h1 style={{ fontSize: "clamp(32px, 5vw, 52px)", fontWeight: 800, color: "#111", marginBottom: "20px", letterSpacing: "-0.02em" }}>
                     About CommunitAI
@@ -55,7 +50,7 @@ export default function AboutPage() {
                 </p>
             </section>
 
-            {/* ── The problem ── */}
+            {/* The problem */}
             <section style={{ background: "#f9fafb", padding: "60px 24px" }}>
                 <div style={{ maxWidth: "720px", margin: "0 auto" }}>
                     <h2 style={{ fontSize: "26px", fontWeight: 800, color: "#111", marginBottom: "20px" }}>The problem we&apos;re solving</h2>
@@ -75,7 +70,7 @@ export default function AboutPage() {
                 </div>
             </section>
 
-            {/* ── Our solution ── */}
+            {/* Our solution */}
             <section style={{ maxWidth: "720px", margin: "0 auto", padding: "60px 24px" }}>
                 <h2 style={{ fontSize: "26px", fontWeight: 800, color: "#111", marginBottom: "20px" }}>Our solution</h2>
                 <p style={{ fontSize: "15px", color: "#374151", lineHeight: 1.8, marginBottom: "16px" }}>
@@ -89,7 +84,7 @@ export default function AboutPage() {
                 </p>
             </section>
 
-            {/* ── Tech stack ── */}
+            {/* Tech stack */}
             <section style={{ background: "#f9fafb", padding: "60px 24px" }}>
                 <div style={{ maxWidth: "720px", margin: "0 auto" }}>
                     <h2 style={{ fontSize: "26px", fontWeight: 800, color: "#111", marginBottom: "32px" }}>Built with</h2>
@@ -108,12 +103,9 @@ export default function AboutPage() {
                 </div>
             </section>
 
-            {/* ── Hackathon note ── */}
+            {/* Hackathon note */}
             <section style={{ maxWidth: "720px", margin: "0 auto", padding: "60px 24px" }}>
-                <div style={{
-                    border: "1px solid #bbf7d0", borderRadius: "10px",
-                    background: "#f0fdf4", padding: "32px",
-                }}>
+                <div style={{ border: "1px solid #bbf7d0", borderRadius: "10px", background: "#f0fdf4", padding: "32px" }}>
                     <div style={{ fontSize: "24px", marginBottom: "12px" }}>🏆</div>
                     <h3 style={{ fontSize: "18px", fontWeight: 700, color: "#111", marginBottom: "10px" }}>DigitalOcean Hackathon 2026</h3>
                     <p style={{ fontSize: "14px", color: "#374151", lineHeight: 1.7 }}>
@@ -122,11 +114,9 @@ export default function AboutPage() {
                 </div>
             </section>
 
-            {/* ── CTA ── */}
+            {/* CTA */}
             <section style={{ padding: "60px 24px 80px", textAlign: "center" }}>
-                <h2 style={{ fontSize: "28px", fontWeight: 800, color: "#111", marginBottom: "16px" }}>
-                    Try it yourself
-                </h2>
+                <h2 style={{ fontSize: "28px", fontWeight: 800, color: "#111", marginBottom: "16px" }}>Try it yourself</h2>
                 <p style={{ fontSize: "15px", color: "#6b7280", marginBottom: "28px" }}>
                     Use the demo account to explore with pre-loaded meetings and tasks.
                 </p>
@@ -134,18 +124,18 @@ export default function AboutPage() {
                     fontSize: "15px", fontWeight: 700, color: "#fff",
                     background: "#16a34a", borderRadius: "8px",
                     padding: "14px 36px", textDecoration: "none",
-                    boxShadow: "0 4px 14px rgba(22,163,74,0.3)",
+                    boxShadow: "0 4px 14px rgba(22,163,74,0.25)",
+                    display: "inline-block",
                 }}>
                     Open the demo →
                 </Link>
             </section>
 
-            {/* ── Footer ── */}
+            {/* Footer */}
             <footer style={{
                 borderTop: "1px solid #e5e7eb", padding: "24px",
                 display: "flex", justifyContent: "space-between", alignItems: "center",
-                flexWrap: "wrap", gap: "12px",
-                fontSize: "13px", color: "#9ca3af",
+                flexWrap: "wrap", gap: "12px", fontSize: "13px", color: "#9ca3af",
                 maxWidth: "1000px", margin: "0 auto",
             }}>
                 <span>© 2026 CommunitAI · Built for DigitalOcean Hackathon</span>
