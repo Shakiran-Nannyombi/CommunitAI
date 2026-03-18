@@ -6,7 +6,7 @@ import { motion, useScroll, useTransform } from "framer-motion";
 import { useEffect, useRef, useState } from "react";
 import {
     Moon, Sun, Mic, Zap, CheckSquare, MessageSquare,
-    LayoutDashboard, BarChart3, ArrowRight, Play, Sparkles,
+    LayoutDashboard, BarChart3, ArrowRight, Play,
     Users, Clock, TrendingUp, Shield
 } from "lucide-react";
 import { BackgroundBeams } from "@/components/BackgroundBeams";
@@ -75,7 +75,7 @@ export default function LandingPage() {
     }
 
     return (
-        <div className="min-h-dvh bg-background text-text overflow-x-hidden antialiased">
+        <div className="min-h-dvh bg-background text-text antialiased">
 
             {/* Ambient glow */}
             <div aria-hidden className="pointer-events-none fixed inset-0 overflow-hidden">
@@ -104,14 +104,7 @@ export default function LandingPage() {
             {/* Hero */}
             <section ref={heroRef} className="relative overflow-hidden max-w-5xl mx-auto px-6 pt-28 pb-16 text-center">
                 <BackgroundBeams className="opacity-25" />
-                <motion.div style={{ y: heroY }}>
-                    <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} transition={{ duration: 0.5 }}>
-                        <div className="inline-flex items-center gap-2 rounded-full px-4 py-1.5 mb-8 text-[11px] font-bold uppercase tracking-widest" style={{ background: "rgba(66,174,68,0.1)", border: "1px solid rgba(66,174,68,0.25)", color: "var(--color-accent)" }}>
-                            <Sparkles className="w-3 h-3" />
-                            Powered by DigitalOcean Gradient AI
-                        </div>
-                    </motion.div>
-
+                <motion.div style={{ y: heroY }} className="relative z-10">
                     <motion.h1
                         initial={{ opacity: 0, y: 28 }} animate={{ opacity: 1, y: 0 }}
                         transition={{ delay: 0.1, duration: 0.7, ease: [0.16, 1, 0.3, 1] as any }}

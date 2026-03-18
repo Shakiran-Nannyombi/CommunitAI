@@ -4,8 +4,8 @@ import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { login, register, demoLogin, saveAuth } from "@/lib/api";
 import { LogoMark } from "@/components/Logo";
-import { 
-    Mail, Lock, ArrowRight, CheckCircle2, 
+import {
+    Mail, Lock, ArrowRight, CheckCircle2,
     Rocket, Sun, Moon, Home as HomeIcon
 } from "lucide-react";
 import Link from "next/link";
@@ -30,6 +30,12 @@ export default function AuthPage() {
         } else if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
             setTheme("dark");
             document.documentElement.classList.add("dark");
+        }
+
+        // Auto-trigger demo login if ?demo=1
+        const params = new URLSearchParams(window.location.search);
+        if (params.get("demo") === "1") {
+            handleDemo();
         }
     }, []);
 
@@ -73,14 +79,14 @@ export default function AuthPage() {
                     <Link href="/" className="p-2.5 bg-text/5 hover:bg-text/10 border border-text/5 rounded-xl transition-all group">
                         <HomeIcon className="w-4 h-4 text-text/40 group-hover:text-text transition-colors" />
                     </Link>
-                    <button 
+                    <button
                         onClick={() => setMode(mode === "login" ? "register" : "login")}
                         className="text-[9px] font-black uppercase tracking-[0.2em] text-text/30 hover:text-text transition-colors"
                     >
                         {mode === "login" ? "Create Account" : "Sign In"}
                     </button>
                 </div>
-                <button 
+                <button
                     onClick={toggleTheme}
                     className="p-2.5 bg-text/5 hover:bg-text/10 border border-text/5 rounded-xl transition-all group pointer-events-auto"
                 >
@@ -100,11 +106,11 @@ export default function AuthPage() {
                             <LogoMark size={40} className="hover:rotate-12 transition-transform duration-500" />
                             <span className="text-2xl font-black tracking-tighter text-text uppercase">CommunitAI</span>
                         </Link>
-                        
+
                         <div className="space-y-8">
                             <h2 className="text-6xl font-black leading-[1.05] tracking-tighter text-text">
-                                Focus on <br/>
-                                <span className="text-accent underline decoration-accent/10 underline-offset-12 decoration-12">Leading</span> <br/>
+                                Focus on <br />
+                                <span className="text-accent underline decoration-accent/10 underline-offset-12 decoration-12">Leading</span> <br />
                                 <span className="text-text/20 italic">Not Managing.</span>
                             </h2>
                             <p className="text-xl text-text/40 max-w-sm font-medium leading-relaxed tracking-tight">
@@ -125,8 +131,8 @@ export default function AuthPage() {
                                 {mode === "login" ? "Welcome back" : "Create Account"}
                             </h3>
                             <p className="text-base text-text/40 font-medium tracking-tight">
-                                {mode === "login" 
-                                    ? "Access your dashboard to continue leading." 
+                                {mode === "login"
+                                    ? "Access your dashboard to continue leading."
                                     : "Start your journey with CommunitAI today."}
                             </p>
                         </div>
@@ -136,7 +142,7 @@ export default function AuthPage() {
                                 <label className="text-[9px] font-black uppercase tracking-[0.2em] text-text/20 ml-1">Full Identity</label>
                                 <div className="relative">
                                     <CheckCircle2 className="absolute left-6 top-1/2 -translate-y-1/2 w-4 h-4 text-text/20" />
-                                    <input 
+                                    <input
                                         value={name} onChange={e => setName(e.target.value)}
                                         placeholder="Enter your name" required={mode === 'register'}
                                         className="w-full bg-text/3 border border-text/5 rounded-2xl pl-14 pr-6 py-4 text-sm font-bold focus:outline-none focus:ring-4 focus:ring-accent/5 focus:border-accent/40 transition-all placeholder:text-text/10"
@@ -148,7 +154,7 @@ export default function AuthPage() {
                                 <label className="text-[9px] font-black uppercase tracking-[0.2em] text-text/20 ml-1">Work Protocol / Email</label>
                                 <div className="group relative">
                                     <Mail className="absolute left-6 top-1/2 -translate-y-1/2 w-4 h-4 text-text/20 group-focus-within:text-accent transition-colors" />
-                                    <input 
+                                    <input
                                         type="email" value={email} onChange={e => setEmail(e.target.value)}
                                         placeholder="name@community.io" required
                                         className="w-full bg-text/3 border border-text/5 rounded-2xl pl-14 pr-6 py-4 text-sm font-bold focus:outline-none focus:ring-4 focus:ring-accent/5 focus:border-accent/40 transition-all placeholder:text-text/10"
@@ -165,7 +171,7 @@ export default function AuthPage() {
                                 </div>
                                 <div className="group relative">
                                     <Lock className="absolute left-6 top-1/2 -translate-y-1/2 w-4 h-4 text-text/20 group-focus-within:text-accent transition-colors" />
-                                    <input 
+                                    <input
                                         type="password" value={password} onChange={e => setPassword(e.target.value)}
                                         placeholder="••••••••" required minLength={6}
                                         className="w-full bg-text/3 border border-text/5 rounded-2xl pl-14 pr-6 py-4 text-sm font-bold focus:outline-none focus:ring-4 focus:ring-accent/5 focus:border-accent/40 transition-all placeholder:text-text/10"
@@ -179,7 +185,7 @@ export default function AuthPage() {
                                 </div>
                             )}
 
-                            <button 
+                            <button
                                 type="submit" disabled={loading}
                                 className="w-full bg-accent hover:bg-accent/90 text-background font-black py-4 rounded-2xl shadow-xl shadow-accent/20 hover:-translate-y-1 active:scale-95 transition-all flex items-center justify-center gap-3 group uppercase tracking-widest text-[10px]"
                             >
@@ -189,7 +195,7 @@ export default function AuthPage() {
                         </form>
 
                         <div className="pt-10 border-t border-text/5 text-center mt-10">
-                            <button 
+                            <button
                                 onClick={() => setMode(mode === "login" ? "register" : "login")}
                                 className="inline-flex items-center gap-2 text-xs font-black text-accent hover:text-accent/80 transition-all uppercase tracking-widest px-6 py-2.5 rounded-full bg-accent/5 border border-accent/10 hover:border-accent/30"
                             >
@@ -203,7 +209,7 @@ export default function AuthPage() {
 
             {/* Try Demo Button */}
             {!loading && (
-                <button 
+                <button
                     onClick={handleDemo}
                     className="fixed bottom-6 right-6 lg:bottom-10 lg:right-10 bg-text text-background px-6 py-3 rounded-xl text-[9px] font-black uppercase tracking-[0.2em] hover:bg-accent hover:scale-105 transition-all flex items-center gap-2 shadow-xl z-50 group border border-background/20"
                 >
