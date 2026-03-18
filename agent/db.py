@@ -20,6 +20,9 @@ SessionLocal = async_sessionmaker(
     autocommit=False,
 )
 
+# Alias for backwards compatibility
+AsyncSessionLocal = SessionLocal
+
 
 class Base(DeclarativeBase):
     """Shared declarative base for agent ORM models."""
