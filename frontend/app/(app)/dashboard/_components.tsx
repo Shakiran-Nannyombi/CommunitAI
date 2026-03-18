@@ -80,7 +80,7 @@ export function UploadForm({ title, setTitle, file, setFile, uploading, uploadEr
                         {file ? <FileAudio className="w-4 h-4 text-accent" /> : <Paperclip className="w-4 h-4 text-text/40 group-hover:text-text/60" />}
                         <span className="truncate font-medium">{file ? file.name : "Choose audio file…"}</span>
                     </div>
-                    <input type="file" accept="audio/mpeg,audio/wav,audio/mp4,audio/x-m4a"
+                    <input type="file" accept="audio/mpeg,audio/wav,audio/mp4,audio/x-m4a,audio/aac,audio/x-aac"
                         onChange={e => setFile(e.target.files?.[0] ?? null)} className="hidden" required />
                 </label>
                 <button type="submit" disabled={uploading}

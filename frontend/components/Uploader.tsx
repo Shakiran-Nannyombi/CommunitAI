@@ -7,14 +7,16 @@ const ALLOWED_MIME = new Set([
     "audio/wav",
     "audio/mp4",
     "audio/x-m4a",
+    "audio/aac",
+    "audio/x-aac",
 ]);
-const ALLOWED_EXT = new Set([".mp3", ".wav", ".m4a"]);
+const ALLOWED_EXT = new Set([".mp3", ".wav", ".m4a", ".aac"]);
 const MAX_BYTES = 500 * 1024 * 1024; // 500 MB
 
 export function validateAudioFile(file: File): string | null {
     const ext = "." + file.name.split(".").pop()?.toLowerCase();
     if (!ALLOWED_MIME.has(file.type) && !ALLOWED_EXT.has(ext)) {
-        return "Unsupported format. Please upload an MP3, WAV, or M4A file.";
+        return "Unsupported format. Please upload an MP3, WAV, M4A, or AAC file.";
     }
     if (file.size > MAX_BYTES) {
         return "File exceeds the 500 MB limit. Please compress or trim the recording.";
@@ -83,7 +85,7 @@ export default function Uploader({ meetingId, onUploadComplete }: UploaderProps)
             <input
                 ref={inputRef}
                 type="file"
-                accept=".mp3,.wav,.m4a"
+                accept=".mp3,.wav,.m4a,.aac"
                 onChange={handleChange}
                 className="text-sm text-gray-700"
             />
