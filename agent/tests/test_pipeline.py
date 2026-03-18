@@ -33,11 +33,9 @@ _db_stub.AsyncSessionLocal = None
 _db_stub.update_meeting_status = None
 sys.modules["agent.db"] = _db_stub
 
-_gradient_stub = types.ModuleType("gradient_ai")
-_gradient_adk_stub = types.ModuleType("gradient_ai.adk")
-_gradient_adk_stub.entrypoint = lambda fn: fn
-sys.modules["gradient_ai"] = _gradient_stub
-sys.modules["gradient_ai.adk"] = _gradient_adk_stub
+_gradient_stub = types.ModuleType("gradient_adk")
+_gradient_stub.entrypoint = lambda fn: fn
+sys.modules["gradient_adk"] = _gradient_stub
 
 import agent.agent  # noqa: E402  (must come after stubs)
 

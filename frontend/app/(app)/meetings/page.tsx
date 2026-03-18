@@ -2,12 +2,12 @@
 
 import { useEffect, useState, useCallback } from "react";
 import { useRouter } from "next/navigation";
-import { 
+import {
     getMeetings, loadAuth, uploadAudio, createMeeting,
-    type MeetingListItem, type AuthUser 
+    type MeetingListItem, type AuthUser
 } from "@/lib/api";
-import { 
-    Mic, Search, Filter, Upload, MoreVertical, 
+import {
+    Mic, Search, Filter, Upload, MoreVertical,
     Calendar, Clock, ChevronRight, ChevronLeft,
     AlertCircle, CheckCircle2, Loader2, Play
 } from "lucide-react";
@@ -71,7 +71,7 @@ export default function MeetingsLibrary() {
                             </p>
                         </div>
                     </div>
-                    <button className="flex items-center gap-3 px-8 py-4 bg-accent text-background font-black rounded-2xl hover:scale-[1.02] active:scale-95 transition-all shadow-xl shadow-accent/20">
+                    <button onClick={() => router.push("/record")} className="flex items-center gap-3 px-8 py-4 bg-accent text-background font-black rounded-2xl hover:scale-[1.02] active:scale-95 transition-all shadow-xl shadow-accent/20">
                         <Upload className="w-5 h-5" />
                         Upload a Recording
                     </button>
@@ -83,8 +83,8 @@ export default function MeetingsLibrary() {
                 <div className="max-w-7xl mx-auto flex flex-col lg:flex-row gap-4">
                     <div className="relative flex-1 group">
                         <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-text/20 group-focus-within:text-accent transition-colors" />
-                        <input 
-                            type="text" 
+                        <input
+                            type="text"
                             placeholder="Search by title, sentiment, or speaker..."
                             value={search}
                             onChange={(e) => setSearch(e.target.value)}
@@ -93,14 +93,13 @@ export default function MeetingsLibrary() {
                     </div>
                     <div className="flex gap-2 h-14">
                         {["all", "complete", "processing", "pending"].map(f => (
-                            <button 
+                            <button
                                 key={f}
                                 onClick={() => setFilter(f)}
-                                className={`px-6 rounded-2xl text-[10px] font-black uppercase tracking-widest transition-all border ${
-                                    filter === f 
-                                        ? "bg-accent text-background border-accent shadow-lg shadow-accent/10" 
-                                        : "bg-background text-text/40 border-text/10 hover:border-text/30 hover:text-text/60"
-                                }`}
+                                className={`px-6 rounded-2xl text-[10px] font-black uppercase tracking-widest transition-all border ${filter === f
+                                    ? "bg-accent text-background border-accent shadow-lg shadow-accent/10"
+                                    : "bg-background text-text/40 border-text/10 hover:border-text/30 hover:text-text/60"
+                                    }`}
                             >
                                 {f}
                             </button>
@@ -126,7 +125,7 @@ export default function MeetingsLibrary() {
                                 <h2 className="text-2xl font-black text-text">No recordings yet</h2>
                                 <p className="text-text/40 font-medium max-w-sm mx-auto mt-2">Start capturing your meetings and let CommunitAI help you uncover hidden insights.</p>
                             </div>
-                            <button className="bg-accent text-background font-black px-8 py-4 rounded-2xl shadow-xl shadow-accent/20 hover:scale-105 transition-transform">
+                            <button onClick={() => router.push("/workspaces/new")} className="bg-accent text-background font-black px-8 py-4 rounded-2xl shadow-xl shadow-accent/20 hover:scale-105 transition-transform">
                                 Create First Workspace
                             </button>
                         </div>
@@ -136,7 +135,7 @@ export default function MeetingsLibrary() {
                                 const StatusIcon = STATUS_CONFIG[m.status]?.icon || AlertCircle;
                                 const statusColor = STATUS_CONFIG[m.status]?.color || "text-text/40";
                                 const statusBg = STATUS_CONFIG[m.status]?.bg || "bg-text/5";
-                                
+
                                 return (
                                     <Link key={m.id} href={`/meetings/${m.id}`} className="group bg-background border border-text/10 rounded-4xl p-6 hover:border-accent/40 hover:shadow-[0_24px_48px_-12px_rgba(0,0,0,0.08)] transition-all duration-500 flex flex-col group">
                                         <div className="flex justify-between items-start mb-6">

@@ -144,9 +144,8 @@ export default function CommandCentre() {
                             <button
                                 key={link.id}
                                 onClick={() => setTab(link.id)}
-                                className={`text-[12px] font-black uppercase tracking-widest transition-all ${
-                                    tab === link.id ? "text-accent" : "text-text/40 hover:text-text"
-                                }`}
+                                className={`text-[12px] font-black uppercase tracking-widest transition-all ${tab === link.id ? "text-accent" : "text-text/40 hover:text-text"
+                                    }`}
                             >
                                 {link.label.split('(')[0].trim()}
                             </button>
@@ -169,10 +168,7 @@ export default function CommandCentre() {
                 <div className="md:hidden shrink-0 px-6 py-6 border-b border-text/5 flex items-center justify-between">
                     <div className="flex items-center gap-4">
                         <div className="w-12 h-12 rounded-2xl bg-accent/10 border border-accent/20 flex items-center justify-center">
-                            {(() => {
-                                const Icon = navLinks.find(t => t.id === tab)?.icon.type || LayoutDashboard;
-                                return <Icon className="w-6 h-6 text-accent" />;
-                            })()}
+                            <LayoutDashboard className="w-6 h-6 text-accent" />
                         </div>
                         <div>
                             <h1 className="text-xl font-bold text-text tracking-tight capitalize">

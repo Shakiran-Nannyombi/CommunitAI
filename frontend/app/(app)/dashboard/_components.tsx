@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { type Workspace, type MeetingListItem, type GlobalActionItem } from "@/lib/api";
 import {
     LayoutDashboard,
@@ -31,7 +32,7 @@ const STATUS_CONFIG: Record<string, { color: string; bg: string; label: string }
 
 function StatusBadge({ status }: { status: string }) {
     const cfg = STATUS_CONFIG[status] ?? { color: "text-zinc-400", bg: "bg-zinc-500/10 border-zinc-500/20", label: status };
-    
+
     // Stitch style badges for specific states
     if (status === "complete") {
         return (
@@ -106,6 +107,7 @@ export function OverviewTab({ workspaces, meetings, pendingTasks, onComplete, on
         uploading: boolean; uploadErr: string; onUpload: (e: React.FormEvent) => void;
         activeWs: Workspace | null;
     }) {
+    const router = useRouter();
     const recentMeetings = meetings.slice(0, 3);
     const completedCount = meetings.filter(m => m.status === "complete").length;
 
@@ -218,7 +220,7 @@ export function OverviewTab({ workspaces, meetings, pendingTasks, onComplete, on
                                 Join & Record
                             </button>
                         </div>
-                        
+
                         <div className="space-y-4">
                             <div className="flex items-center gap-4">
                                 <div className="flex h-14 w-14 flex-col items-center justify-center rounded-2xl bg-text/3 border border-text/5 shrink-0">
@@ -249,12 +251,16 @@ export function OverviewTab({ workspaces, meetings, pendingTasks, onComplete, on
                         <p className="text-[13px] text-text/40 font-bold leading-relaxed">Upload your first meeting recording or transcript to start getting AI-powered insights for your community.</p>
                     </div>
                     <div className="flex flex-col gap-4 w-full pt-2">
-                        <button className="flex items-center justify-center gap-2.5 rounded-2xl bg-accent px-8 py-3.5 font-black text-background shadow-xl shadow-accent/10 hover:shadow-accent/20 transition-all uppercase tracking-widest text-[11px]">
+                        <button
+                            onClick={() => router.push("/record")}
+                            className="flex items-center justify-center gap-2.5 rounded-2xl bg-accent px-8 py-3.5 font-black text-background shadow-xl shadow-accent/10 hover:shadow-accent/20 transition-all uppercase tracking-widest text-[11px]">
                             <FileAudio className="w-4 h-4" />
                             Upload a Recording
                         </button>
-                        <button className="rounded-2xl bg-text/3 px-8 py-3.5 font-black text-text/60 hover:text-text hover:bg-text/6 transition-all uppercase tracking-widest text-[11px] border border-text/5">
-                            Connect Calendar
+                        <button
+                            onClick={() => router.push("/workspaces/new")}
+                            className="rounded-2xl bg-text/3 px-8 py-3.5 font-black text-text/60 hover:text-text hover:bg-text/6 transition-all uppercase tracking-widest text-[11px] border border-text/5">
+                            Create a Workspace
                         </button>
                     </div>
                 </div>

@@ -12,12 +12,12 @@ from agent.steps.summarize import generate_summary
 logger = logging.getLogger(__name__)
 
 # Try to import the ADK entrypoint decorator; fall back to a no-op identity
-# decorator if gradient_ai.adk is not installed (e.g. in local dev / tests).
+# decorator if gradient_adk is not installed (e.g. in local dev / tests).
 try:
-    from gradient_ai.adk import entrypoint
+    from gradient_adk import entrypoint
 except ImportError:  # pragma: no cover
     def entrypoint(fn):  # type: ignore[misc]
-        """Identity decorator used when gradient_ai.adk is not available."""
+        """Identity decorator used when gradient_adk is not available."""
         return fn
 
 

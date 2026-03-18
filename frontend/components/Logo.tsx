@@ -31,8 +31,8 @@ export function LogoFull({
     size?: number;
     variant?: "dark" | "light";
 }) {
-    const textColor = variant === "dark" ? "var(--accent)" : "var(--text)";
-    const aiColor = variant === "dark" ? "var(--accent)" : "var(--primary)";
+    const textColor = variant === "dark" ? "var(--color-accent)" : "var(--color-text)";
+    const aiColor = variant === "dark" ? "var(--color-accent)" : "var(--color-primary)";
     const fontSize = Math.round(size * 0.56);
 
     return (

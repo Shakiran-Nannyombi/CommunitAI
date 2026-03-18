@@ -14,10 +14,40 @@ import {
     Settings,
     Grid,
     ChevronDown,
-    Search
+    Search,
+    Home,
+    Rocket,
+    Building2,
+    GraduationCap,
+    Trophy,
+    Users as UsersIcon,
+    Folder,
+    Briefcase,
+    Globe,
+    Activity
 } from "lucide-react";
 import { loadAuth, getWorkspaces, createWorkspace, clearAuth, type AuthUser, type Workspace } from "@/lib/api";
 import Link from "next/link";
+
+const ICON_MAP: Record<string, any> = {
+    "🏘️": Home,
+    "🚀": Rocket,
+    "🏢": Building2,
+    "🎓": GraduationCap,
+    "🏆": Trophy, // Added trophy for sports
+    "🏀": Trophy, 
+    "👥": UsersIcon,
+    "folder": Folder,
+    "work": Briefcase,
+    "globe": Globe,
+    "activity": Activity,
+    "default": Folder
+};
+
+function WorkspaceIcon({ emoji, className }: { emoji: string; className?: string }) {
+    const Icon = ICON_MAP[emoji] || ICON_MAP["default"];
+    return <Icon className={className} />;
+}
 
 function Sidebar({ 
     user, 
@@ -95,10 +125,12 @@ function Sidebar({
                         <Link 
                             key={ws.id}
                             href={`/workspaces/${ws.id}`}
-                            className="flex items-center gap-2 px-3 py-2 text-sm text-text/60 hover:text-text hover:bg-text/5 rounded-lg transition-colors group"
+                            className="flex items-center gap-2.5 px-3 py-2 text-sm text-text/60 hover:text-text hover:bg-text/5 rounded-xl transition-all group"
                         >
-                            <span className="text-base group-hover:scale-110 transition-transform">{ws.icon_emoji}</span>
-                            <span className="truncate">{ws.name}</span>
+                            <div className="w-7 h-7 rounded-lg bg-text/5 flex items-center justify-center group-hover:bg-accent/10 group-hover:text-accent transition-all">
+                                <WorkspaceIcon emoji={ws.icon_emoji} className="w-3.5 h-3.5" />
+                            </div>
+                            <span className="truncate font-medium">{ws.name}</span>
                         </Link>
                     ))}
                     </div>
@@ -198,6 +230,17 @@ function NavigationContent() {
     const [wsName, setWsName] = useState("");
     const [wsEmoji, setWsEmoji] = useState("🏘️");
 
+    const emojiOptions = [
+        { e: "🏘️", l: "Home" },
+        { e: "🚀", l: "Startup" },
+        { e: "🏢", l: "Org" },
+        { e: "🎓", l: "School" },
+        { e: "🏆", l: "Club" },
+        { e: "👥", l: "Team" },
+        { e: "work", l: "Work" },
+        { e: "globe", l: "Global" }
+    ];
+
     useEffect(() => {
         const auth = loadAuth();
         if (auth) {
@@ -289,13 +332,22 @@ function NavigationContent() {
                             <h2 className="text-base font-bold text-text">New Workspace</h2>
                             <p className="text-xs text-text/50 mt-1">Create a dedicated space for your community or team.</p>
                         </div>
-                        <div className="flex gap-3">
-                            <input value={wsEmoji} onChange={e => setWsEmoji(e.target.value)}
-                                maxLength={2}
-                                className="w-12 bg-text/5 border border-text/10 rounded-xl px-2 py-3 text-center text-xl focus:outline-none focus:ring-2 focus:ring-accent/20 focus:border-accent/40 transition-all duration-200" />
+                        <div className="space-y-4">
+                            <div className="grid grid-cols-4 gap-2">
+                                {emojiOptions.map(opt => (
+                                    <button 
+                                        key={opt.e} type="button" 
+                                        onClick={() => setWsEmoji(opt.e)}
+                                        className={`p-3 rounded-xl border flex flex-col items-center gap-1.5 transition-all ${wsEmoji === opt.e ? 'bg-accent/10 border-accent/40 text-accent' : 'bg-text/3 border-text/5 text-text/40 hover:border-text/10'}`}
+                                    >
+                                        <WorkspaceIcon emoji={opt.e} className="w-4 h-4" />
+                                        <span className="text-[7px] font-black uppercase tracking-widest">{opt.l}</span>
+                                    </button>
+                                ))}
+                            </div>
                             <input value={wsName} onChange={e => setWsName(e.target.value)}
-                                placeholder="Workspace name" required
-                                className="flex-1 bg-text/5 border border-text/10 rounded-xl px-4 py-3 text-sm text-text placeholder-text/30 focus:outline-none focus:ring-2 focus:ring-accent/20 focus:border-accent/40 transition-all duration-200" />
+                                placeholder="Workspace name (e.g. Marketing Team)" required
+                                className="w-full bg-text/5 border border-text/10 rounded-xl px-4 py-3 text-sm text-text placeholder-text/30 focus:outline-none focus:ring-2 focus:ring-accent/20 focus:border-accent/40 transition-all duration-200" />
                         </div>
                         <div className="flex gap-3 pt-2">
                             <button type="button" onClick={() => setShowWsForm(false)}
