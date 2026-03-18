@@ -3,7 +3,7 @@
 import { useEffect, useState, useCallback } from "react";
 import { useParams, useRouter } from "next/navigation";
 import {
-    getMeeting, completeActionItem, retryMeeting, generateNudge,
+    getMeeting, completeActionItem, retryMeeting, generateNudge, loadAuth,
     type MeetingDetail, type ActionItem,
 } from "@/lib/api";
 
@@ -41,6 +41,10 @@ export default function MeetingPage() {
     const [nudgeMsg, setNudgeMsg] = useState("");
     const [nudgeLoading, setNudgeLoading] = useState<string | null>(null);
     const [transcriptOpen, setTranscriptOpen] = useState(false);
+
+    useEffect(() => {
+        if (!loadAuth()) { router.replace("/login"); }
+    }, [router]);
 
     const load = useCallback(async () => {
         try {
