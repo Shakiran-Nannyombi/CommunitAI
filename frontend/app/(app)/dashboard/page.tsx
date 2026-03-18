@@ -1,29 +1,22 @@
 "use client";
 
 import { useEffect, useState, useCallback } from "react";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useRouter } from "next/navigation";
 import {
     getWorkspaces, createWorkspace, getMeetings, createMeeting, uploadAudio,
     getGlobalTasks, completeActionItem, generateNudge, clearAuth, loadAuth,
-    type Workspace, type GlobalActionItem, type AuthUser, MeetingListItem
+    type Workspace, type GlobalActionItem, type AuthUser,
 } from "@/lib/api";
 import { OverviewTab, TasksTab, MeetingsTab } from "./_components";
+import { Sidebar, SidebarBody, SidebarLink } from "@/components/ui/sidebar";
+import { LogoMark } from "@/components/Logo";
+import { motion } from "framer-motion";
 import {
-    Zap,
-    LayoutDashboard,
-    CheckSquare,
-    Mic,
-    Plus,
-    LogOut,
-    Loader2,
-    PlusCircle,
-    Sparkles,
-    Copy,
-    X
+    LayoutDashboard, CheckSquare, Mic, Plus, LogOut, Zap,
 } from "lucide-react";
+import { cn } from "@/lib/utils";
 
 const PROCESSING = new Set(["pending", "processing", "transcribed"]);
-
 type Tab = "overview" | "tasks" | "meetings";
 
 export default function CommandCentre() {
@@ -31,18 +24,11 @@ export default function CommandCentre() {
     const [user, setUser] = useState<AuthUser | null>(null);
     const [workspaces, setWorkspaces] = useState<Workspace[]>([]);
     const [activeWs, setActiveWs] = useState<Workspace | null>(null);
-    const searchParams = useSearchParams();
-    const tab = (searchParams.get("tab") as Tab) || "overview";
-
-    const setTab = useCallback((t: Tab) => {
-        const params = new URLSearchParams(searchParams);
-        params.set("tab", t);
-        router.push(`/dashboard?${params.toString()}`);
-    }, [router, searchParams]);
-
+    const [tab, setTab] = useState<Tab>("overview");
     const [meetings, setMeetings] = useState<MeetingListItem[]>([]);
     const [tasks, setTasks] = useState<GlobalActionItem[]>([]);
     const [loading, setLoading] = useState(true);
+    const [sidebarOpen, setSidebarOpen] = useState(false);
 
     const [title, setTitle] = useState("");
     const [file, setFile] = useState<File | null>(null);
@@ -50,7 +36,7 @@ export default function CommandCentre() {
     const [uploadErr, setUploadErr] = useState("");
 
     const [wsName, setWsName] = useState("");
-    const [wsEmoji, setWsEmoji] = useState("folder"); // Default icon name
+    const [wsEmoji, setWsEmoji] = useState("🏘️");
     const [showWsForm, setShowWsForm] = useState(false);
 
     const [nudgeMsg, setNudgeMsg] = useState("");
@@ -70,12 +56,26 @@ export default function CommandCentre() {
     }, []);
 
     const loadMeetings = useCallback(async (uid: string, wsId?: string) => {
-        const data = await getMeetings(uid, wsId);
-        setMeetings(data);
+        setMeetings(await getMeetings(uid, wsId));
     }, []);
 
     useEffect(() => { if (user) loadAll(user.user_id); }, [user, loadAll]);
     useEffect(() => { if (user) loadMeetings(user.user_id, activeWs?.id); }, [user, activeWs, loadMeetings]);
+
+    useEffect(() => {
+        if (!user) return;
+        const hasProcessing = meetings.some(m => PROCESSING.has(m.status));
+        if (!hasProcessing) return;
+        const t = setInterval(() => loadMeetings(user.user_id, activeWs?.id), 4000);
+        return () => clearInterval(t);
+    }, [meetings, user, activeWs, loadMeetings]);
+
+    function handleLogout() { clearAuth(); router.push("/home"); }
+
+    async function handleUpload(e: React.FormEvent) {
+        e.preventDefault();
+        if (!title.trim() || !file || !user) return;
+       Effect(() => { if (user) loadMeetings(user.user_id, activeWs?.id); }, [user, activeWs, loadMeetings]);
 
     useEffect(() => {
         if (!user) return;

@@ -60,7 +60,7 @@ export default function AuthPage() {
                 {/* Header */}
                 <div style={{ marginBottom: "40px", textAlign: "center" }}>
                     <div style={{ display: "flex", justifyContent: "center", marginBottom: "12px" }}>
-                        <LogoMark size={48} color="var(--accent)" />
+                        <LogoMark size={48} />
                     </div>
                     <p style={{ fontSize: "20px", letterSpacing: "0.3em", color: "var(--accent)", fontWeight: 800, textTransform: "uppercase" }}>
                         CommunitAI

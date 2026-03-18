@@ -137,15 +137,15 @@ body {
 }
 
 .app-root ::-webkit-scrollbar-track {
-    background: #000;
+    background: var(--background);
 }
 
 .app-root ::-webkit-scrollbar-thumb {
-    background: #18181b;
+    background: color-mix(in srgb, var(--text), transparent 90%);
 }
 
 .app-root ::-webkit-scrollbar-thumb:hover {
-    background: #27272a;
+    background: color-mix(in srgb, var(--text), transparent 80%);
 }
 
 /* ── Terminal panel ────────────────────────────────────────────────────────── */
@@ -214,9 +214,9 @@ body {
 
 /* ── Table row hover ───────────────────────────────────────────────────────── */
 .tr-hover:hover {
-    background: #0d0d0d;
+    background: color-mix(in srgb, var(--text), transparent 97%);
 }
 
 .tr-hover:hover td {
-    color: #a1a1aa;
+    color: var(--accent);
 }
