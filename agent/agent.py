@@ -56,7 +56,7 @@ async def _get_meeting_status(meeting_id: str) -> str:
 
 
 @entrypoint
-async def process_meeting(meeting_id: str) -> dict:
+async def process_meeting(meeting_id: str, audio_key: str | None = None, retry_from: str | None = None) -> dict:
     """Orchestrate the full AI processing pipeline for a meeting.
 
     Steps run sequentially: transcribe → extract_action_items →

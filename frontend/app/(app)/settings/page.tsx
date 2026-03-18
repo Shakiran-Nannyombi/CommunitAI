@@ -36,17 +36,18 @@ export default function SettingsPage() {
     if (loading || !user) return null;
 
     return (
-        <div className="flex-1 flex flex-col h-full bg-background overflow-y-auto px-6 lg:px-20 py-12">
-            <div className="max-w-4xl mx-auto w-full space-y-16">
+        <div className="flex-1 flex flex-col h-full bg-background overflow-y-auto px-16 lg:px-20 py-20 relative">
+            <div className="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] bg-accent/5 blur-[120px] rounded-full pointer-events-none" />
+            <div className="max-w-4xl mx-auto w-full space-y-24 relative z-10">
                 {/* Header */}
-                <div>
-                    <div className="flex items-center gap-3 mb-4">
-                        <div className="p-3 bg-accent/10 rounded-2xl text-accent">
+                <div className="space-y-6">
+                    <div className="flex items-center gap-6">
+                        <div className="p-4 bg-accent/10 border border-accent/20 rounded-3xl text-accent shadow-2xl shadow-accent/5">
                             <SettingsIcon className="w-8 h-8" />
                         </div>
-                        <h1 className="text-4xl font-black text-text tracking-tight">Settings</h1>
+                        <h1 className="text-5xl font-black text-text tracking-tighter">Settings</h1>
                     </div>
-                    <p className="text-xl text-text/50 font-medium">Manage your profile, integrations, and preferences.</p>
+                    <p className="text-xl text-text/40 font-semibold leading-relaxed">Manage your profile, integrations, and preferences.</p>
                 </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-12">
@@ -86,57 +87,57 @@ export default function SettingsPage() {
                     {/* Main Content */}
                     <div className="md:col-span-2 space-y-12">
                         {/* Profile Section */}
-                        <section className="space-y-8 animate-in fade-in slide-in-from-right-4 duration-500">
+                        <section className="glass-card rounded-4xl p-10 space-y-10 animate-in fade-in slide-in-from-right-4 duration-500">
                             <div className="flex items-center gap-6">
-                                <div className="w-24 h-24 rounded-4xl bg-accent/10 border-4 border-background ring-2 ring-accent/20 flex items-center justify-center text-4xl shadow-xl overflow-hidden relative group">
+                                <div className="w-24 h-24 rounded-4xl bg-accent/10 border-4 border-background ring-2 ring-accent/20 flex items-center justify-center text-4xl font-black shadow-xl overflow-hidden relative group">
                                     <div className="absolute inset-0 bg-accent/20 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center cursor-pointer backdrop-blur-sm">
                                         <Sparkles className="w-8 h-8 text-accent" />
                                     </div>
                                     {user.email[0].toUpperCase()}
                                 </div>
                                 <div>
-                                    <h3 className="text-2xl font-black text-text">Account Details</h3>
-                                    <p className="text-sm font-medium text-text/40">Update your public identity and email.</p>
+                                    <h3 className="text-2xl font-black text-text tracking-tight">Account Details</h3>
+                                    <p className="text-sm font-semibold text-text/40">Update your public identity and email.</p>
                                 </div>
                             </div>
 
                             <div className="space-y-6">
                                 <div className="space-y-2">
-                                    <label className="text-[10px] font-black uppercase tracking-widest text-text/40 ml-1">Full Name</label>
+                                    <label className="text-[10px] font-black uppercase tracking-[0.2em] text-text/30 ml-1">Full Name</label>
                                     <input 
                                         disabled
                                         defaultValue="Leader CommunitAI"
-                                        className="w-full bg-text/3 border border-text/5 rounded-2xl px-5 py-4 text-sm font-semibold text-text/60 cursor-not-allowed"
+                                        className="w-full bg-text/3 border border-text/5 rounded-2xl px-6 py-4 text-sm font-black text-text/60 cursor-not-allowed"
                                     />
                                 </div>
                                 <div className="space-y-2">
-                                    <label className="text-[10px] font-black uppercase tracking-widest text-text/40 ml-1">Work Email</label>
+                                    <label className="text-[10px] font-black uppercase tracking-[0.2em] text-text/30 ml-1">Work Email</label>
                                     <div className="relative">
-                                        <Mail className="absolute left-5 top-1/2 -translate-y-1/2 w-4 h-4 text-text/20" />
+                                        <Mail className="absolute left-6 top-1/2 -translate-y-1/2 w-4 h-4 text-text/20" />
                                         <input 
                                             disabled
                                             value={user.email}
-                                            className="w-full bg-text/3 border border-text/5 rounded-2xl pl-12 pr-5 py-4 text-sm font-semibold text-text/60 cursor-not-allowed"
+                                            className="w-full bg-text/3 border border-text/5 rounded-2xl pl-12 pr-6 py-4 text-sm font-black text-text/60 cursor-not-allowed"
                                         />
                                     </div>
                                 </div>
                             </div>
 
                             {/* Plan Highlight */}
-                            <div className="p-8 bg-accent/5 border border-accent/20 rounded-[2.5rem] relative overflow-hidden group">
-                                <div className="absolute top-0 right-0 p-6 opacity-[0.05] group-hover:scale-125 transition-transform duration-700">
-                                    <ShieldCheck className="w-24 h-24 text-accent" />
+                            <div className="p-10 bg-accent/5 border border-accent/20 rounded-4xl relative overflow-hidden group">
+                                <div className="absolute top-0 right-0 p-8 opacity-[0.05] group-hover:scale-125 transition-transform duration-700">
+                                    <ShieldCheck className="w-32 h-32 text-accent" />
                                 </div>
                                 <div className="relative z-10 flex items-center justify-between">
                                     <div>
-                                        <div className="flex items-center gap-2 mb-2">
-                                            <span className="px-2 py-0.5 bg-accent text-background text-[8px] font-black uppercase tracking-widest rounded-full">PRO PLAN</span>
-                                            <span className="text-[10px] font-bold text-accent uppercase tracking-widest">Active</span>
+                                        <div className="flex items-center gap-3 mb-2">
+                                            <span className="px-3 py-1 bg-accent text-background text-[8px] font-black uppercase tracking-[0.2em] rounded-full">PRO PLAN</span>
+                                            <span className="text-[10px] font-black text-accent uppercase tracking-widest">Active</span>
                                         </div>
-                                        <h4 className="text-xl font-black text-text">Strategic Leadership</h4>
-                                        <p className="text-sm font-medium text-text/40 mt-1">Unlimited workspaces and AI memory.</p>
+                                        <h4 className="text-2xl font-black text-text tracking-tight">Strategic Leadership</h4>
+                                        <p className="text-sm font-semibold text-text/40 mt-1">Unlimited workspaces and AI memory.</p>
                                     </div>
-                                    <button className="px-6 py-3 bg-text text-background rounded-xl text-[10px] font-black uppercase tracking-widest shadow-xl shadow-text/5 hover:scale-105 transition-transform">Manage</button>
+                                    <button className="px-8 py-4 bg-text text-background rounded-2xl text-[10px] font-black uppercase tracking-widest shadow-2xl shadow-text/10 hover:scale-105 transition-transform">Manage</button>
                                 </div>
                             </div>
                         </section>
@@ -144,24 +145,24 @@ export default function SettingsPage() {
                         <div className="h-px bg-text/5 w-full"></div>
 
                         {/* Integrations Preview */}
-                        <section className="space-y-6">
-                            <h3 className="text-xl font-black text-text">Quick Integrations</h3>
-                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        <section className="glass-card rounded-4xl p-10 space-y-8">
+                            <h3 className="text-2xl font-black text-text tracking-tight">Quick Integrations</h3>
+                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
                                 {[
                                     { name: "Slack", icon: Slack, status: "Connected", color: "text-purple-400" },
                                     { name: "GitHub", icon: Github, status: "Available", color: "text-text/40" },
                                 ].map(app => (
-                                    <div key={app.name} className="p-5 border border-text/10 rounded-3xl flex items-center justify-between hover:border-accent/30 transition-all cursor-pointer group">
+                                    <div key={app.name} className="p-6 border border-text/5 rounded-3xl flex items-center justify-between hover:border-accent/30 transition-all duration-500 cursor-pointer group bg-text/2">
                                         <div className="flex items-center gap-4">
-                                            <div className="p-3 bg-text/5 rounded-2xl group-hover:bg-accent/10 transition-colors">
-                                                <app.icon className={`w-5 h-5 ${app.color}`} />
+                                            <div className="p-4 bg-background rounded-2xl group-hover:bg-accent/10 transition-colors shadow-sm">
+                                                <app.icon className={`w-6 h-6 ${app.color}`} />
                                             </div>
                                             <div>
-                                                <p className="text-sm font-black text-text">{app.name}</p>
-                                                <p className="text-[9px] font-bold text-text/30 uppercase tracking-widest">{app.status}</p>
+                                                <p className="text-base font-black text-text">{app.name}</p>
+                                                <p className="text-[9px] font-black text-text/30 uppercase tracking-[0.2em]">{app.status}</p>
                                             </div>
                                         </div>
-                                        <ChevronRight className="w-4 h-4 text-text/10 group-hover:text-accent transition-colors" />
+                                        <ChevronRight className="w-6 h-6 text-text/10 group-hover:text-accent transition-all transform group-hover:translate-x-1" />
                                     </div>
                                 ))}
                             </div>

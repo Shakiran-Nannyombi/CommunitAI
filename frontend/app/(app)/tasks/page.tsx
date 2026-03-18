@@ -71,28 +71,31 @@ export default function TasksPage() {
     );
 
     return (
-        <div className="flex-1 flex flex-col h-full bg-background overflow-hidden">
+        <div className="flex-1 flex flex-col h-full bg-background overflow-hidden relative">
+            {/* Background Glows */}
+            <div className="absolute top-[-10%] right-[-10%] w-[40%] h-[40%] bg-accent/5 blur-[120px] rounded-full pointer-events-none" />
+            <div className="absolute bottom-[-10%] left-[-10%] w-[30%] h-[30%] bg-accent/5 blur-[100px] rounded-full pointer-events-none" />
             {/* Header */}
-            <header className="shrink-0 px-10 py-10 border-b border-text/5 bg-background/50 backdrop-blur-md">
-                <div className="max-w-7xl mx-auto flex flex-col md:flex-row md:items-end justify-between gap-8">
-                    <div>
-                        <div className="flex items-center gap-3 mb-4">
-                            <div className="w-12 h-12 bg-accent/10 rounded-2xl flex items-center justify-center text-accent">
-                                <CheckCircle2 className="w-6 h-6" />
+            <header className="shrink-0 px-16 lg:px-20 py-16 bg-background/50 backdrop-blur-xl relative z-10">
+                <div className="max-w-7xl mx-auto flex flex-col md:flex-row md:items-end justify-between gap-12">
+                    <div className="space-y-6">
+                        <div className="flex items-center gap-6">
+                            <div className="w-16 h-16 bg-accent/10 border border-accent/20 rounded-3xl flex items-center justify-center text-accent shadow-2xl shadow-accent/5">
+                                <CheckCircle2 className="w-8 h-8" />
                             </div>
-                            <h1 className="text-4xl font-black text-text tracking-tight">Team Tasks</h1>
+                            <h1 className="text-5xl font-black text-text tracking-tighter">Team Tasks</h1>
                         </div>
-                        <p className="text-lg text-text/40 font-medium">Coordinate initiatives and eliminate blockers across all meetings.</p>
+                        <p className="text-xl text-text/40 font-semibold max-w-2xl leading-relaxed">Coordinate initiatives and eliminate blockers across all workspace intelligence streams.</p>
                     </div>
 
-                    <div className="flex items-center gap-2 p-1.5 bg-text/3 border border-text/5 rounded-3xl">
+                    <div className="flex items-center gap-2 p-2 bg-text/3 border border-text/5 rounded-4xl">
                         {(["pending", "completed", "all"] as const).map(f => (
                             <button 
                                 key={f} 
                                 onClick={() => setFilter(f)}
-                                className={`px-6 py-2.5 rounded-[1.2rem] text-[10px] font-black uppercase tracking-widest transition-all ${
+                                className={`px-8 py-3 rounded-3xl text-[10px] font-black uppercase tracking-[0.2em] transition-all duration-500 ${
                                     filter === f 
-                                        ? "bg-background text-text shadow-sm border border-text/10" 
+                                        ? "bg-background text-text shadow-xl border border-text/10" 
                                         : "text-text/30 hover:text-text/60"
                                 }`}
                             >
@@ -104,8 +107,8 @@ export default function TasksPage() {
             </header>
 
             {/* Content Area */}
-            <main className="flex-1 overflow-y-auto custom-scrollbar">
-                <div className="max-w-7xl mx-auto p-10 pb-32">
+            <main className="flex-1 overflow-y-auto custom-scrollbar relative z-10">
+                <div className="max-w-7xl mx-auto px-16 lg:px-20 py-12 pb-48">
                     {filteredTasks.length === 0 ? (
                         <div className="bg-text/2 border border-text/5 rounded-[3rem] py-32 flex flex-col items-center justify-center text-center">
                             <div className="w-20 h-20 bg-text/5 rounded-full flex items-center justify-center text-text/10 mb-8">
@@ -120,10 +123,10 @@ export default function TasksPage() {
                                 {filteredTasks.map(task => (
                                     <motion.div 
                                         key={task.id}
-                                        initial={{ opacity: 0, y: 20 }}
-                                        animate={{ opacity: 1, y: 0 }}
-                                        exit={{ opacity: 0, scale: 0.95 }}
-                                        className="group bg-background border border-text/5 rounded-[2.5rem] p-8 hover:border-accent/40 hover:shadow-2xl hover:shadow-accent/2 transition-all duration-500 relative overflow-hidden"
+                                        initial={{ opacity: 0, scale: 0.95 }}
+                                        animate={{ opacity: 1, scale: 1 }}
+                                        exit={{ opacity: 0, scale: 0.9 }}
+                                        className="group glass-card rounded-4xl p-10 hover:border-accent/40 transition-all duration-700 relative overflow-hidden shadow-premium hover:shadow-premium-hover"
                                     >
                                         <div className="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-8">
                                             <div className="flex items-start gap-6 flex-1">

@@ -41,17 +41,22 @@ function Sidebar({
     const [showWsDropdown, setShowWsDropdown] = useState(false);
 
     return (
-        <aside className="hidden md:flex w-64 border-r border-text/10 flex-col bg-background shrink-0 h-full">
-            <div className="p-8 pb-10">
-                <Link href="/dashboard?tab=overview" className="flex items-center gap-3">
-                    <LogoMark size={32} />
-                    <h1 className="text-xl font-bold tracking-tight text-text">CommunitAI</h1>
+        <aside className="hidden md:flex w-72 border-r border-text/5 flex-col bg-background/50 backdrop-blur-xl shrink-0 h-full relative z-20">
+            <div className="p-10 pb-12">
+                <Link href="/dashboard?tab=overview" className="flex items-center gap-4 group">
+                    <div className="p-2 rounded-2xl bg-accent/10 border border-accent/20 group-hover:scale-110 transition-transform duration-500 shadow-lg shadow-accent/5">
+                        <LogoMark size={32} />
+                    </div>
+                    <div className="flex flex-col">
+                        <h1 className="text-xl font-bold tracking-tighter text-text leading-tight">CommunitAI</h1>
+                        <span className="text-[8px] font-black uppercase tracking-[0.2em] text-accent/50">Intelligence Hub</span>
+                    </div>
                 </Link>
             </div>
 
             <nav className="flex-1 px-4 space-y-2">
                 <div className="mb-4">
-                    <p className="px-4 text-[10px] font-bold uppercase tracking-widest text-text/40 mb-2">Main Menu</p>
+                    <p className="px-6 text-[10px] font-black uppercase tracking-[0.2em] text-text/20 mb-4">Core Systems</p>
                     {navLinks.map(link => {
                         const isActive = link.id === "record" 
                             ? pathname === "/record" 
@@ -61,13 +66,13 @@ function Sidebar({
                             <Link 
                                 key={link.id} 
                                 href={link.href}
-                                className={`flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-200 group ${
+                                className={`flex items-center gap-4 px-6 py-4 rounded-2xl transition-all duration-300 group ${
                                     isActive 
-                                    ? "bg-accent/10 text-accent font-bold" 
-                                    : "text-text/60 hover:text-text hover:bg-text/5 font-medium"
+                                    ? "bg-accent/10 text-accent font-bold shadow-sm shadow-accent/5" 
+                                    : "text-text/50 hover:text-text hover:bg-text/5 font-semibold"
                                 }`}
                             >
-                                <span className={`${isActive ? "text-accent" : "text-text/40 group-hover:text-text/60"}`}>
+                                <span className={`${isActive ? "text-accent scale-110" : "text-text/30 group-hover:text-text/60 group-hover:scale-110"} transition-all duration-300`}>
                                     {link.icon}
                                 </span>
                                 <span className="text-sm">{link.label}</span>
@@ -100,15 +105,15 @@ function Sidebar({
                 </div>
             </nav>
 
-            <div className="p-4 border-t border-text/10">
-                <div className="bg-text/5 rounded-2xl p-3 flex items-center justify-between group cursor-pointer hover:bg-text/10 transition-colors">
+            <div className="p-6 border-t border-text/5 space-y-4">
+                <div className="glass-card rounded-4xl p-4 flex items-center justify-between group cursor-pointer hover:border-accent/30 transition-all duration-500">
                     <div className="flex items-center gap-3 min-w-0">
-                        <div className="h-10 w-10 shrink-0 rounded-xl bg-accent/10 border border-accent/20 flex items-center justify-center text-accent font-bold">
+                        <div className="h-12 w-12 shrink-0 rounded-[1.25rem] bg-accent/10 border border-accent/20 flex items-center justify-center text-accent font-black text-lg shadow-inner">
                             {(user.display_name || user.email)[0].toUpperCase()}
                         </div>
                         <div className="min-w-0">
-                            <p className="text-sm font-bold text-text truncate">{user.display_name || user.email}</p>
-                            <p className="text-[10px] text-text/40 font-bold uppercase">Pro Member</p>
+                            <p className="text-sm font-black text-text truncate tracking-tight">{user.display_name || user.email}</p>
+                            <p className="text-[9px] text-accent/60 font-black uppercase tracking-widest">PRO MEMBER</p>
                         </div>
                     </div>
                 </div>

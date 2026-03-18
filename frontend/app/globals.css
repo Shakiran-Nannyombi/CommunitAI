@@ -21,7 +21,11 @@
     --color-accent: var(--accent);
     
     --font-mono: "JetBrains Mono", "Fira Code", "Cascadia Code", ui-monospace, monospace;
-    --font-sans: system-ui, -apple-system, "Segoe UI", sans-serif;
+    --font-sans: "Inter", system-ui, -apple-system, "Segoe UI", sans-serif;
+
+    /* Premium Shadows */
+    --shadow-premium: 0 20px 50px -12px rgba(0, 0, 0, 0.05);
+    --shadow-premium-hover: 0 30px 60px -12px rgba(0, 0, 0, 0.08);
 }
 
 @layer base {
@@ -135,6 +139,28 @@ body {
     width: 3px;
     height: 3px;
 }
+.dashed-card {
+    background: rgba(var(--accent-rgb), 0.03);
+    border: 2px dashed rgba(var(--accent-rgb), 0.15);
+    transition: all 0.3s ease;
+}
+
+.dashed-card:hover {
+    background: rgba(var(--accent-rgb), 0.05);
+    border-color: rgba(var(--accent-rgb), 0.3);
+}
+
+.badge-processed {
+    background: rgba(66, 174, 68, 0.1);
+    color: #42ae44;
+    border: 1px solid rgba(66, 174, 68, 0.2);
+}
+
+.badge-archived {
+    background: rgba(100, 116, 139, 0.1);
+    color: #64748b;
+    border: 1px solid rgba(100, 116, 139, 0.2);
+}
 
 .app-root ::-webkit-scrollbar-track {
     background: var(--background);
@@ -219,4 +245,38 @@ body {
 
 .tr-hover:hover td {
     color: var(--accent);
+}
+
+/* ── Premium UI Utilities ─────────────────────────────────────────────────── */
+.glass-card {
+    background: color-mix(in srgb, var(--background), transparent 20%);
+    backdrop-filter: blur(16px) saturate(180%);
+    border: 1px solid color-mix(in srgb, var(--text), transparent 92%);
+    box-shadow: var(--shadow-premium);
+}
+
+.glass-card-hover {
+    transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.glass-card-hover:hover {
+    transform: translateY(-4px);
+    background: color-mix(in srgb, var(--background), transparent 10%);
+    border-color: color-mix(in srgb, var(--accent), transparent 70%);
+    box-shadow: var(--shadow-premium-hover);
+}
+
+.premium-border {
+    border: 1px solid color-mix(in srgb, var(--text), transparent 90%);
+}
+
+.premium-gradient {
+    background: linear-gradient(135deg, var(--background) 0%, color-mix(in srgb, var(--background), var(--accent) 3%) 100%);
+}
+
+.text-gradient {
+    background: linear-gradient(to right, var(--text), color-mix(in srgb, var(--text), transparent 40%));
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
 }

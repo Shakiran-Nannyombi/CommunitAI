@@ -101,75 +101,78 @@ export default function MeetingInsights() {
     );
 
     return (
-        <div className="flex-1 flex flex-col h-full bg-background overflow-hidden">
+        <div className="flex-1 flex flex-col h-full bg-background overflow-hidden relative">
+            <div className="absolute top-[-10%] right-[-10%] w-[40%] h-[40%] bg-accent/5 blur-[120px] rounded-full pointer-events-none" />
+            <div className="absolute bottom-[-10%] left-[-10%] w-[30%] h-[30%] bg-accent/5 blur-[100px] rounded-full pointer-events-none" />
             {/* Nav Header */}
-            <header className="shrink-0 px-10 py-6 border-b border-text/5 bg-background/80 backdrop-blur-md flex items-center justify-between sticky top-0 z-30">
-                <div className="flex items-center gap-6">
-                    <button onClick={() => router.back()} className="p-3 bg-text/3 hover:bg-text/5 rounded-2xl transition-colors text-text/40 hover:text-text">
-                        <ChevronLeft className="w-5 h-5" />
+            {/* Nav Header */}
+            <header className="shrink-0 px-16 lg:px-20 py-10 bg-background/50 backdrop-blur-xl flex items-center justify-between sticky top-0 z-30">
+                <div className="flex items-center gap-8">
+                    <button onClick={() => router.back()} className="p-4 bg-text/3 hover:bg-accent/5 hover:text-accent rounded-2xl transition-all duration-500 text-text/40 shadow-sm">
+                        <ChevronLeft className="w-6 h-6" />
                     </button>
-                    <div>
-                        <h1 className="text-2xl font-black text-text tracking-tight flex items-center gap-3">
+                    <div className="space-y-1">
+                        <h1 className="text-3xl font-black text-text tracking-tighter flex items-center gap-4">
                             {meeting.title}
-                            <span className="px-2 py-0.5 bg-accent/10 text-accent text-[8px] font-black uppercase tracking-widest rounded-full border border-accent/20">PROCESSED</span>
+                            <span className="px-3 py-1 bg-accent/10 border border-accent/20 text-accent text-[9px] font-black uppercase tracking-[0.2em] rounded-full shadow-2xl shadow-accent/5">PROCESSED</span>
                         </h1>
-                        <div className="flex items-center gap-4 text-[10px] font-black uppercase tracking-[0.2em] text-text/30 mt-1">
-                            <span className="flex items-center gap-1.5"><Calendar className="w-3.5 h-3.5" /> {new Date(meeting.created_at).toLocaleDateString()}</span>
-                            <span className="w-1 h-1 rounded-full bg-text/10" />
-                            <span className="flex items-center gap-1.5"><Clock className="w-3.5 h-3.5" /> 42:15</span>
+                        <div className="flex items-center gap-6 text-[10px] font-black uppercase tracking-[0.3em] text-text/30">
+                            <span className="flex items-center gap-2"><Calendar className="w-4 h-4" /> {new Date(meeting.created_at).toLocaleDateString("en-GB", { day: 'numeric', month: 'short', year: 'numeric' })}</span>
+                            <span className="w-1.5 h-1.5 rounded-full bg-accent/40" />
+                            <span className="flex items-center gap-2"><Clock className="w-4 h-4 ml-1" /> 42:15</span>
                         </div>
                     </div>
                 </div>
-                <div className="flex items-center gap-3">
+                <div className="flex items-center gap-4">
                     <button 
                         onClick={handleShareSlack}
                         disabled={sharing}
-                        className={`flex items-center gap-2.5 px-6 py-3 rounded-2xl font-black text-[10px] uppercase tracking-widest transition-all ${
-                            shared ? 'bg-accent text-background border-accent' : 'bg-text/3 text-text/40 border border-text/10 hover:border-text/30 hover:text-text'
+                        className={`flex items-center gap-3 px-8 py-4 rounded-2xl font-black text-[10px] uppercase tracking-[0.2em] transition-all duration-700 shadow-2xl ${
+                            shared ? 'bg-accent text-background border-accent shadow-accent/20' : 'bg-text/3 text-text/40 border border-text/5 hover:border-accent/40 hover:text-accent hover:bg-accent/5 shadow-text/5'
                         }`}
                     >
                         {sharing ? <Loader2 className="w-4 h-4 animate-spin" /> : <Slack className="w-4 h-4" />}
-                        {shared ? 'SYNALYZED TO SLACK' : 'SHARE RESULTS'}
+                        {shared ? 'SYNALYZED' : 'SHARE RESULTS'}
                     </button>
-                    <button className="p-3 bg-red-500/5 text-red-500/40 hover:text-red-500 hover:bg-red-500/10 rounded-2xl transition-all">
-                        <Trash2 className="w-5 h-5" />
+                    <button className="p-4 bg-red-500/5 text-red-500/20 hover:text-red-500 hover:bg-red-500/10 rounded-2xl transition-all duration-500 shadow-sm">
+                        <Trash2 className="w-6 h-6" />
                     </button>
                 </div>
             </header>
 
             <div className="flex-1 flex overflow-hidden">
                 {/* Scrollable Main Area */}
-                <main className="flex-1 overflow-y-auto px-10 py-12 custom-scrollbar lg:pr-6">
+                <main className="flex-1 overflow-y-auto px-16 lg:px-20 py-16 custom-scrollbar relative z-10 lg:pr-10">
                     <div className="max-w-4xl mx-auto space-y-16">
                         {/* Audio Player Card (Simulated) */}
-                        <section className="p-8 bg-text/2 border border-text/5 rounded-[3rem] relative overflow-hidden group">
-                            <div className="absolute inset-0 bg-accent/1 pointer-events-none group-hover:bg-accent/3 transition-colors" />
-                            <div className="relative z-10 flex items-center gap-8">
-                                <button className="w-16 h-16 bg-text text-background rounded-3xl flex items-center justify-center hover:scale-105 active:scale-95 transition-all shadow-xl shadow-text/10">
-                                    <Play className="w-6 h-6 fill-current" />
+                        {/* Audio Player Card (Simulated) */}
+                        <section className="p-10 glass-card rounded-4xl relative overflow-hidden group shadow-premium">
+                            <div className="relative z-10 flex items-center gap-10">
+                                <button className="w-20 h-20 bg-text text-background rounded-3xl flex items-center justify-center hover:scale-105 active:scale-95 transition-all duration-500 shadow-2xl shadow-text/10">
+                                    <Play className="w-8 h-8 fill-current ml-1" />
                                 </button>
-                                <div className="flex-1 space-y-4">
-                                    <div className="flex justify-between text-[10px] font-black uppercase tracking-widest text-text/30">
+                                <div className="flex-1 space-y-6">
+                                    <div className="flex justify-between text-[10px] font-black uppercase tracking-[0.3em] text-text/30">
                                         <span>0:00</span>
-                                        <div className="flex items-center gap-2">
-                                            <Sparkles className="w-3 h-3 text-accent" />
-                                            <span>AI Confidence: 98%</span>
+                                        <div className="flex items-center gap-3">
+                                            <Sparkles className="w-4 h-4 text-accent" />
+                                            <span className="text-accent">AI SYNERGY: 98.4%</span>
                                         </div>
                                         <span>42:15</span>
                                     </div>
-                                    <div className="h-2 w-full bg-text/5 rounded-full overflow-hidden relative">
-                                        <div className="absolute inset-0 bg-accent/20 w-1/3" />
+                                    <div className="h-3 w-full bg-text/5 rounded-full overflow-hidden relative shadow-inner">
+                                        <div className="absolute inset-y-0 left-0 bg-accent/30 w-1/3" />
                                         {/* Simulated Waveform effect */}
-                                        <div className="absolute inset-0 flex items-center justify-between px-2 opacity-20">
-                                            {Array.from({ length: 40 }).map((_, i) => (
-                                                <div key={i} className="w-1 bg-text/20 rounded-full" style={{ height: `${Math.random() * 80 + 20}%` }} />
+                                        <div className="absolute inset-0 flex items-center justify-between px-3 opacity-20">
+                                            {Array.from({ length: 60 }).map((_, i) => (
+                                                <div key={i} className="w-1 bg-text/40 rounded-full" style={{ height: `${Math.random() * 80 + 20}%` }} />
                                             ))}
                                         </div>
                                     </div>
                                 </div>
-                                <div className="flex items-center gap-4 text-text/20">
-                                    <Volume2 className="w-5 h-5" />
-                                    <MoreVertical className="w-5 h-5" />
+                                <div className="flex items-center gap-6 text-text/20">
+                                    <Volume2 className="w-6 h-6 hover:text-text transition-colors cursor-pointer" />
+                                    <MoreVertical className="w-6 h-6 hover:text-text transition-colors cursor-pointer" />
                                 </div>
                             </div>
                         </section>
@@ -177,7 +180,7 @@ export default function MeetingInsights() {
                         {/* Analysis Hub */}
                         <div className="grid grid-cols-1 lg:grid-cols-5 gap-12">
                             {/* Left Navigation */}
-                            <nav className="lg:col-span-1 space-y-2">
+                            <nav className="lg:col-span-1 space-y-3">
                                 {[
                                     { id: "summary", label: "Executive Summary", icon: MessageSquare },
                                     { id: "tasks", label: "Action Items", icon: CheckCircle2 },
@@ -187,13 +190,13 @@ export default function MeetingInsights() {
                                     <button 
                                         key={sec.id}
                                         onClick={() => setActiveSection(sec.id as Section)}
-                                        className={`w-full flex items-center gap-3 px-5 py-4 rounded-2xl text-[10px] font-black uppercase tracking-widest transition-all ${
+                                        className={`w-full flex items-center gap-4 px-6 py-5 rounded-2xl text-[10px] font-black uppercase tracking-[0.2em] transition-all duration-500 ${
                                             activeSection === sec.id 
-                                                ? 'bg-text text-background shadow-xl shadow-text/5' 
+                                                ? 'bg-text text-background shadow-2xl shadow-text/10 scale-105' 
                                                 : 'text-text/30 hover:text-text/60 hover:bg-text/5'
                                         }`}
                                     >
-                                        <sec.icon className="w-4 h-4" />
+                                        <sec.icon className="w-5 h-5" />
                                         {sec.label}
                                     </button>
                                 ))}
@@ -208,21 +211,21 @@ export default function MeetingInsights() {
                                             initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10 }}
                                             className="space-y-8"
                                         >
-                                            <div className="space-y-4">
-                                                <h3 className="text-2xl font-black text-text tracking-tight">Meeting Context</h3>
-                                                <p className="text-lg leading-relaxed text-text/70 font-medium">
+                                            <div className="space-y-6">
+                                                <h3 className="text-3xl font-black text-text tracking-tighter">Meeting Context</h3>
+                                                <p className="text-2xl leading-relaxed text-text/60 font-semibold tracking-tight">
                                                     {meeting.summary || "Generating abstract summary..."}
                                                 </p>
                                             </div>
                                             
-                                            <div className="grid grid-cols-2 gap-6">
-                                                <div className="p-6 bg-accent/5 border border-accent/10 rounded-3xl">
-                                                    <h4 className="text-[10px] font-black uppercase tracking-widest text-accent mb-2">Key Theme</h4>
-                                                    <p className="text-sm font-black text-text">Community Growth & Retention</p>
+                                            <div className="grid grid-cols-2 gap-8">
+                                                <div className="p-8 glass-card rounded-4xl bg-accent/5">
+                                                    <h4 className="text-[10px] font-black uppercase tracking-[0.3em] text-accent mb-3">Key Theme</h4>
+                                                    <p className="text-lg font-black text-text">Community Growth & Retention</p>
                                                 </div>
-                                                <div className="p-6 bg-blue-500/5 border border-blue-500/10 rounded-3xl">
-                                                    <h4 className="text-[10px] font-black uppercase tracking-widest text-blue-500 mb-2">Top Speaker</h4>
-                                                    <p className="text-sm font-black text-text">Jane Cooper (42% airtime)</p>
+                                                <div className="p-8 glass-card rounded-4xl bg-blue-500/5">
+                                                    <h4 className="text-[10px] font-black uppercase tracking-[0.3em] text-blue-500 mb-3">Top Speaker</h4>
+                                                    <p className="text-lg font-black text-text">Jane Cooper (42% airtime)</p>
                                                 </div>
                                             </div>
                                         </motion.div>
@@ -241,33 +244,33 @@ export default function MeetingInsights() {
                                                 </button>
                                             </div>
 
-                                            <div className="space-y-4">
+                                            <div className="space-y-6">
                                                 {meeting.action_items.length === 0 ? (
-                                                    <p className="py-12 text-center text-text/30 font-bold uppercase tracking-widest text-xs border border-dashed border-text/10 rounded-3xl">No action items detected</p>
+                                                    <p className="py-24 text-center text-text/20 font-black uppercase tracking-[0.3em] text-[10px] border-2 border-dashed border-text/5 rounded-4xl">No action items detected in stream</p>
                                                 ) : (
                                                     meeting.action_items.map(task => (
-                                                        <div key={task.id} className="group p-6 bg-background border border-text/10 rounded-3xl hover:border-accent/40 transition-all flex items-center justify-between">
-                                                            <div className="flex items-center gap-5">
+                                                        <div key={task.id} className="group p-8 glass-card rounded-4xl hover:border-accent/40 transition-all duration-700 flex items-center justify-between shadow-premium hover:shadow-premium-hover">
+                                                            <div className="flex items-center gap-8">
                                                                 <button 
                                                                     onClick={() => handleToggleTask(task)}
-                                                                    className={`w-8 h-8 rounded-xl border-2 flex items-center justify-center transition-all ${
-                                                                        task.completed ? 'bg-accent border-accent text-background' : 'border-text/10 group-hover:border-accent/40 text-transparent'
+                                                                    className={`w-10 h-10 rounded-2xl border-2 flex items-center justify-center transition-all duration-500 ${
+                                                                        task.completed ? 'bg-accent border-accent text-background shadow-xl shadow-accent/20' : 'border-text/10 group-hover:border-accent/40 text-transparent'
                                                                     }`}
                                                                 >
-                                                                    <CheckCircle2 className="w-4 h-4" />
+                                                                    <CheckCircle2 className="w-5 h-5" />
                                                                 </button>
                                                                 <div>
-                                                                    <p className={`font-black transition-all ${task.completed ? 'text-text/30 line-through' : 'text-text'}`}>
+                                                                    <p className={`text-lg font-black transition-all duration-700 tracking-tight ${task.completed ? 'text-text/20 line-through' : 'text-text'}`}>
                                                                         {task.description}
                                                                     </p>
-                                                                    <div className="flex items-center gap-3 text-[9px] font-bold text-text/30 uppercase tracking-[0.2em] mt-1">
-                                                                        <span className="text-accent">{task.assignee || "Everyone"}</span>
-                                                                        {task.due_date && <span>Due: {new Date(task.due_date).toLocaleDateString()}</span>}
+                                                                    <div className="flex items-center gap-4 text-[10px] font-black uppercase tracking-[0.3em] mt-2">
+                                                                        <span className="text-accent">{task.assignee || "EVERYONE"}</span>
+                                                                        {task.due_date && <span className="text-text/20">DUE: {new Date(task.due_date).toLocaleDateString()}</span>}
                                                                     </div>
                                                                 </div>
                                                             </div>
-                                                            <button className="p-2 text-text/10 hover:text-text transition-colors">
-                                                                <Edit3 className="w-4 h-4" />
+                                                            <button className="p-3 text-text/10 hover:text-text transition-colors duration-500">
+                                                                <Edit3 className="w-5 h-5" />
                                                             </button>
                                                         </div>
                                                     ))
@@ -284,21 +287,21 @@ export default function MeetingInsights() {
                                         >
                                             <h3 className="text-2xl font-black text-text tracking-tight">Emotional Pulse</h3>
                                             
-                                            <div className="p-10 bg-text/3 border border-text/5 rounded-[3rem] text-center space-y-6">
-                                                <div className="inline-block p-6 bg-accent/20 rounded-[2.5rem] border border-accent/20">
-                                                    <h4 className="text-sm font-black text-accent uppercase tracking-widest mb-1">Overall Sentiment</h4>
-                                                    <p className="text-5xl font-black capitalize tracking-tighter text-text">
+                                            <div className="p-16 glass-card rounded-[3rem] text-center space-y-10 shadow-premium group">
+                                                <div className="inline-block p-10 bg-accent/20 rounded-4xl border border-accent/20 shadow-2xl shadow-accent/5 group-hover:scale-110 transition-transform duration-700">
+                                                    <h4 className="text-[10px] font-black text-accent uppercase tracking-[0.3em] mb-2">Overall Sentiment</h4>
+                                                    <p className="text-7xl font-black capitalize tracking-tighter text-text">
                                                         {meeting.sentiment?.classification || "Neutral"}
                                                     </p>
                                                 </div>
-                                                <p className="text-text/40 font-medium max-w-sm mx-auto">The community seems energized and focused on the new roadmap features.</p>
+                                                <p className="text-xl text-text/40 font-semibold max-w-sm mx-auto leading-relaxed">The community seems energized and focused on the new roadmap features.</p>
                                             </div>
 
-                                            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                                                 {meeting.sentiment?.signals.map((sig, i) => (
-                                                    <div key={i} className="p-6 border border-text/10 rounded-3xl hover:bg-text/2 transition-colors">
-                                                        <span className="text-[10px] font-black uppercase text-accent tracking-widest mb-3 block">{sig.type}</span>
-                                                        <blockquote className="text-sm italic font-medium text-text/60 leading-relaxed group">
+                                                    <div key={i} className="p-8 glass-card rounded-4xl hover:border-accent/40 transition-all duration-700">
+                                                        <span className="text-[10px] font-black uppercase text-accent tracking-[0.3em] mb-4 block">{sig.type}</span>
+                                                        <blockquote className="text-base italic font-semibold text-text/60 leading-relaxed group">
                                                             "{sig.excerpt}"
                                                         </blockquote>
                                                     </div>
@@ -328,16 +331,16 @@ export default function MeetingInsights() {
                                                 </button>
                                             </div>
                                             
-                                            <div className="p-8 bg-text/2 border border-text/5 rounded-[3rem] min-h-[400px]">
+                                            <div className="p-12 glass-card rounded-4xl min-h-[500px]">
                                                 {isEditingTranscript ? (
                                                     <textarea 
                                                         value={transcriptEdit}
                                                         onChange={(e) => setTranscriptEdit(e.target.value)}
-                                                        className="w-full h-[500px] bg-transparent border-none focus:ring-0 text-sm font-medium leading-loose custom-scrollbar text-text"
+                                                        className="w-full h-[600px] bg-transparent border-none focus:ring-0 text-lg font-semibold leading-relaxed custom-scrollbar text-text/80"
                                                         autoFocus
                                                     />
                                                 ) : (
-                                                    <p className="text-sm font-medium leading-loose text-text/60 whitespace-pre-wrap">
+                                                    <p className="text-lg font-semibold leading-relaxed text-text/50 whitespace-pre-wrap selection:bg-accent/20">
                                                         {meeting.transcript || "Transcript is still being generated by the AI engine..."}
                                                     </p>
                                                 )}

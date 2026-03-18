@@ -68,20 +68,20 @@ export default function PlannerTab({ workspaceId }: Props) {
     }
 
     return (
-        <div className="flex flex-col h-[600px] bg-background border border-text/5 rounded-[2.5rem] overflow-hidden shadow-2xl shadow-text/2 relative group">
+        <div className="flex flex-col h-[800px] glass-card rounded-4xl overflow-hidden shadow-2xl relative group">
             {/* Background Glow */}
             <div className="absolute inset-0 bg-accent/1 pointer-events-none group-hover:bg-accent/2 transition-colors duration-700"></div>
 
             {/* Chat Header */}
-            <header className="shrink-0 px-8 py-4 border-b border-text/5 bg-background/50 backdrop-blur-md flex items-center justify-between relative z-10">
-                <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 bg-accent/10 rounded-2xl flex items-center justify-center text-accent">
-                        <Bot className="w-5 h-5" />
+            <header className="shrink-0 px-10 py-8 border-b border-text/5 bg-background/50 backdrop-blur-xl flex items-center justify-between relative z-10">
+                <div className="flex items-center gap-6">
+                    <div className="w-14 h-14 bg-accent/10 border border-accent/20 rounded-2xl flex items-center justify-center text-accent shadow-xl shadow-accent/5">
+                        <Bot className="w-7 h-7" />
                     </div>
-                    <div>
-                        <h3 className="text-sm font-black text-text tracking-tight uppercase">Planner Agent</h3>
-                        <p className="text-[10px] font-bold text-accent uppercase tracking-widest flex items-center gap-1.5">
-                            <span className="w-1.5 h-1.5 rounded-full bg-accent animate-pulse" />
+                    <div className="space-y-1">
+                        <h3 className="text-xl font-black text-text tracking-tight uppercase">Planner Agent</h3>
+                        <p className="text-[10px] font-black text-accent uppercase tracking-[0.3em] flex items-center gap-2">
+                            <span className="w-2 h-2 rounded-full bg-accent animate-pulse" />
                             AI Insight Ready
                         </p>
                     </div>
@@ -97,7 +97,7 @@ export default function PlannerTab({ workspaceId }: Props) {
             </header>
 
             {/* Chat Content */}
-            <div className="flex-1 overflow-y-auto px-8 py-6 space-y-6 custom-scrollbar relative z-10">
+            <div className="flex-1 overflow-y-auto px-10 py-10 space-y-10 custom-scrollbar relative z-10">
                 <AnimatePresence initial={false}>
                     {messages.length === 0 && !loading && (
                         <motion.div 
@@ -178,7 +178,7 @@ export default function PlannerTab({ workspaceId }: Props) {
             </div>
 
             {/* Chat Input */}
-            <form onSubmit={handleSend} className="shrink-0 p-6 border-t border-text/5 bg-background/50 backdrop-blur-md relative z-10">
+            <form onSubmit={handleSend} className="shrink-0 p-10 border-t border-text/5 bg-background/50 backdrop-blur-xl relative z-10">
                 <div className="relative flex items-center gap-3">
                     <div className="relative flex-1 group">
                         <input

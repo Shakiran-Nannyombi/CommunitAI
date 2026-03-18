@@ -8,3 +8,5 @@ pydantic-settings
 python-dotenv
 boto3
 hypothesis
+fastapi
+uvicorn[standard]
