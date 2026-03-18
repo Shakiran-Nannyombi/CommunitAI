@@ -3,8 +3,19 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { login, register, demoLogin, saveAuth } from "@/lib/api";
+import { LogoMark } from "@/components/Logo";
 
 type Mode = "login" | "register";
+
+const INPUT_STYLE: React.CSSProperties = {
+    width: "100%", background: "#000", border: "1px solid #27272a",
+    borderRadius: "4px", padding: "10px 12px", fontSize: "14px",
+    color: "#d4d4d8", outline: "none", fontFamily: "inherit",
+};
+const LABEL_STYLE: React.CSSProperties = {
+    display: "block", fontSize: "11px", letterSpacing: "0.15em",
+    color: "#52525b", marginBottom: "6px",
+};
 
 export default function AuthPage() {
     const router = useRouter();
@@ -17,159 +28,139 @@ export default function AuthPage() {
 
     async function handleSubmit(e: React.FormEvent) {
         e.preventDefault();
-        setError("");
-        setLoading(true);
+        setError(""); setLoading(true);
         try {
             const user = mode === "login"
                 ? await login(email, password)
                 : await register(email, password, name);
             saveAuth(user);
-            router.push("/");
+            router.push("/dashboard");
         } catch (err: unknown) {
-            const msg = (err as { response?: { data?: { detail?: string } } })
-                ?.response?.data?.detail;
+            const msg = (err as { response?: { data?: { detail?: string } } })?.response?.data?.detail;
             setError(msg ?? "Something went wrong");
-        } finally {
-            setLoading(false);
-        }
+        } finally { setLoading(false); }
     }
 
     async function handleDemo() {
-        setError("");
-        setLoading(true);
+        setError(""); setLoading(true);
         try {
             const user = await demoLogin();
             saveAuth(user);
-            router.push("/");
-        } catch {
-            setError("Could not load demo account");
-        } finally {
-            setLoading(false);
-        }
+            router.push("/dashboard");
+        } catch { setError("Could not load demo account"); }
+        finally { setLoading(false); }
     }
 
     return (
-        <div className="min-h-screen bg-black flex items-center justify-center font-mono p-4">
+        <div className="app-root" style={{ minHeight: "100dvh", display: "flex", alignItems: "center", justifyContent: "center", padding: "24px" }}>
             {/* Scanline overlay */}
-            <div className="fixed inset-0 pointer-events-none scanline opacity-30" />
+            <div className="fixed inset-0 pointer-events-none scanline opacity-20" />
 
-            <div className="w-full max-w-sm">
+            <div style={{ width: "100%", maxWidth: "400px", position: "relative", zIndex: 10 }}>
                 {/* Header */}
-                <div className="mb-8 text-center">
-                    <p className="text-green-400 text-xl font-bold tracking-[0.3em] uppercase">
+                <div style={{ marginBottom: "40px", textAlign: "center" }}>
+                    <div style={{ display: "flex", justifyContent: "center", marginBottom: "12px" }}>
+                        <LogoMark size={48} color="#4ade80" />
+                    </div>
+                    <p style={{ fontSize: "20px", letterSpacing: "0.3em", color: "#4ade80", fontWeight: 800, textTransform: "uppercase" }}>
                         CommunitAI
                     </p>
-                    <p className="text-zinc-600 text-xs mt-1 tracking-widest uppercase">
+                    <p style={{ fontSize: "11px", letterSpacing: "0.2em", color: "#52525b", marginTop: "6px", textTransform: "uppercase" }}>
                         AI Chief of Staff
                     </p>
-                    <div className="mt-3 flex items-center justify-center gap-1.5 text-xs text-zinc-700">
-                        <span className="w-1.5 h-1.5 rounded-full bg-green-500 pulse-dot" />
-                        SYSTEM ONLINE
+                    <div style={{ marginTop: "10px", display: "flex", alignItems: "center", justifyContent: "center", gap: "8px", fontSize: "11px" }}>
+                        <span className="pulse-dot" style={{ width: "6px", height: "6px", borderRadius: "50%", background: "#22c55e", display: "inline-block" }} />
+                        <span style={{ color: "#3f3f46", letterSpacing: "0.2em" }}>SYSTEM ONLINE</span>
                     </div>
                 </div>
 
-                {/* Panel */}
-                <div className="panel rounded">
+                {/* Card */}
+                <div style={{ borderRadius: "8px", overflow: "hidden", border: "1px solid #1f1f1f", background: "#050505" }}>
                     {/* Tab bar */}
-                    <div className="panel-header">
-                        <div className="flex gap-0">
-                            {(["login", "register"] as Mode[]).map(m => (
-                                <button
-                                    key={m}
-                                    onClick={() => { setMode(m); setError(""); }}
-                                    className={`px-4 py-1.5 text-xs uppercase tracking-widest border-b-2 transition ${mode === m
-                                            ? "border-green-500 text-green-400"
-                                            : "border-transparent text-zinc-600 hover:text-zinc-400"
-                                        }`}
-                                >
-                                    {m === "login" ? "Sign In" : "Register"}
-                                </button>
-                            ))}
-                        </div>
+                    <div style={{ borderBottom: "1px solid #1a1a1a", background: "#0a0a0a", padding: "0 16px", display: "flex" }}>
+                        {(["login", "register"] as Mode[]).map(m => (
+                            <button key={m} onClick={() => { setMode(m); setError(""); }} style={{
+                                fontSize: "11px", letterSpacing: "0.15em", padding: "12px 16px",
+                                borderBottom: mode === m ? "2px solid #22c55e" : "2px solid transparent",
+                                color: mode === m ? "#4ade80" : "#52525b",
+                                background: "none", cursor: "pointer", transition: "color 0.15s", fontFamily: "inherit",
+                            }}>
+                                {m === "login" ? "SIGN IN" : "REGISTER"}
+                            </button>
+                        ))}
                     </div>
 
-                    <form onSubmit={handleSubmit} className="p-5 space-y-3">
-                        {mode === "register" && (
+                    <div style={{ padding: "24px" }}>
+                        <form onSubmit={handleSubmit} style={{ display: "flex", flexDirection: "column", gap: "16px" }}>
+                            {mode === "register" && (
+                                <div>
+                                    <label style={LABEL_STYLE}>DISPLAY NAME</label>
+                                    <input type="text" value={name} onChange={e => setName(e.target.value)}
+                                        placeholder="Your name" style={INPUT_STYLE}
+                                        onFocus={e => e.target.style.borderColor = "#166534"}
+                                        onBlur={e => e.target.style.borderColor = "#27272a"} />
+                                </div>
+                            )}
                             <div>
-                                <label className="block text-zinc-600 text-xs uppercase tracking-widest mb-1">
-                                    Display Name
-                                </label>
-                                <input
-                                    type="text"
-                                    value={name}
-                                    onChange={e => setName(e.target.value)}
-                                    placeholder="Your name"
-                                    className="w-full bg-black border border-zinc-800 rounded px-3 py-2 text-xs text-zinc-300 placeholder-zinc-700 focus:outline-none focus:border-green-700 transition"
-                                />
+                                <label style={LABEL_STYLE}>EMAIL</label>
+                                <input type="email" value={email} onChange={e => setEmail(e.target.value)}
+                                    placeholder="you@example.com" required style={INPUT_STYLE}
+                                    onFocus={e => e.target.style.borderColor = "#166534"}
+                                    onBlur={e => e.target.style.borderColor = "#27272a"} />
                             </div>
-                        )}
+                            <div>
+                                <label style={LABEL_STYLE}>PASSWORD</label>
+                                <input type="password" value={password} onChange={e => setPassword(e.target.value)}
+                                    placeholder="••••••••" required minLength={6} style={INPUT_STYLE}
+                                    onFocus={e => e.target.style.borderColor = "#166534"}
+                                    onBlur={e => e.target.style.borderColor = "#27272a"} />
+                            </div>
 
-                        <div>
-                            <label className="block text-zinc-600 text-xs uppercase tracking-widest mb-1">
-                                Email
-                            </label>
-                            <input
-                                type="email"
-                                value={email}
-                                onChange={e => setEmail(e.target.value)}
-                                placeholder="you@example.com"
-                                required
-                                className="w-full bg-black border border-zinc-800 rounded px-3 py-2 text-xs text-zinc-300 placeholder-zinc-700 focus:outline-none focus:border-green-700 transition"
-                            />
+                            {error && (
+                                <p style={{ fontSize: "13px", color: "#f87171", border: "1px solid #450a0a", background: "#0f0000", borderRadius: "4px", padding: "10px 12px" }}>
+                                    {error}
+                                </p>
+                            )}
+
+                            <button type="submit" disabled={loading} style={{
+                                width: "100%", background: loading ? "#14532d" : "#15803d",
+                                border: "none", borderRadius: "4px", padding: "12px",
+                                fontSize: "13px", fontWeight: 700, letterSpacing: "0.15em",
+                                color: "#000", cursor: loading ? "not-allowed" : "pointer",
+                                fontFamily: "inherit", transition: "background 0.15s",
+                            }}
+                                onMouseEnter={e => { if (!loading) (e.target as HTMLButtonElement).style.background = "#16a34a"; }}
+                                onMouseLeave={e => { if (!loading) (e.target as HTMLButtonElement).style.background = "#15803d"; }}
+                            >
+                                {loading ? "CONNECTING..." : mode === "login" ? "SIGN IN" : "CREATE ACCOUNT"}
+                            </button>
+                        </form>
+
+                        <div style={{ display: "flex", alignItems: "center", gap: "12px", margin: "20px 0" }}>
+                            <div style={{ flex: 1, borderTop: "1px solid #18181b" }} />
+                            <span style={{ fontSize: "12px", color: "#3f3f46" }}>or</span>
+                            <div style={{ flex: 1, borderTop: "1px solid #18181b" }} />
                         </div>
 
-                        <div>
-                            <label className="block text-zinc-600 text-xs uppercase tracking-widest mb-1">
-                                Password
-                            </label>
-                            <input
-                                type="password"
-                                value={password}
-                                onChange={e => setPassword(e.target.value)}
-                                placeholder="••••••••"
-                                required
-                                minLength={6}
-                                className="w-full bg-black border border-zinc-800 rounded px-3 py-2 text-xs text-zinc-300 placeholder-zinc-700 focus:outline-none focus:border-green-700 transition"
-                            />
-                        </div>
-
-                        {error && (
-                            <p className="text-red-400 text-xs border border-red-900 bg-red-950/30 rounded px-3 py-2">
-                                {error}
-                            </p>
-                        )}
-
-                        <button
-                            type="submit"
-                            disabled={loading}
-                            className="w-full bg-green-700 hover:bg-green-600 disabled:opacity-50 text-black font-bold text-xs uppercase tracking-widest py-2.5 rounded transition"
+                        <button onClick={handleDemo} disabled={loading} style={{
+                            width: "100%", background: "none",
+                            border: "1px solid #27272a", borderRadius: "4px", padding: "12px",
+                            fontSize: "13px", letterSpacing: "0.15em", fontWeight: 600,
+                            color: "#71717a", cursor: loading ? "not-allowed" : "pointer",
+                            fontFamily: "inherit", transition: "all 0.15s",
+                        }}
+                            onMouseEnter={e => { const b = e.currentTarget; b.style.borderColor = "#166534"; b.style.color = "#4ade80"; }}
+                            onMouseLeave={e => { const b = e.currentTarget; b.style.borderColor = "#27272a"; b.style.color = "#71717a"; }}
                         >
-                            {loading ? "..." : mode === "login" ? "Sign In" : "Create Account"}
+                            {loading ? "CONNECTING..." : "⚡  TRY DEMO ACCOUNT"}
                         </button>
-                    </form>
-
-                    {/* Divider */}
-                    <div className="px-5 pb-5">
-                        <div className="flex items-center gap-3 mb-3">
-                            <div className="flex-1 border-t border-zinc-900" />
-                            <span className="text-zinc-700 text-xs">or</span>
-                            <div className="flex-1 border-t border-zinc-900" />
-                        </div>
-
-                        <button
-                            onClick={handleDemo}
-                            disabled={loading}
-                            className="w-full border border-zinc-800 hover:border-green-800 disabled:opacity-50 text-zinc-400 hover:text-green-400 text-xs uppercase tracking-widest py-2.5 rounded transition"
-                        >
-                            {loading ? "..." : "⚡ Try Demo Account"}
-                        </button>
-                        <p className="text-zinc-700 text-xs text-center mt-2">
+                        <p style={{ fontSize: "12px", color: "#3f3f46", textAlign: "center", marginTop: "8px" }}>
                             Pre-loaded with sample meetings &amp; tasks
                         </p>
                     </div>
                 </div>
 
-                <p className="text-zinc-800 text-xs text-center mt-6 tracking-widest">
+                <p style={{ fontSize: "11px", color: "#27272a", textAlign: "center", marginTop: "24px", letterSpacing: "0.2em" }}>
                     COMMUNITAI · SECURE SESSION
                 </p>
             </div>

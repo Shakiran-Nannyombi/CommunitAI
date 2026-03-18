@@ -1,0 +1,29 @@
+<svg width="120" height="120" viewBox="0 0 120 120" fill="none" xmlns="http://www.w3.org/2000/svg" aria-label="CommunitAI logo">
+
+  <!-- Person 1 — top center -->
+  <circle cx="60" cy="18" r="10" fill="#4ade80"/>
+  <!-- Body / torso 1 -->
+  <path d="M50 32 Q60 28 70 32 L72 52 Q60 56 48 52 Z" fill="#4ade80" opacity="0.85"/>
+
+  <!-- Person 2 — bottom left -->
+  <circle cx="24" cy="82" r="10" fill="#4ade80"/>
+  <!-- Body / torso 2 -->
+  <path d="M14 96 Q24 92 34 96 L36 116 Q24 120 12 116 Z" fill="#4ade80" opacity="0.85"/>
+
+  <!-- Person 3 — bottom right -->
+  <circle cx="96" cy="82" r="10" fill="#4ade80"/>
+  <!-- Body / torso 3 -->
+  <path d="M86 96 Q96 92 106 96 L108 116 Q96 120 84 116 Z" fill="#4ade80" opacity="0.85"/>
+
+  <!-- Arm: person 1 left hand reaching down-left to person 2 right hand -->
+  <path d="M50 44 C42 54 36 62 34 72" stroke="#4ade80" stroke-width="5" stroke-linecap="round" fill="none" opacity="0.9"/>
+  <!-- Arm: person 1 right hand reaching down-right to person 3 left hand -->
+  <path d="M70 44 C78 54 84 62 86 72" stroke="#4ade80" stroke-width="5" stroke-linecap="round" fill="none" opacity="0.9"/>
+  <!-- Arm: person 2 left hand reaching across to person 3 right hand -->
+  <path d="M34 88 C48 100 72 100 86 88" stroke="#4ade80" stroke-width="5" stroke-linecap="round" fill="none" opacity="0.9"/>
+
+  <!-- Central glow dot where the three connect -->
+  <circle cx="60" cy="72" r="6" fill="#4ade80" opacity="0.4"/>
+  <circle cx="60" cy="72" r="3" fill="#4ade80" opacity="0.8"/>
+
+</svg>

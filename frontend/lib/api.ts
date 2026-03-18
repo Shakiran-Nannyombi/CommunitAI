@@ -72,7 +72,43 @@ export interface Workspace {
     id: string;
     name: string;
     icon_emoji: string;
+    slack_webhook_url: string | null;
     created_at: string;
+}
+
+export interface PlannerMessageOut {
+    role: string;
+    content: string;
+    created_at: string;
+}
+
+export interface PlannerChatResponse {
+    reply: string;
+    history: PlannerMessageOut[];
+}
+
+export interface WeeklyMeetingCount {
+    week_start: string;
+    count: number;
+}
+
+export interface SentimentTrendItem {
+    meeting_title: string;
+    created_at: string;
+    classification: "positive" | "neutral" | "negative";
+}
+
+export interface AssigneeActivity {
+    assignee: string;
+    task_count: number;
+}
+
+export interface ImpactOut {
+    meetings_per_week: WeeklyMeetingCount[];
+    completion_rate: number;
+    sentiment_trend: SentimentTrendItem[];
+    top_assignees: AssigneeActivity[];
+    has_enough_data: boolean;
 }
 
 export interface ActionItem {
@@ -195,4 +231,72 @@ export async function completeActionItem(id: string): Promise<ActionItem> {
 export async function generateNudge(actionItemId: string): Promise<string> {
     const { data } = await api.post<{ message: string }>(`/action-items/${actionItemId}/nudge`);
     return data.message;
+}
+
+// --- Transcript ---
+
+export async function patchTranscript(meetingId: string, content: string): Promise<void> {
+    await api.patch(`/meetings/${meetingId}/transcript`, { content });
+}
+
+// --- Action Items (extended) ---
+
+export async function patchActionItem(
+    id: string,
+    data: { description?: string; assignee?: string; due_date?: string | null; completed?: boolean }
+): Promise<ActionItem> {
+    const { data: result } = await api.patch<ActionItem>(`/action-items/${id}`, data);
+    return result;
+}
+
+export async function deleteActionItem(id: string): Promise<void> {
+    await api.delete(`/action-items/${id}`);
+}
+
+export async function addActionItem(
+    meetingId: string,
+    data: { description: string; assignee?: string; due_date?: string | null }
+): Promise<ActionItem> {
+    const { data: result } = await api.post<ActionItem>(`/meetings/${meetingId}/action-items`, data);
+    return result;
+}
+
+// --- Workspaces (extended) ---
+
+export async function patchWorkspace(
+    id: string,
+    data: { slack_webhook_url?: string | null }
+): Promise<Workspace> {
+    const { data: result } = await api.patch<Workspace>(`/workspaces/${id}`, data);
+    return result;
+}
+
+export async function getImpact(workspaceId: string): Promise<ImpactOut> {
+    const { data } = await api.get<ImpactOut>(`/workspaces/${workspaceId}/impact`);
+    return data;
+}
+
+// --- Planner ---
+
+export async function plannerChat(
+    workspaceId: string,
+    message: string,
+    userId: string
+): Promise<PlannerChatResponse> {
+    const { data } = await api.post<PlannerChatResponse>(`/workspaces/${workspaceId}/planner/chat`, {
+        message,
+        user_id: userId,
+    });
+    return data;
+}
+
+export async function clearPlannerChat(workspaceId: string, userId: string): Promise<void> {
+    await api.delete(`/workspaces/${workspaceId}/planner/chat`, { params: { user_id: userId } });
+}
+
+// --- Integrations ---
+
+export async function shareToSlack(meetingId: string): Promise<{ ok: boolean }> {
+    const { data } = await api.post<{ ok: boolean }>(`/meetings/${meetingId}/share/slack`);
+    return data;
 }

@@ -17,8 +17,8 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import selectinload
 
 from backend.db import get_db
-from backend.models.db import Meeting
-from backend.schemas.api import MeetingCreate, MeetingDetailOut, ActionItemOut
+from backend.models.db import ActionItem, Meeting, Transcript
+from backend.schemas.api import ActionItemCreate, ActionItemOut, MeetingCreate, MeetingDetailOut, TranscriptUpdate
 from backend.services import agent_client, spaces
 
 router = APIRouter(tags=["meetings"])
@@ -210,6 +210,59 @@ async def delete_meeting(
             pass
 
     await db.delete(meeting)
+
+
+@router.patch("/meetings/{meeting_id}/transcript", response_model=MeetingDetailOut)
+async def update_transcript(
+    meeting_id: UUID,
+    payload: TranscriptUpdate,
+    db: AsyncSession = Depends(get_db),
+) -> MeetingDetailOut:
+    result = await db.execute(
+        select(Meeting)
+        .where(Meeting.id == meeting_id)
+        .options(
+            selectinload(Meeting.transcript),
+            selectinload(Meeting.action_items),
+            selectinload(Meeting.sentiment_report),
+            selectinload(Meeting.summary),
+        )
+    )
+    meeting = result.scalar_one_or_none()
+    if meeting is None:
+        raise HTTPException(status_code=404, detail="Meeting not found")
+
+    if meeting.transcript is None:
+        transcript = Transcript(meeting_id=meeting_id, content=payload.content)
+        db.add(transcript)
+        await db.flush()
+        await db.refresh(meeting, ["transcript"])
+    else:
+        meeting.transcript.content = payload.content
+
+    return _build_detail(meeting)
+
+
+@router.post("/meetings/{meeting_id}/action-items", response_model=ActionItemOut, status_code=201)
+async def add_action_item(
+    meeting_id: UUID,
+    payload: ActionItemCreate,
+    db: AsyncSession = Depends(get_db),
+) -> ActionItemOut:
+    result = await db.execute(select(Meeting).where(Meeting.id == meeting_id))
+    meeting = result.scalar_one_or_none()
+    if meeting is None:
+        raise HTTPException(status_code=404, detail="Meeting not found")
+
+    action_item = ActionItem(
+        meeting_id=meeting_id,
+        description=payload.description,
+        assignee=payload.assignee,
+        due_date=payload.due_date,
+    )
+    db.add(action_item)
+    await db.flush()
+    return ActionItemOut.model_validate(action_item)
 
 
 @router.post("/meetings/{meeting_id}/retry", response_model=MeetingDetailOut)
