@@ -1,0 +1,115 @@
+name: communitai
+region: nyc
+
+services:
+  # ── Backend API ────────────────────────────────────────────────────────────
+  - name: backend
+    source_dir: backend
+    github:
+      branch: main
+      deploy_on_push: true
+    run_command: uvicorn main:app --host 0.0.0.0 --port $PORT
+    build_command: pip install -r requirements.txt
+    environment_slug: python
+    instance_size_slug: basic-xxs
+    instance_count: 1
+    http_port: 8080
+    envs:
+      - key: DATABASE_URL
+        scope: RUN_TIME
+        type: SECRET
+      - key: DO_SPACES_KEY
+        scope: RUN_TIME
+        type: SECRET
+      - key: DO_SPACES_SECRET
+        scope: RUN_TIME
+        type: SECRET
+      - key: DO_SPACES_REGION
+        scope: RUN_TIME
+        value: auto
+      - key: DO_SPACES_BUCKET
+        scope: RUN_TIME
+        value: communitai-storage
+      - key: DO_SPACES_ENDPOINT
+        scope: RUN_TIME
+        type: SECRET
+      - key: AGENT_ENDPOINT_URL
+        scope: RUN_TIME
+        value: ${agent.PUBLIC_URL}
+      - key: AGENT_API_KEY
+        scope: RUN_TIME
+        type: SECRET
+      - key: GRADIENT_API_KEY
+        scope: RUN_TIME
+        type: SECRET
+      - key: GRADIENT_MODEL_ACCESS_KEY
+        scope: RUN_TIME
+        type: SECRET
+      - key: OPENAI_API_KEY
+        scope: RUN_TIME
+        type: SECRET
+      - key: JWT_SECRET
+        scope: RUN_TIME
+        type: SECRET
+      - key: ALLOWED_ORIGINS
+        scope: RUN_TIME
+        type: SECRET
+      - key: DEMO_EMAIL
+        scope: RUN_TIME
+        value: demo@communitai.app
+      - key: DEMO_PASSWORD
+        scope: RUN_TIME
+        type: SECRET
+
+  # ── Agent (AI Pipeline) ────────────────────────────────────────────────────
+  - name: agent
+    source_dir: agent
+    github:
+      branch: main
+      deploy_on_push: true
+    run_command: uvicorn server:app --host 0.0.0.0 --port $PORT
+    build_command: pip install -r requirements.txt
+    environment_slug: python
+    instance_size_slug: basic-xxs
+    instance_count: 1
+    http_port: 8080
+    envs:
+      - key: DATABASE_URL
+        scope: RUN_TIME
+        type: SECRET
+      - key: DO_SPACES_KEY
+        scope: RUN_TIME
+        type: SECRET
+      - key: DO_SPACES_SECRET
+        scope: RUN_TIME
+        type: SECRET
+      - key: DO_SPACES_REGION
+        scope: RUN_TIME
+        value: auto
+      - key: DO_SPACES_BUCKET
+        scope: RUN_TIME
+        value: communitai-storage
+      - key: DO_SPACES_ENDPOINT
+        scope: RUN_TIME
+        type: SECRET
+      - key: AGENT_API_KEY
+        scope: RUN_TIME
+        type: SECRET
+      - key: GRADIENT_API_KEY
+        scope: RUN_TIME
+        type: SECRET
+      - key: GRADIENT_MODEL_ACCESS_KEY
+        scope: RUN_TIME
+        type: SECRET
+      - key: GROQ_API_KEY
+        scope: RUN_TIME
+        type: SECRET
+      - key: OPENAI_API_KEY
+        scope: RUN_TIME
+        type: SECRET
+      - key: GRADIENT_INFERENCE_MODEL
+        scope: RUN_TIME
+        value: llama3.3-70b-instruct
+      - key: GRADIENT_INFERENCE_URL
+        scope: RUN_TIME
+        value: https://inference.do-ai.run/v1/chat/completions
