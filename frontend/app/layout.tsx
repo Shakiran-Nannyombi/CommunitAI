@@ -7,15 +7,11 @@ export const metadata: Metadata = {
     description: "AI-powered Chief of Staff for community leaders",
 };
 
-export default function RootLayout({
-    children,
-}: {
-    children: React.ReactNode;
-}) {
+export default function RootLayout({ children }: { children: React.ReactNode }) {
     return (
         <html lang="en">
-            <body>
-                <ToastProvider>{children}</ToastProvider>
+            <body className="min-h-screen bg-black text-white flex" suppressHydrationWarning>
+                {children}
             </body>
         </html>
     );

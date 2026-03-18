@@ -18,7 +18,7 @@ from sqlalchemy.orm import selectinload
 
 from backend.db import get_db
 from backend.models.db import Meeting
-from backend.schemas.api import MeetingCreate, MeetingDetailOut
+from backend.schemas.api import MeetingCreate, MeetingDetailOut, ActionItemOut
 from backend.services import agent_client, spaces
 
 router = APIRouter(tags=["meetings"])
@@ -29,11 +29,13 @@ def _build_detail(meeting: Meeting) -> MeetingDetailOut:
     return MeetingDetailOut(
         id=meeting.id,
         title=meeting.title,
+        user_id=meeting.user_id,
+        workspace_id=meeting.workspace_id,
         status=meeting.status,
         audio_url=meeting.audio_url,
         created_at=meeting.created_at,
         transcript=meeting.transcript.content if meeting.transcript else None,
-        action_items=meeting.action_items,
+        action_items=[ActionItemOut.model_validate(a) for a in meeting.action_items],
         sentiment=meeting.sentiment_report,
         summary=meeting.summary.content if meeting.summary else None,
     )
@@ -44,7 +46,7 @@ async def create_meeting(
     payload: MeetingCreate,
     db: AsyncSession = Depends(get_db),
 ) -> MeetingDetailOut:
-    meeting = Meeting(title=payload.title, user_id=payload.user_id)
+    meeting = Meeting(title=payload.title, user_id=payload.user_id, workspace_id=payload.workspace_id)
     db.add(meeting)
     await db.flush()  # populate meeting.id before commit
 

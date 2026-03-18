@@ -1,6 +1,11 @@
 context.txt
 .kiro/*
 
+# Python virtual envs
+.venv/
+venv/
+env/
+
 # Python
 # Byte-compiled / optimized / DLL files
 __pycache__/
@@ -18,8 +23,8 @@ dist/
 downloads/
 eggs/
 .eggs/
-lib/
-lib64/
+# lib/ and lib64/ are Python venv dirs, not source folders
+# lib64/
 parts/
 sdist/
 var/
@@ -95,6 +100,8 @@ node_modules/
 # next.js
 /.next/
 /out/
+frontend/.next/
+frontend/out/
 
 # production
 /build

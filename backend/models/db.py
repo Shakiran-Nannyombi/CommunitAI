@@ -30,6 +30,39 @@ except ModuleNotFoundError:
     from db import Base  # when running alembic from inside backend/
 
 
+class User(Base):
+    __tablename__ = "users"
+
+    id: Mapped[uuid.UUID] = mapped_column(
+        UUID(as_uuid=True), primary_key=True, default=uuid.uuid4
+    )
+    email: Mapped[str] = mapped_column(String, nullable=False, unique=True, index=True)
+    hashed_password: Mapped[str] = mapped_column(Text, nullable=False)
+    display_name: Mapped[str] = mapped_column(Text, nullable=False, default="")
+    is_demo: Mapped[bool] = mapped_column(Boolean, nullable=False, default=False)
+    created_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True), nullable=False, server_default=func.now()
+    )
+
+
+class Workspace(Base):
+    __tablename__ = "workspaces"
+
+    id: Mapped[uuid.UUID] = mapped_column(
+        UUID(as_uuid=True), primary_key=True, default=uuid.uuid4
+    )
+    user_id: Mapped[str] = mapped_column(String, nullable=False)
+    name: Mapped[str] = mapped_column(Text, nullable=False)
+    icon_emoji: Mapped[str] = mapped_column(String, nullable=False, default="🏘️")
+    created_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True), nullable=False, server_default=func.now()
+    )
+
+    meetings: Mapped[list["Meeting"]] = relationship(
+        "Meeting", back_populates="workspace", cascade="all, delete-orphan"
+    )
+
+
 class Meeting(Base):
     __tablename__ = "meetings"
 
@@ -37,6 +70,11 @@ class Meeting(Base):
         UUID(as_uuid=True), primary_key=True, default=uuid.uuid4
     )
     user_id: Mapped[str] = mapped_column(String, nullable=False)
+    workspace_id: Mapped[uuid.UUID | None] = mapped_column(
+        UUID(as_uuid=True),
+        ForeignKey("workspaces.id", ondelete="SET NULL"),
+        nullable=True,
+    )
     title: Mapped[str] = mapped_column(Text, nullable=False)
     status: Mapped[str] = mapped_column(
         String,
@@ -51,6 +89,9 @@ class Meeting(Base):
     )
 
     # Relationships
+    workspace: Mapped["Workspace | None"] = relationship(
+        "Workspace", back_populates="meetings"
+    )
     transcript: Mapped["Transcript | None"] = relationship(
         "Transcript", back_populates="meeting", uselist=False, cascade="all, delete-orphan"
     )
