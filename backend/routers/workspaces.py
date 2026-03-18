@@ -5,20 +5,32 @@ GET  /workspaces          — list workspaces for a user
 POST /workspaces          — create a workspace
 GET  /tasks               — global action items across all meetings for a user
 POST /action-items/{id}/nudge — generate a Slack/Discord nudge message via Gradient AI
+GET  /workspaces/{id}/impact  — impact tracker analytics for a workspace
 """
 
 import httpx
+from datetime import date, timedelta
 from uuid import UUID
 
 from fastapi import APIRouter, Depends, HTTPException
-from sqlalchemy import select
+from sqlalchemy import select, text
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import selectinload
 
 from backend.config import settings
 from backend.db import get_db
 from backend.models.db import ActionItem, Meeting, Workspace
-from backend.schemas.api import GlobalActionItemOut, NudgeOut, WorkspaceCreate, WorkspaceOut
+from backend.schemas.api import (
+    AssigneeActivity,
+    GlobalActionItemOut,
+    ImpactOut,
+    NudgeOut,
+    SentimentTrendItem,
+    WeeklyMeetingCount,
+    WorkspaceCreate,
+    WorkspaceOut,
+    WorkspaceUpdate,
+)
 
 router = APIRouter(tags=["workspaces"])
 
@@ -46,6 +58,25 @@ async def create_workspace(
 ) -> WorkspaceOut:
     ws = Workspace(name=payload.name, icon_emoji=payload.icon_emoji, user_id=payload.user_id)
     db.add(ws)
+    await db.flush()
+    await db.refresh(ws)
+    return WorkspaceOut.model_validate(ws)
+
+
+@router.patch("/workspaces/{workspace_id}", response_model=WorkspaceOut)
+async def update_workspace(
+    workspace_id: UUID,
+    payload: WorkspaceUpdate,
+    db: AsyncSession = Depends(get_db),
+) -> WorkspaceOut:
+    result = await db.execute(select(Workspace).where(Workspace.id == workspace_id))
+    ws = result.scalar_one_or_none()
+    if ws is None:
+        raise HTTPException(status_code=404, detail="Workspace not found")
+
+    if payload.slack_webhook_url is not None or "slack_webhook_url" in payload.model_fields_set:
+        ws.slack_webhook_url = payload.slack_webhook_url
+
     await db.flush()
     await db.refresh(ws)
     return WorkspaceOut.model_validate(ws)
@@ -132,3 +163,118 @@ async def generate_nudge(
 
     message = resp.json()["choices"][0]["message"]["content"].strip()
     return NudgeOut(message=message)
+
+
+@router.get("/workspaces/{workspace_id}/impact", response_model=ImpactOut)
+async def get_workspace_impact(
+    workspace_id: UUID,
+    db: AsyncSession = Depends(get_db),
+) -> ImpactOut:
+    """Return impact analytics for a workspace: meetings/week, completion rate, sentiment trend, top assignees."""
+
+    # Check workspace exists and count total meetings for has_enough_data flag
+    meeting_count_result = await db.execute(
+        select(Meeting).where(Meeting.workspace_id == workspace_id)
+    )
+    all_meetings = meeting_count_result.scalars().all()
+    has_enough_data = len(all_meetings) >= 2
+
+    # 1. Meetings per week (last 12 weeks) — fill missing weeks with 0
+    meetings_per_week_result = await db.execute(
+        text(
+            """
+            SELECT date_trunc('week', created_at)::date AS week_start, count(*) AS cnt
+            FROM meetings
+            WHERE workspace_id = :workspace_id
+              AND created_at >= now() - interval '12 weeks'
+            GROUP BY 1
+            ORDER BY 1
+            """
+        ),
+        {"workspace_id": workspace_id},
+    )
+    raw_weeks = {row.week_start: row.cnt for row in meetings_per_week_result}
+
+    # Build a full 12-week series, filling gaps with 0
+    today = date.today()
+    # Start of the current week (Monday)
+    current_week_start = today - timedelta(days=today.weekday())
+    meetings_per_week: list[WeeklyMeetingCount] = []
+    for i in range(11, -1, -1):
+        week_start = current_week_start - timedelta(weeks=i)
+        meetings_per_week.append(
+            WeeklyMeetingCount(week_start=week_start, count=raw_weeks.get(week_start, 0))
+        )
+
+    # 2. Task completion rate
+    completion_result = await db.execute(
+        text(
+            """
+            SELECT
+                count(*) FILTER (WHERE action_items.completed) AS completed_count,
+                count(*) AS total_count
+            FROM action_items
+            JOIN meetings ON action_items.meeting_id = meetings.id
+            WHERE meetings.workspace_id = :workspace_id
+            """
+        ),
+        {"workspace_id": workspace_id},
+    )
+    comp_row = completion_result.one()
+    if comp_row.total_count == 0:
+        task_completion_rate = 0.0
+    else:
+        task_completion_rate = comp_row.completed_count / comp_row.total_count
+
+    # 3. Sentiment trend (last 5 meetings, returned in chronological order)
+    sentiment_result = await db.execute(
+        text(
+            """
+            SELECT m.title, m.created_at, sr.classification
+            FROM meetings m
+            JOIN sentiment_reports sr ON sr.meeting_id = m.id
+            WHERE m.workspace_id = :workspace_id
+            ORDER BY m.created_at DESC
+            LIMIT 5
+            """
+        ),
+        {"workspace_id": workspace_id},
+    )
+    # Reverse to get chronological (oldest first) order
+    sentiment_rows = list(sentiment_result)
+    sentiment_trend = [
+        SentimentTrendItem(
+            meeting_title=row.title,
+            created_at=row.created_at,
+            classification=row.classification,
+        )
+        for row in reversed(sentiment_rows)
+    ]
+
+    # 4. Top assignees (top 5 by task count)
+    assignees_result = await db.execute(
+        text(
+            """
+            SELECT assignee, count(*) AS task_count
+            FROM action_items
+            JOIN meetings ON action_items.meeting_id = meetings.id
+            WHERE meetings.workspace_id = :workspace_id
+            GROUP BY assignee
+            ORDER BY task_count DESC
+            LIMIT 5
+            """
+        ),
+        {"workspace_id": workspace_id},
+    )
+    top_assignees = [
+        AssigneeActivity(assignee=row.assignee, task_count=row.task_count)
+        for row in assignees_result
+    ]
+
+    return ImpactOut(
+        meetings_per_week=meetings_per_week,
+        task_completion_rate=task_completion_rate,
+        sentiment_trend=sentiment_trend,
+        top_assignees=top_assignees,
+        has_enough_data=has_enough_data,
+    )

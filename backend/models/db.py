@@ -58,8 +58,13 @@ class Workspace(Base):
         DateTime(timezone=True), nullable=False, server_default=func.now()
     )
 
+    slack_webhook_url: Mapped[str | None] = mapped_column(Text, nullable=True)
+
     meetings: Mapped[list["Meeting"]] = relationship(
         "Meeting", back_populates="workspace", cascade="all, delete-orphan"
+    )
+    planner_messages: Mapped[list["PlannerMessage"]] = relationship(
+        "PlannerMessage", back_populates="workspace", cascade="all, delete-orphan"
     )
 
 
@@ -196,3 +201,20 @@ class Summary(Base):
     )
 
     meeting: Mapped["Meeting"] = relationship("Meeting", back_populates="summary")
+
+
+class PlannerMessage(Base):
+    __tablename__ = "planner_messages"
+
+    id: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
+    workspace_id: Mapped[uuid.UUID] = mapped_column(
+        UUID(as_uuid=True), ForeignKey("workspaces.id", ondelete="CASCADE"), nullable=False
+    )
+    user_id: Mapped[str] = mapped_column(Text, nullable=False)
+    role: Mapped[str] = mapped_column(String, nullable=False)   # user | assistant | system
+    content: Mapped[str] = mapped_column(Text, nullable=False)
+    created_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True), nullable=False, server_default=func.now()
+    )
+
+    workspace: Mapped["Workspace"] = relationship("Workspace", back_populates="planner_messages")
