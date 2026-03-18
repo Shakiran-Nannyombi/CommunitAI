@@ -46,16 +46,16 @@ export function Sidebar() {
     ];
 
     return (
-        <aside className="w-72 shrink-0 bg-[#0d0d0d] border-r border-white/5 flex flex-col h-screen sticky top-0 overflow-hidden">
+        <aside className="w-72 shrink-0 bg-background border-r border-text/5 flex flex-col h-screen sticky top-0 overflow-hidden">
             {/* Logo */}
             <div className="p-8 pb-6">
                 <Link href="/dashboard" className="flex items-center gap-3 group">
-                    <div className="w-10 h-10 rounded-xl bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center group-hover:bg-emerald-500/20 transition-all duration-300 shadow-lg shadow-emerald-500/5">
-                        <Zap className="w-5 h-5 text-emerald-400" />
+                    <div className="w-10 h-10 rounded-xl bg-accent/10 border border-accent/20 flex items-center justify-center group-hover:bg-accent/20 transition-all duration-300 shadow-lg shadow-accent/5">
+                        <Zap className="w-5 h-5 text-accent" />
                     </div>
                     <div>
-                        <span className="text-white font-bold text-xl tracking-tight block">CommunitAI</span>
-                        <span className="text-[10px] font-bold text-emerald-500/60 uppercase tracking-widest block -mt-1">Chief of Staff</span>
+                        <span className="text-text font-bold text-xl tracking-tight block">CommunitAI</span>
+                        <span className="text-[10px] font-bold text-accent/60 uppercase tracking-widest block -mt-1">Chief of Staff</span>
                     </div>
                 </Link>
             </div>
@@ -76,11 +76,11 @@ export function Sidebar() {
                             href={item.href}
                             className={`flex items-center gap-3 px-4 py-4 rounded-2xl text-sm font-semibold transition-all duration-300 group ${
                                 isActive
-                                    ? "bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 shadow-lg shadow-emerald-500/5"
-                                    : "text-zinc-500 hover:text-white hover:bg-white/5 border border-transparent"
+                                    ? "bg-accent/10 text-accent border border-accent/20 shadow-lg shadow-accent/5"
+                                    : "text-text/50 hover:text-text hover:bg-text/5 border border-transparent"
                             }`}
                         >
-                            <item.icon className={`w-5 h-5 transition-colors duration-300 ${isActive ? "text-emerald-400" : "text-zinc-600 group-hover:text-zinc-400"}`} />
+                            <item.icon className={`w-5 h-5 transition-colors duration-300 ${isActive ? "text-accent" : "text-text/40 group-hover:text-text/60"}`} />
                             {item.label}
                         </Link>
                     );
@@ -128,15 +128,15 @@ export function Sidebar() {
             {/* User / Footer */}
             <div className="p-4 mt-auto">
                 {user && (
-                    <div className="flex items-center gap-3 p-3.5 rounded-4xl bg-zinc-900/50 border border-white/5 backdrop-blur-xl">
-                        <div className="w-10 h-10 rounded-full bg-emerald-500/10 flex items-center justify-center text-sm font-bold text-emerald-400 border border-emerald-500/20 shadow-inner">
+                    <div className="flex items-center gap-3 p-3.5 rounded-4xl bg-text/5 border border-text/10 backdrop-blur-xl">
+                        <div className="w-10 h-10 rounded-full bg-accent/10 flex items-center justify-center text-sm font-bold text-accent border border-accent/20 shadow-inner">
                             {user.display_name?.[0]?.toUpperCase() || user.email[0].toUpperCase()}
                         </div>
                         <div className="flex-1 min-w-0">
-                            <p className="text-sm font-bold text-white truncate">{user.display_name || user.email}</p>
-                            <p className="text-[10px] font-bold text-zinc-500 truncate uppercase tracking-tight">{user.is_demo ? "Demo Account" : "Pro Plan"}</p>
+                            <p className="text-sm font-bold text-text truncate">{user.display_name || user.email}</p>
+                            <p className="text-[10px] font-bold text-text/50 truncate uppercase tracking-tight">{user.is_demo ? "Demo Account" : "Pro Plan"}</p>
                         </div>
-                        <button onClick={logout} className="p-2.5 rounded-full text-zinc-500 hover:text-red-400 hover:bg-red-500/10 transition-all duration-300">
+                        <button onClick={logout} className="p-2.5 rounded-full text-text/40 hover:text-red-500/80 hover:bg-red-500/10 transition-all duration-300">
                             <LogOut className="w-4 h-4" />
                         </button>
                     </div>

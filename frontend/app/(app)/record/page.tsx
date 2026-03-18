@@ -199,11 +199,11 @@ export default function RecordPage() {
     if (supported === null) return null;
 
     return (
-        <div className="flex flex-col min-h-screen">
+        <div className="flex flex-col min-h-screen bg-background">
             <main className="flex-1 flex flex-col items-center justify-start p-10 max-w-3xl w-full mx-auto space-y-8">
                 <div className="w-full">
-                    <h1 className="text-3xl font-bold text-white tracking-tight">Record Meeting</h1>
-                    <p className="text-zinc-500 mt-2">Capture your community discussions and generate instant insights.</p>
+                    <h1 className="text-3xl font-bold text-text tracking-tight">Record Meeting</h1>
+                    <p className="text-text/50 mt-2">Capture your community discussions and generate instant insights.</p>
                 </div>
 
                 {/* ── Unsupported: error banner + fallback form ── */}
@@ -234,33 +234,33 @@ export default function RecordPage() {
                     <>
                         {/* ── IDLE: mode toggle + start button ── */}
                         {recordState === "idle" && (
-                            <section className="w-full bg-zinc-950 border border-zinc-800 rounded p-6 space-y-5">
-                                <p className="text-xs text-zinc-500 uppercase tracking-widest">New Recording</p>
+                            <section className="w-full bg-background border border-text/10 rounded p-6 space-y-5">
+                                <p className="text-xs text-text/50 uppercase tracking-widest">New Recording</p>
 
                                 {uploadError && (
-                                    <div className="bg-red-950/40 border border-red-800 rounded px-3 py-2 text-xs text-red-400">
+                                    <div className="bg-red-500/10 border border-red-500/20 rounded px-3 py-2 text-xs text-red-500">
                                         {uploadError}
                                     </div>
                                 )}
 
                                 {/* Audio mode toggle */}
                                 <div>
-                                    <p className="text-xs text-zinc-500 mb-2 uppercase tracking-widest">Audio Source</p>
+                                    <p className="text-xs text-text/50 mb-2 uppercase tracking-widest">Audio Source</p>
                                     <div className="flex gap-2">
                                         {(["system", "microphone"] as AudioMode[]).map(mode => (
                                             <button
                                                 key={mode}
                                                 onClick={() => setAudioMode(mode)}
                                                 className={`px-4 py-2 text-xs rounded border transition ${audioMode === mode
-                                                    ? "border-green-600 text-green-400 bg-green-950/40"
-                                                    : "border-zinc-800 text-zinc-500 hover:border-zinc-600 hover:text-zinc-300"
+                                                    ? "border-accent text-accent bg-accent/10"
+                                                    : "border-text/10 text-text/50 hover:border-text/20 hover:text-text/70"
                                                     }`}
                                             >
                                                 {mode === "system" ? "🔊 System Audio" : "🎙 Microphone"}
                                             </button>
                                         ))}
                                     </div>
-                                    <p className="text-xs text-zinc-600 mt-2">
+                                    <p className="text-xs text-text/40 mt-2">
                                         {audioMode === "system"
                                             ? "Captures audio from your browser tab or system."
                                             : "Captures audio from your microphone only."}
@@ -269,7 +269,7 @@ export default function RecordPage() {
 
                                 <button
                                     onClick={startRecording}
-                                    className="w-full py-3 bg-green-700 hover:bg-green-600 text-black font-bold text-xs uppercase tracking-widest rounded transition"
+                                    className="w-full py-3 bg-accent hover:bg-accent/90 text-background font-bold text-xs uppercase tracking-widest rounded transition"
                                 >
                                     ● Start Recording
                                 </button>
@@ -278,20 +278,20 @@ export default function RecordPage() {
 
                         {/* ── RECORDING: timer + indicator + stop ── */}
                         {recordState === "recording" && (
-                            <section className="w-full bg-zinc-950 border border-zinc-800 rounded p-6 space-y-5 text-center">
+                            <section className="w-full bg-background border border-text/10 rounded p-6 space-y-5 text-center">
                                 <div className="flex items-center justify-center gap-3">
                                     <span className="w-3 h-3 rounded-full bg-red-500 animate-pulse" aria-label="Recording indicator" />
-                                    <span className="text-red-400 text-xs uppercase tracking-widest">Recording</span>
+                                    <span className="text-red-500 text-xs uppercase tracking-widest">Recording</span>
                                 </div>
-                                <p className="text-4xl tabular-nums text-white font-bold" aria-label="Elapsed time">
+                                <p className="text-4xl tabular-nums text-text font-bold" aria-label="Elapsed time">
                                     {formatElapsed(elapsed)}
                                 </p>
-                                <p className="text-xs text-zinc-600">
+                                <p className="text-xs text-text/40">
                                     {audioMode === "system" ? "🔊 System Audio" : "🎙 Microphone"}
                                 </p>
                                 <button
                                     onClick={stopRecording}
-                                    className="w-full py-3 bg-red-800 hover:bg-red-700 text-white font-bold text-xs uppercase tracking-widest rounded transition"
+                                    className="w-full py-3 bg-red-500 hover:bg-red-600 text-white font-bold text-xs uppercase tracking-widest rounded transition"
                                 >
                                     ■ Stop Recording
                                 </button>
@@ -300,40 +300,40 @@ export default function RecordPage() {
 
                         {/* ── PREVIEW: video + confirm form ── */}
                         {recordState === "preview" && blob && blobUrl && (
-                            <section className="w-full bg-zinc-950 border border-zinc-800 rounded p-6 space-y-5">
-                                <p className="text-xs text-zinc-500 uppercase tracking-widest">Preview &amp; Upload</p>
+                            <section className="w-full bg-background border border-text/10 rounded p-6 space-y-5">
+                                <p className="text-xs text-text/50 uppercase tracking-widest">Preview &amp; Upload</p>
 
                                 {/* Video preview */}
                                 <video
                                     src={blobUrl}
                                     controls
-                                    className="w-full rounded border border-zinc-800 bg-black max-h-64"
+                                    className="w-full rounded border border-text/10 bg-black max-h-64"
                                 />
 
                                 {/* Size error */}
                                 {sizeError && (
-                                    <div className="bg-red-950/40 border border-red-800 rounded px-3 py-2 text-xs text-red-400">
+                                    <div className="bg-red-500/10 border border-red-500/20 rounded px-3 py-2 text-xs text-red-500">
                                         {sizeError}
                                     </div>
                                 )}
 
                                 {/* Network error (preserves blob) */}
                                 {uploadError && (
-                                    <div className="bg-red-950/40 border border-red-800 rounded px-3 py-2 text-xs text-red-400">
+                                    <div className="bg-red-500/10 border border-red-500/20 rounded px-3 py-2 text-xs text-red-500">
                                         {uploadError}
                                     </div>
                                 )}
 
-                                <p className="text-xs text-zinc-600">
+                                <p className="text-xs text-text/40">
                                     Size: {(blob.size / (1024 * 1024)).toFixed(1)} MB
                                     {blob.size > MAX_BLOB_BYTES && (
-                                        <span className="text-red-400 ml-2">— exceeds 500 MB limit</span>
+                                        <span className="text-red-500 ml-2">— exceeds 500 MB limit</span>
                                     )}
                                 </p>
 
                                 {/* Title input */}
                                 <div>
-                                    <label className="block text-xs text-zinc-500 mb-1.5 uppercase tracking-widest">
+                                    <label className="block text-xs text-text/50 mb-1.5 uppercase tracking-widest">
                                         Meeting Title
                                     </label>
                                     <input
@@ -342,7 +342,7 @@ export default function RecordPage() {
                                         onChange={e => setTitle(e.target.value)}
                                         placeholder="e.g. Weekly Sync"
                                         required
-                                        className="w-full bg-black border border-zinc-800 rounded px-3 py-2 text-xs text-zinc-300 placeholder-zinc-700 focus:outline-none focus:border-green-700 transition"
+                                        className="w-full bg-text/5 border border-text/10 rounded px-3 py-2 text-xs text-text placeholder-text/20 focus:outline-none focus:border-accent transition"
                                     />
                                 </div>
 
@@ -358,14 +358,14 @@ export default function RecordPage() {
                                     <button
                                         onClick={handleConfirmUpload}
                                         disabled={uploading || !title.trim()}
-                                        className="flex-1 py-2.5 bg-green-700 hover:bg-green-600 disabled:opacity-50 text-black font-bold text-xs uppercase tracking-widest rounded transition"
+                                        className="flex-1 py-2.5 bg-accent hover:bg-accent/90 disabled:opacity-50 text-background font-bold text-xs uppercase tracking-widest rounded transition"
                                     >
                                         {uploading ? "Uploading..." : "Confirm & Upload"}
                                     </button>
                                     <button
                                         onClick={discardRecording}
                                         disabled={uploading}
-                                        className="px-5 border border-zinc-800 hover:border-zinc-600 text-zinc-500 hover:text-zinc-300 text-xs rounded transition"
+                                        className="px-5 border border-text/10 hover:border-text/20 text-text/50 hover:text-text/70 text-xs rounded transition"
                                     >
                                         Discard
                                     </button>
@@ -415,17 +415,17 @@ function WorkspaceSelector({ workspaces, workspaceId, setWorkspaceId }: Workspac
     if (workspaces.length === 0) return null;
     return (
         <div>
-            <label className="block text-xs text-zinc-500 mb-1.5 uppercase tracking-widest">
+            <label className="block text-xs text-text/50 mb-1.5 uppercase tracking-widest">
                 Workspace (optional)
             </label>
             <select
                 value={workspaceId}
                 onChange={e => setWorkspaceId(e.target.value)}
-                className="w-full bg-black border border-zinc-800 rounded px-3 py-2 text-xs text-zinc-300 focus:outline-none focus:border-green-700 transition"
+                className="w-full bg-text/5 border border-text/10 rounded px-3 py-2 text-xs text-text focus:outline-none focus:border-accent transition appearance-none"
             >
                 <option value="">— None —</option>
                 {workspaces.map(ws => (
-                    <option key={ws.id} value={ws.id}>
+                    <option key={ws.id} value={ws.id} className="bg-background">
                         {ws.icon_emoji} {ws.name}
                     </option>
                 ))}
@@ -456,17 +456,17 @@ function FallbackForm({
     onSubmit,
 }: FallbackFormProps) {
     return (
-        <form onSubmit={onSubmit} className="w-full bg-zinc-950 border border-zinc-800 rounded p-6 space-y-4">
-            <p className="text-xs text-zinc-500 uppercase tracking-widest">Upload Audio / Video File</p>
+        <form onSubmit={onSubmit} className="w-full bg-background border border-text/10 rounded p-6 space-y-4">
+            <p className="text-xs text-text/50 uppercase tracking-widest">Upload Audio / Video File</p>
 
             {(uploadError || sizeError) && (
-                <div className="bg-red-950/40 border border-red-800 rounded px-3 py-2 text-xs text-red-400">
+                <div className="bg-red-500/10 border border-red-500/20 rounded px-3 py-1 text-xs text-red-500">
                     {sizeError || uploadError}
                 </div>
             )}
 
             <div>
-                <label className="block text-xs text-zinc-500 mb-1.5 uppercase tracking-widest">
+                <label className="block text-xs text-text/50 mb-1.5 uppercase tracking-widest">
                     Meeting Title
                 </label>
                 <input
@@ -475,12 +475,12 @@ function FallbackForm({
                     onChange={e => setTitle(e.target.value)}
                     placeholder="e.g. Weekly Sync"
                     required
-                    className="w-full bg-black border border-zinc-800 rounded px-3 py-2 text-xs text-zinc-300 placeholder-zinc-700 focus:outline-none focus:border-green-700 transition"
+                    className="w-full bg-text/5 border border-text/10 rounded px-3 py-2 text-xs text-text placeholder-text/20 focus:outline-none focus:border-accent transition"
                 />
             </div>
 
             <div>
-                <label className="block text-xs text-zinc-500 mb-1.5 uppercase tracking-widest">
+                <label className="block text-xs text-text/50 mb-1.5 uppercase tracking-widest">
                     Audio / Video File
                 </label>
                 <input
@@ -488,10 +488,10 @@ function FallbackForm({
                     accept="audio/*,video/*"
                     required
                     onChange={e => setFallbackFile(e.target.files?.[0] ?? null)}
-                    className="w-full text-xs text-zinc-400 file:mr-3 file:py-1.5 file:px-3 file:rounded file:border-0 file:text-xs file:bg-zinc-800 file:text-zinc-300 hover:file:bg-zinc-700 transition"
+                    className="w-full text-xs text-text/40 file:mr-3 file:py-1.5 file:px-3 file:rounded file:border-0 file:text-xs file:bg-text/10 file:text-text/70 hover:file:bg-text/20 transition"
                 />
                 {fallbackFile && (
-                    <p className="text-xs text-zinc-600 mt-1">
+                    <p className="text-xs text-text/30 mt-1">
                         {fallbackFile.name} — {(fallbackFile.size / (1024 * 1024)).toFixed(1)} MB
                     </p>
                 )}
@@ -506,7 +506,7 @@ function FallbackForm({
             <button
                 type="submit"
                 disabled={uploading || !title.trim() || !fallbackFile}
-                className="w-full py-2.5 bg-green-700 hover:bg-green-600 disabled:opacity-50 text-black font-bold text-xs uppercase tracking-widest rounded transition"
+                className="w-full py-2.5 bg-accent hover:bg-accent/90 disabled:opacity-50 text-background font-bold text-xs uppercase tracking-widest rounded transition"
             >
                 {uploading ? "Uploading..." : "Upload"}
             </button>

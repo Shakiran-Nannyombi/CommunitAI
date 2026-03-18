@@ -12,8 +12,33 @@
     --color-green-800: #166534;
     --color-green-900: #14532d;
     --color-green-950: #052e16;
+    
+    /* New Theme Tokens */
+    --color-text: var(--text);
+    --color-background: var(--background);
+    --color-primary: var(--primary);
+    --color-secondary: var(--secondary);
+    --color-accent: var(--accent);
+    
     --font-mono: "JetBrains Mono", "Fira Code", "Cascadia Code", ui-monospace, monospace;
     --font-sans: system-ui, -apple-system, "Segoe UI", sans-serif;
+}
+
+@layer base {
+  :root {
+    --text: #161d17;
+    --background: #f9fbf9;
+    --primary: #325832;
+    --secondary: #90cb91;
+    --accent: #42ae44;
+  }
+  .dark {
+    --text: #e2e9e3;
+    --background: #040604;
+    --primary: #a7cda7;
+    --secondary: #346f35;
+    --accent: #51bd53;
+  }
 }
 
 /* ── Design tokens ─────────────────────────────────────────────────────────── */
@@ -21,33 +46,29 @@
     /* Base scale — 16px root so rem units are predictable */
     font-size: 16px;
 
-    /* App (dark terminal) context */
-    --app-bg: #000;
-    --app-surface: #030303;
-    --app-surface-2: #0a0a0a;
-    --app-border: #18181b;
-    --app-border-2: #27272a;
-    --app-text: #d4d4d8;
-    /* primary readable text */
-    --app-text-muted: #71717a;
-    /* secondary */
-    --app-text-dim: #52525b;
-    /* tertiary / labels */
-    --app-text-faint: #3f3f46;
-    /* very dim / decorative */
-    --app-green: #4ade80;
-    --app-green-dim: #16a34a;
+    /* App context mapped to new tokens */
+    --app-bg: var(--background);
+    --app-surface: var(--background);
+    --app-surface-2: color-mix(in srgb, var(--background), var(--text) 5%);
+    --app-border: color-mix(in srgb, var(--background), var(--text) 10%);
+    --app-border-2: color-mix(in srgb, var(--background), var(--text) 20%);
+    --app-text: var(--text);
+    --app-text-muted: color-mix(in srgb, var(--text), transparent 30%);
+    --app-text-dim: color-mix(in srgb, var(--text), transparent 50%);
+    --app-text-faint: color-mix(in srgb, var(--text), transparent 70%);
+    --app-green: var(--accent);
+    --app-green-dim: var(--primary);
 
-    /* Marketing (light) context */
-    --mkt-bg: #fff;
-    --mkt-text: #111827;
-    --mkt-text-muted: #6b7280;
-    --mkt-text-sub: #374151;
-    --mkt-border: #e5e7eb;
-    --mkt-surface: #f9fafb;
-    --mkt-green: #16a34a;
-    --mkt-green-light: #f0fdf4;
-    --mkt-green-border: #bbf7d0;
+    /* Marketing (light) context mapped to new tokens */
+    --mkt-bg: var(--background);
+    --mkt-text: var(--text);
+    --mkt-text-muted: color-mix(in srgb, var(--text), transparent 40%);
+    --mkt-text-sub: color-mix(in srgb, var(--text), transparent 20%);
+    --mkt-border: color-mix(in srgb, var(--background), var(--text) 10%);
+    --mkt-surface: color-mix(in srgb, var(--background), var(--text) 2%);
+    --mkt-green: var(--accent);
+    --mkt-green-light: color-mix(in srgb, var(--accent), transparent 90%);
+    --mkt-green-border: color-mix(in srgb, var(--accent), transparent 70%);
 
     /* Shared type scale */
     --text-xs: 0.75rem;

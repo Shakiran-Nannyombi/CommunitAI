@@ -134,23 +134,23 @@ export default function CommandCentre() {
     ];
 
     return (
-        <div className="flex flex-col h-screen">
+        <div className="flex flex-col h-screen bg-background">
             {/* Header */}
-            <header className="shrink-0 border-b border-white/5 bg-[#0d0d0d]/80 backdrop-blur-md px-10 py-6 flex items-center justify-between">
+            <header className="shrink-0 border-b border-text/5 bg-background/80 backdrop-blur-md px-10 py-6 flex items-center justify-between">
                 <div className="flex items-center gap-4">
-                    <div className="w-12 h-12 rounded-2xl bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center shadow-lg shadow-emerald-500/5">
+                    <div className="w-12 h-12 rounded-2xl bg-accent/10 border border-accent/20 flex items-center justify-center shadow-lg shadow-accent/5">
                         {(() => {
                             const Icon = TABS_INFO.find(t => t.id === tab)?.icon || LayoutDashboard;
-                            return <Icon className="w-6 h-6 text-emerald-400" />;
+                            return <Icon className="w-6 h-6 text-accent" />;
                         })()}
                     </div>
                     <div>
-                        <h1 className="text-xl font-bold text-white tracking-tight capitalize">
+                        <h1 className="text-xl font-bold text-text tracking-tight capitalize">
                             {TABS_INFO.find(t => t.id === tab)?.label ?? "Dashboard"}
                         </h1>
                         <div className="flex items-center gap-2 mt-0.5">
-                            <span className="w-1.5 h-1.5 rounded-full bg-emerald-500/50" />
-                            <p className="text-xs font-semibold text-zinc-500 uppercase tracking-widest">
+                            <span className="w-1.5 h-1.5 rounded-full bg-accent/50" />
+                            <p className="text-xs font-semibold text-text/50 uppercase tracking-widest">
                                 {tab === "overview" ? `${workspaces.length} Workspaces · ${pendingTasks.length} Open Tasks` : tab === "tasks" ? `${pendingTasks.length} Open · ${tasks.length} Total` : `${meetings.length} Meetings total`}
                             </p>
                         </div>
@@ -164,7 +164,7 @@ export default function CommandCentre() {
                         </div>
                     )}
                     <button onClick={() => setTab("meetings")}
-                        className="flex items-center gap-2 text-sm font-bold px-6 py-2.5 rounded-2xl bg-emerald-500 text-black hover:bg-emerald-400 transition-all duration-300 shadow-xl shadow-emerald-500/20 active:scale-95">
+                        className="flex items-center gap-2 text-sm font-bold px-6 py-2.5 rounded-2xl bg-accent text-background hover:bg-accent/90 transition-all duration-300 shadow-xl shadow-accent/20 active:scale-95">
                         <PlusCircle className="w-5 h-5" />
                         New Meeting
                     </button>
@@ -177,12 +177,12 @@ export default function CommandCentre() {
                     {loading ? (
                         <div className="flex flex-col items-center justify-center h-full">
                             <div className="relative">
-                                <div className="w-12 h-12 border-4 border-emerald-500/10 border-t-emerald-500 rounded-full animate-spin" />
+                                <div className="w-12 h-12 border-4 border-accent/10 border-t-accent rounded-full animate-spin" />
                                 <div className="absolute inset-0 flex items-center justify-center">
-                                    <Zap className="w-4 h-4 text-emerald-500/50" />
+                                    <Zap className="w-4 h-4 text-accent/50" />
                                 </div>
                             </div>
-                            <p className="text-sm font-medium text-zinc-400 mt-6 animate-pulse">Initializing your cockpit…</p>
+                            <p className="text-sm font-medium text-text/40 mt-6 animate-pulse">Initializing your cockpit…</p>
                         </div>
                     ) : (
                         <>
@@ -208,29 +208,29 @@ export default function CommandCentre() {
 
             {/* ── New Workspace Modal ── */}
             {showWsForm && (
-                <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50"
+                <div className="fixed inset-0 bg-background/60 backdrop-blur-sm flex items-center justify-center z-50"
                     onClick={() => setShowWsForm(false)}>
                     <form onSubmit={handleCreateWs} onClick={e => e.stopPropagation()}
-                        className="bg-[#141414] border border-white/10 rounded-xl w-80 p-5 shadow-2xl space-y-4">
+                        className="bg-background border border-text/10 rounded-xl w-80 p-5 shadow-2xl space-y-4">
                         <div>
-                            <h2 className="text-sm font-semibold text-white">New Workspace</h2>
-                            <p className="text-xs text-zinc-500 mt-0.5">Create a space for your team or project</p>
+                            <h2 className="text-sm font-semibold text-text">New Workspace</h2>
+                            <p className="text-xs text-text/50 mt-0.5">Create a space for your team or project</p>
                         </div>
                         <div className="flex gap-2">
-                            <div className="w-12 bg-[#0d0d0d] border border-white/5 rounded-xl flex items-center justify-center text-zinc-400">
+                            <div className="w-12 bg-text/5 border border-text/5 rounded-xl flex items-center justify-center text-text/40">
                                 <LayoutDashboard className="w-5 h-5" />
                             </div>
                             <input value={wsName} onChange={e => setWsName(e.target.value)}
                                 placeholder="Workspace name" required
-                                className="flex-1 bg-[#0d0d0d] border border-white/5 rounded-xl px-4 py-3 text-sm text-zinc-200 placeholder-zinc-600 focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500/40 transition-all duration-200" />
+                                className="flex-1 bg-text/5 border border-text/5 rounded-xl px-4 py-3 text-sm text-text placeholder-text/20 focus:outline-none focus:ring-2 focus:ring-accent/20 focus:border-accent/40 transition-all duration-200" />
                         </div>
                         <div className="flex gap-2">
                             <button type="button" onClick={() => setShowWsForm(false)}
-                                className="flex-1 py-2.5 rounded-lg border border-white/10 text-sm text-zinc-400 hover:text-white hover:bg-white/5 transition">
+                                className="flex-1 py-2.5 rounded-lg border border-text/10 text-sm text-text/40 hover:text-text hover:bg-text/5 transition">
                                 Cancel
                             </button>
                             <button type="submit"
-                                className="flex-1 py-2.5 rounded-lg bg-emerald-500 hover:bg-emerald-400 text-black font-semibold text-sm transition">
+                                className="flex-1 py-2.5 rounded-lg bg-accent hover:bg-accent/90 text-background font-semibold text-sm transition">
                                 Create
                             </button>
                         </div>
@@ -240,26 +240,26 @@ export default function CommandCentre() {
 
             {/* ── Nudge Modal ── */}
             {nudgeMsg && (
-                <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50"
+                <div className="fixed inset-0 bg-background/60 backdrop-blur-sm flex items-center justify-center z-50"
                     onClick={() => setNudgeMsg("")}>
                     <div onClick={e => e.stopPropagation()}
-                        className="bg-[#141414] border border-white/10 rounded-xl w-[420px] p-5 shadow-2xl space-y-4">
+                        className="bg-background border border-text/10 rounded-xl w-[420px] p-5 shadow-2xl space-y-4">
                         <div className="flex items-center gap-2.5">
-                            <div className="w-8 h-8 rounded-lg bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center text-emerald-400 shadow-inner">
+                            <div className="w-8 h-8 rounded-lg bg-accent/10 border border-accent/20 flex items-center justify-center text-accent shadow-inner">
                                 <Sparkles className="w-4 h-4" />
                             </div>
-                            <h2 className="text-base font-bold text-white tracking-tight">AI Insights</h2>
+                            <h2 className="text-base font-bold text-text tracking-tight">AI Insights</h2>
                         </div>
-                        <p className="text-sm text-zinc-300 leading-relaxed bg-[#0d0d0d] border border-white/5 rounded-lg p-4 whitespace-pre-wrap">
+                        <p className="text-sm text-text/80 leading-relaxed bg-text/5 border border-text/5 rounded-lg p-4 whitespace-pre-wrap">
                             {nudgeMsg}
                         </p>
                         <div className="flex gap-2">
                             <button onClick={() => navigator.clipboard.writeText(nudgeMsg)}
-                                className="flex-1 py-2.5 rounded-lg bg-emerald-500 hover:bg-emerald-400 text-black font-semibold text-sm transition">
+                                className="flex-1 py-2.5 rounded-lg bg-accent hover:bg-accent/90 text-background font-semibold text-sm transition">
                                 Copy
                             </button>
                             <button onClick={() => setNudgeMsg("")}
-                                className="px-4 py-2.5 rounded-lg border border-white/10 text-sm text-zinc-400 hover:text-white hover:bg-white/5 transition">
+                                className="px-4 py-2.5 rounded-lg border border-text/10 text-sm text-text/40 hover:text-text hover:bg-text/5 transition">
                                 Close
                             </button>
                         </div>
