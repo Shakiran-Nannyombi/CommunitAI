@@ -93,14 +93,14 @@ export default function TasksPage() {
             <div className="absolute bottom-[-10%] left-[-10%] w-[30%] h-[30%] bg-accent/5 blur-[100px] rounded-full pointer-events-none" />
 
             {/* Header */}
-            <header className="shrink-0 px-16 lg:px-20 py-16 bg-background/50 backdrop-blur-xl relative z-10">
+            <header className="shrink-0 px-5 sm:px-10 lg:px-16 py-8 lg:py-16 bg-background/50 backdrop-blur-xl relative z-10">
                 <div className="max-w-7xl mx-auto flex flex-col md:flex-row md:items-end justify-between gap-12">
                     <div className="space-y-6">
                         <div className="flex items-center gap-6">
                             <div className="w-16 h-16 bg-accent/10 border border-accent/20 rounded-3xl flex items-center justify-center text-accent shadow-2xl shadow-accent/5">
                                 <CheckCircle2 className="w-8 h-8" />
                             </div>
-                            <h1 className="text-5xl font-black text-text tracking-tighter">Team Tasks</h1>
+                            <h1 className="text-3xl sm:text-4xl lg:text-5xl font-black text-text tracking-tighter">Team Tasks</h1>
                         </div>
                         <p className="text-xl text-text/40 font-semibold max-w-2xl leading-relaxed">Coordinate initiatives and eliminate blockers across all workspace intelligence streams.</p>
                     </div>
@@ -111,8 +111,8 @@ export default function TasksPage() {
                                 key={f}
                                 onClick={() => setFilter(f)}
                                 className={`px-8 py-3 rounded-3xl text-[10px] font-black uppercase tracking-[0.2em] transition-all duration-500 ${filter === f
-                                        ? "bg-background text-text shadow-xl border border-text/10"
-                                        : "text-text/30 hover:text-text/60"
+                                    ? "bg-background text-text shadow-xl border border-text/10"
+                                    : "text-text/30 hover:text-text/60"
                                     }`}
                             >
                                 {f}
@@ -124,7 +124,7 @@ export default function TasksPage() {
 
             {/* Content */}
             <main className="flex-1 overflow-y-auto custom-scrollbar relative z-10">
-                <div className="max-w-7xl mx-auto px-16 lg:px-20 py-12 pb-48">
+                <div className="max-w-7xl mx-auto px-5 sm:px-10 lg:px-16 py-8 pb-48">
                     {filteredTasks.length === 0 ? (
                         <div className="bg-text/2 border border-text/5 rounded-[3rem] py-32 flex flex-col items-center justify-center text-center">
                             <div className="w-20 h-20 bg-text/5 rounded-full flex items-center justify-center text-text/10 mb-8">
@@ -149,8 +149,8 @@ export default function TasksPage() {
                                                 <button
                                                     onClick={() => handleToggle(task)}
                                                     className={`shrink-0 w-10 h-10 rounded-2xl border-2 flex items-center justify-center transition-all ${task.completed
-                                                            ? 'bg-accent border-accent text-background'
-                                                            : 'border-text/10 group-hover:border-accent/40 text-transparent'
+                                                        ? 'bg-accent border-accent text-background'
+                                                        : 'border-text/10 group-hover:border-accent/40 text-transparent'
                                                         }`}
                                                 >
                                                     <CheckCircle2 className="w-5 h-5" />

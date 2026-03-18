@@ -9,8 +9,8 @@ import {
 } from "@/lib/api";
 import PlannerTab from "./_planner";
 import ImpactTab from "./_impact";
-import { 
-    LayoutDashboard, Calendar, BarChart3, Settings, 
+import {
+    LayoutDashboard, Calendar, BarChart3, Settings,
     ChevronRight, Hash, Users, Zap, Bell, Slack,
     Loader2, AlertCircle, CheckCircle2, MoreVertical
 } from "lucide-react";
@@ -104,37 +104,36 @@ export default function WorkspacePage() {
             <div className="absolute top-[-10%] right-[-10%] w-[40%] h-[40%] bg-accent/5 blur-[120px] rounded-full pointer-events-none" />
             <div className="absolute bottom-[-10%] left-[-10%] w-[30%] h-[30%] bg-accent/5 blur-[100px] rounded-full pointer-events-none" />
             {/* Header */}
-            <header className="shrink-0 px-16 lg:px-20 py-16 bg-background/50 backdrop-blur-xl relative z-20">
-                <div className="max-w-7xl mx-auto flex flex-col md:flex-row md:items-end justify-between gap-12">
-                    <div className="flex items-center gap-8">
-                        <div className="w-20 h-20 rounded-[2.5rem] bg-accent/10 border border-accent/20 flex items-center justify-center text-4xl shadow-2xl shadow-accent/5">
+            <header className="shrink-0 px-5 sm:px-10 lg:px-16 xl:px-20 py-8 sm:py-12 lg:py-16 bg-background/50 backdrop-blur-xl relative z-20">
+                <div className="max-w-7xl mx-auto flex flex-col md:flex-row md:items-end justify-between gap-6 sm:gap-12">
+                    <div className="flex items-center gap-5 sm:gap-8">
+                        <div className="w-14 h-14 sm:w-20 sm:h-20 rounded-[2rem] sm:rounded-[2.5rem] bg-accent/10 border border-accent/20 flex items-center justify-center text-3xl sm:text-4xl shadow-2xl shadow-accent/5 shrink-0">
                             {workspace.icon_emoji}
                         </div>
-                        <div className="space-y-2">
-                            <div className="flex items-center gap-4">
-                                <h1 className="text-5xl font-black text-text tracking-tighter leading-none">{workspace.name}</h1>
-                                <button className="p-3 text-text/20 hover:text-accent hover:bg-accent/5 rounded-2xl transition-all duration-500">
+                        <div className="space-y-1 sm:space-y-2 min-w-0">
+                            <div className="flex items-center gap-3 sm:gap-4">
+                                <h1 className="text-3xl sm:text-4xl lg:text-5xl font-black text-text tracking-tighter leading-none truncate">{workspace.name}</h1>
+                                <button className="p-2 sm:p-3 text-text/20 hover:text-accent hover:bg-accent/5 rounded-2xl transition-all duration-500 shrink-0">
                                     <MoreVertical className="w-5 h-5" />
                                 </button>
                             </div>
-                            <div className="flex items-center gap-6 text-[10px] font-black uppercase tracking-[0.3em] text-text/30">
-                                <span className="flex items-center gap-2.5"><Users className="w-4 h-4" /> 12 MEMBERS</span>
+                            <div className="flex items-center gap-4 sm:gap-6 text-[10px] font-black uppercase tracking-[0.3em] text-text/30">
+                                <span className="flex items-center gap-2"><Users className="w-4 h-4" /> 12 MEMBERS</span>
                                 <span className="w-1.5 h-1.5 rounded-full bg-accent/40" />
-                                <span className="flex items-center gap-2.5 text-accent"><Zap className="w-4 h-4" /> ACTIVE GROWTH</span>
+                                <span className="flex items-center gap-2 text-accent"><Zap className="w-4 h-4" /> ACTIVE</span>
                             </div>
                         </div>
                     </div>
 
                     <nav className="flex gap-2 p-2 bg-text/3 border border-text/5 rounded-4xl self-start md:self-auto">
                         {(["meetings", "planner", "impact"] as Tab[]).map(t => (
-                            <button 
-                                key={t} 
+                            <button
+                                key={t}
                                 onClick={() => setTab(t)}
-                                className={`px-8 py-3 rounded-3xl text-[10px] font-black uppercase tracking-[0.2em] transition-all duration-500 ${
-                                    tab === t 
-                                        ? "bg-background text-text shadow-xl border border-text/10" 
-                                        : "text-text/30 hover:text-text/60"
-                                }`}
+                                className={`px-5 sm:px-8 py-3 rounded-3xl text-[10px] font-black uppercase tracking-[0.2em] transition-all duration-500 ${tab === t
+                                    ? "bg-background text-text shadow-xl border border-text/10"
+                                    : "text-text/30 hover:text-text/60"
+                                    }`}
                             >
                                 {t}
                             </button>
@@ -145,7 +144,7 @@ export default function WorkspacePage() {
 
             {/* Content Area */}
             <main className="flex-1 overflow-y-auto custom-scrollbar relative z-10">
-                <div className="max-w-7xl mx-auto px-16 lg:px-20 py-12 pb-48 space-y-24">
+                <div className="max-w-7xl mx-auto px-5 sm:px-10 lg:px-16 xl:px-20 py-8 sm:py-12 pb-32 sm:pb-48 space-y-16 sm:space-y-24">
                     {tab === "meetings" && (
                         <div className="animate-in fade-in slide-in-from-bottom-4 duration-500">
                             <div className="flex items-center justify-between mb-8">
@@ -166,7 +165,7 @@ export default function WorkspacePage() {
                             ) : (
                                 <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
                                     {meetings.map(m => (
-                                        <Link 
+                                        <Link
                                             key={m.id}
                                             href={`/meetings/${m.id}`}
                                             className="group glass-card rounded-4xl p-8 hover:border-accent/40 transition-all duration-500 flex items-center justify-between shadow-premium hover:shadow-premium-hover"

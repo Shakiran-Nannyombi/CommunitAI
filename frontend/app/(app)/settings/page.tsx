@@ -60,7 +60,7 @@ export default function SettingsPage() {
     ];
 
     return (
-        <div className="flex-1 flex flex-col h-full bg-background overflow-y-auto px-16 lg:px-20 py-20 relative">
+        <div className="flex-1 flex flex-col h-full bg-background overflow-y-auto px-5 sm:px-10 lg:px-16 py-10 lg:py-20 relative">
             <div className="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] bg-accent/5 blur-[120px] rounded-full pointer-events-none" />
             <div className="max-w-4xl mx-auto w-full space-y-24 relative z-10">
                 {/* Header */}
@@ -69,7 +69,7 @@ export default function SettingsPage() {
                         <div className="p-4 bg-accent/10 border border-accent/20 rounded-3xl text-accent shadow-2xl shadow-accent/5">
                             <SettingsIcon className="w-8 h-8" />
                         </div>
-                        <h1 className="text-5xl font-black text-text tracking-tighter">Settings</h1>
+                        <h1 className="text-3xl sm:text-4xl lg:text-5xl font-black text-text tracking-tighter">Settings</h1>
                     </div>
                     <p className="text-xl text-text/40 font-semibold leading-relaxed">Manage your profile, integrations, and preferences.</p>
                 </div>
@@ -82,8 +82,8 @@ export default function SettingsPage() {
                                 key={item.id}
                                 onClick={() => setActiveTab(item.id)}
                                 className={`w-full flex items-center gap-4 px-6 py-4 rounded-2xl text-[10px] font-black uppercase tracking-widest transition-all ${activeTab === item.id
-                                        ? "bg-text text-background shadow-xl shadow-text/5"
-                                        : "text-text/30 hover:text-text/60 hover:bg-text/5"
+                                    ? "bg-text text-background shadow-xl shadow-text/5"
+                                    : "text-text/30 hover:text-text/60 hover:bg-text/5"
                                     }`}
                             >
                                 <item.icon className="w-4 h-4" />

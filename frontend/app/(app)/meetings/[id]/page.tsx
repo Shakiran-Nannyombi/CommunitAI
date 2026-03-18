@@ -172,14 +172,13 @@ export default function MeetingInsights() {
             <div className="absolute top-[-10%] right-[-10%] w-[40%] h-[40%] bg-accent/5 blur-[120px] rounded-full pointer-events-none" />
             <div className="absolute bottom-[-10%] left-[-10%] w-[30%] h-[30%] bg-accent/5 blur-[100px] rounded-full pointer-events-none" />
             {/* Nav Header */}
-            {/* Nav Header */}
-            <header className="shrink-0 px-16 lg:px-20 py-10 bg-background/50 backdrop-blur-xl flex items-center justify-between sticky top-0 z-30">
+            <header className="shrink-0 px-4 sm:px-8 lg:px-16 py-5 lg:py-10 bg-background/50 backdrop-blur-xl flex items-center justify-between sticky top-0 z-30 gap-3">
                 <div className="flex items-center gap-8">
                     <button onClick={() => router.back()} className="p-4 bg-text/3 hover:bg-accent/5 hover:text-accent rounded-2xl transition-all duration-500 text-text/40 shadow-sm">
                         <ChevronLeft className="w-6 h-6" />
                     </button>
                     <div className="space-y-1">
-                        <h1 className="text-3xl font-black text-text tracking-tighter flex items-center gap-4">
+                        <h1 className="text-lg sm:text-2xl lg:text-3xl font-black text-text tracking-tighter flex items-center gap-2 sm:gap-4 flex-wrap">
                             {meeting.title}
                             <span className={`px-3 py-1 border text-[9px] font-black uppercase tracking-[0.2em] rounded-full shadow-2xl ${meeting.status === "complete"
                                 ? "bg-accent/10 border-accent/20 text-accent shadow-accent/5"
@@ -197,13 +196,19 @@ export default function MeetingInsights() {
                         </div>
                     </div>
                 </div>
-                <div className="flex items-center gap-4">
+                <div className="flex items-center gap-2 sm:gap-4">
                     <button
                         onClick={() => setShowShareModal(true)}
-                        className="flex items-center gap-3 px-8 py-4 rounded-2xl font-black text-[10px] uppercase tracking-[0.2em] transition-all duration-700 shadow-2xl bg-text/3 text-text/40 border border-text/5 hover:border-accent/40 hover:text-accent hover:bg-accent/5 shadow-text/5"
+                        className="hidden sm:flex items-center gap-3 px-6 py-3 rounded-2xl font-black text-[10px] uppercase tracking-[0.2em] transition-all duration-700 shadow-2xl bg-text/3 text-text/40 border border-text/5 hover:border-accent/40 hover:text-accent hover:bg-accent/5"
                     >
                         <Share2 className="w-4 h-4" />
-                        SHARE RESULTS
+                        SHARE
+                    </button>
+                    <button
+                        onClick={() => setShowShareModal(true)}
+                        className="sm:hidden p-3 bg-text/3 text-text/40 border border-text/5 hover:border-accent/40 hover:text-accent rounded-2xl transition-all"
+                    >
+                        <Share2 className="w-5 h-5" />
                     </button>
                     {meeting.status.includes("failed") && (
                         <button
@@ -223,10 +228,10 @@ export default function MeetingInsights() {
 
             <div className="flex-1 flex overflow-hidden">
                 {/* Scrollable Main Area */}
-                <main className="flex-1 overflow-y-auto px-16 lg:px-20 py-16 custom-scrollbar relative z-10 lg:pr-10">
+                <main className="flex-1 overflow-y-auto px-4 sm:px-8 lg:px-16 py-8 lg:py-16 custom-scrollbar relative z-10">
                     <div className="max-w-4xl mx-auto space-y-16">
                         {/* Audio Player */}
-                        <section className="p-10 glass-card rounded-4xl relative overflow-hidden group shadow-premium">
+                        <section className="p-5 sm:p-10 glass-card rounded-4xl relative overflow-hidden group shadow-premium">
                             {meeting.audio_url && (
                                 <audio
                                     ref={audioEl}
@@ -240,15 +245,15 @@ export default function MeetingInsights() {
                                     onEnded={() => setIsPlaying(false)}
                                 />
                             )}
-                            <div className="relative z-10 flex items-center gap-10">
+                            <div className="relative z-10 flex items-center gap-4 sm:gap-10">
                                 <button
                                     onClick={togglePlay}
                                     disabled={!meeting.audio_url}
-                                    className="w-20 h-20 bg-text text-background rounded-3xl flex items-center justify-center hover:scale-105 active:scale-95 transition-all duration-500 shadow-2xl shadow-text/10 disabled:opacity-30"
+                                    className="w-14 h-14 sm:w-20 sm:h-20 bg-text text-background rounded-2xl sm:rounded-3xl flex items-center justify-center hover:scale-105 active:scale-95 transition-all duration-500 shadow-2xl shadow-text/10 disabled:opacity-30 shrink-0"
                                 >
                                     {isPlaying
-                                        ? <Pause className="w-8 h-8 fill-current" />
-                                        : <Play className="w-8 h-8 fill-current ml-1" />}
+                                        ? <Pause className="w-6 h-6 sm:w-8 sm:h-8 fill-current" />
+                                        : <Play className="w-6 h-6 sm:w-8 sm:h-8 fill-current ml-1" />}
                                 </button>
                                 <div className="flex-1 space-y-6">
                                     <div className="flex justify-between text-[10px] font-black uppercase tracking-[0.3em] text-text/30">
@@ -277,7 +282,7 @@ export default function MeetingInsights() {
                                         </div>
                                     </div>
                                 </div>
-                                <div className="flex items-center gap-6 text-text/20">
+                                <div className="hidden sm:flex items-center gap-6 text-text/20">
                                     <Volume2 className="w-6 h-6 hover:text-text transition-colors cursor-pointer" />
                                     <MoreVertical className="w-6 h-6 hover:text-text transition-colors cursor-pointer" />
                                 </div>
@@ -285,25 +290,25 @@ export default function MeetingInsights() {
                         </section>
 
                         {/* Analysis Hub */}
-                        <div className="grid grid-cols-1 lg:grid-cols-5 gap-12">
+                        <div className="grid grid-cols-1 lg:grid-cols-5 gap-6 lg:gap-12">
                             {/* Left Navigation */}
-                            <nav className="lg:col-span-1 space-y-3">
+                            <nav className="lg:col-span-1 flex flex-row lg:flex-col gap-2 overflow-x-auto pb-1 lg:pb-0 custom-scrollbar">
                                 {[
-                                    { id: "summary", label: "Executive Summary", icon: MessageSquare },
-                                    { id: "tasks", label: "Action Items", icon: CheckCircle2 },
-                                    { id: "sentiment", label: "Sentiment Hub", icon: BarChart3 },
-                                    { id: "transcript", label: "Smart Transcript", icon: Mic },
+                                    { id: "summary", label: "Summary", icon: MessageSquare },
+                                    { id: "tasks", label: "Tasks", icon: CheckCircle2 },
+                                    { id: "sentiment", label: "Sentiment", icon: BarChart3 },
+                                    { id: "transcript", label: "Transcript", icon: Mic },
                                 ].map(sec => (
                                     <button
                                         key={sec.id}
                                         onClick={() => setActiveSection(sec.id as Section)}
-                                        className={`w-full flex items-center gap-4 px-6 py-5 rounded-2xl text-[10px] font-black uppercase tracking-[0.2em] transition-all duration-500 ${activeSection === sec.id
-                                            ? 'bg-text text-background shadow-2xl shadow-text/10 scale-105'
+                                        className={`shrink-0 flex items-center gap-2 lg:gap-4 px-4 lg:px-6 py-3 lg:py-5 rounded-2xl text-[10px] font-black uppercase tracking-[0.2em] transition-all duration-500 ${activeSection === sec.id
+                                            ? 'bg-text text-background shadow-2xl shadow-text/10 lg:scale-105'
                                             : 'text-text/30 hover:text-text/60 hover:bg-text/5'
                                             }`}
                                     >
-                                        <sec.icon className="w-5 h-5" />
-                                        {sec.label}
+                                        <sec.icon className="w-4 h-4 lg:w-5 lg:h-5 shrink-0" />
+                                        <span className="whitespace-nowrap">{sec.label}</span>
                                     </button>
                                 ))}
                             </nav>
@@ -318,8 +323,8 @@ export default function MeetingInsights() {
                                             className="space-y-8"
                                         >
                                             <div className="space-y-6">
-                                                <h3 className="text-3xl font-black text-text tracking-tighter">Meeting Context</h3>
-                                                <p className="text-2xl leading-relaxed text-text/60 font-semibold tracking-tight">
+                                                <h3 className="text-xl sm:text-2xl lg:text-3xl font-black text-text tracking-tighter">Meeting Context</h3>
+                                                <p className="text-base sm:text-xl lg:text-2xl leading-relaxed text-text/60 font-semibold tracking-tight">
                                                     {meeting.summary || (
                                                         meeting.status === "complete"
                                                             ? "No summary available."
@@ -328,14 +333,14 @@ export default function MeetingInsights() {
                                                 </p>
                                             </div>
 
-                                            <div className="grid grid-cols-2 gap-8">
-                                                <div className="p-8 glass-card rounded-4xl bg-accent/5">
+                                            <div className="grid grid-cols-2 gap-4 sm:gap-8">
+                                                <div className="p-5 sm:p-8 glass-card rounded-4xl bg-accent/5">
                                                     <h4 className="text-[10px] font-black uppercase tracking-[0.3em] text-accent mb-3">Status</h4>
-                                                    <p className="text-lg font-black text-text capitalize">{meeting.status.replace(/_/g, " ")}</p>
+                                                    <p className="text-base sm:text-lg font-black text-text capitalize">{meeting.status.replace(/_/g, " ")}</p>
                                                 </div>
-                                                <div className="p-8 glass-card rounded-4xl bg-blue-500/5">
+                                                <div className="p-5 sm:p-8 glass-card rounded-4xl bg-blue-500/5">
                                                     <h4 className="text-[10px] font-black uppercase tracking-[0.3em] text-blue-500 mb-3">Action Items</h4>
-                                                    <p className="text-lg font-black text-text">{meeting.action_items.length} detected</p>
+                                                    <p className="text-base sm:text-lg font-black text-text">{meeting.action_items.length} detected</p>
                                                 </div>
                                             </div>
                                         </motion.div>
@@ -359,8 +364,8 @@ export default function MeetingInsights() {
                                                     <p className="py-24 text-center text-text/20 font-black uppercase tracking-[0.3em] text-[10px] border-2 border-dashed border-text/5 rounded-4xl">No action items detected in stream</p>
                                                 ) : (
                                                     meeting.action_items.map(task => (
-                                                        <div key={task.id} className="group p-8 glass-card rounded-4xl hover:border-accent/40 transition-all duration-700 flex items-center justify-between shadow-premium hover:shadow-premium-hover">
-                                                            <div className="flex items-center gap-8">
+                                                        <div key={task.id} className="group p-5 sm:p-8 glass-card rounded-4xl hover:border-accent/40 transition-all duration-700 flex items-center justify-between shadow-premium hover:shadow-premium-hover">
+                                                            <div className="flex items-center gap-4 sm:gap-8 min-w-0">
                                                                 <button
                                                                     onClick={() => handleToggleTask(task)}
                                                                     className={`w-10 h-10 rounded-2xl border-2 flex items-center justify-center transition-all duration-500 ${task.completed ? 'bg-accent border-accent text-background shadow-xl shadow-accent/20' : 'border-text/10 group-hover:border-accent/40 text-transparent'
@@ -368,8 +373,8 @@ export default function MeetingInsights() {
                                                                 >
                                                                     <CheckCircle2 className="w-5 h-5" />
                                                                 </button>
-                                                                <div>
-                                                                    <p className={`text-lg font-black transition-all duration-700 tracking-tight ${task.completed ? 'text-text/20 line-through' : 'text-text'}`}>
+                                                                <div className="min-w-0">
+                                                                    <p className={`text-sm sm:text-lg font-black transition-all duration-700 tracking-tight ${task.completed ? 'text-text/20 line-through' : 'text-text'}`}>
                                                                         {task.description}
                                                                     </p>
                                                                     <div className="flex items-center gap-4 text-[10px] font-black uppercase tracking-[0.3em] mt-2">
@@ -396,21 +401,21 @@ export default function MeetingInsights() {
                                         >
                                             <h3 className="text-2xl font-black text-text tracking-tight">Emotional Pulse</h3>
 
-                                            <div className="p-16 glass-card rounded-[3rem] text-center space-y-10 shadow-premium group">
-                                                <div className="inline-block p-10 bg-accent/20 rounded-4xl border border-accent/20 shadow-2xl shadow-accent/5 group-hover:scale-110 transition-transform duration-700">
+                                            <div className="p-8 sm:p-16 glass-card rounded-[3rem] text-center space-y-8 sm:space-y-10 shadow-premium group">
+                                                <div className="inline-block p-6 sm:p-10 bg-accent/20 rounded-4xl border border-accent/20 shadow-2xl shadow-accent/5 group-hover:scale-110 transition-transform duration-700">
                                                     <h4 className="text-[10px] font-black text-accent uppercase tracking-[0.3em] mb-2">Overall Sentiment</h4>
-                                                    <p className="text-7xl font-black capitalize tracking-tighter text-text">
+                                                    <p className="text-5xl sm:text-7xl font-black capitalize tracking-tighter text-text">
                                                         {meeting.sentiment?.classification || "Neutral"}
                                                     </p>
                                                 </div>
-                                                <p className="text-xl text-text/40 font-semibold max-w-sm mx-auto leading-relaxed">
+                                                <p className="text-base sm:text-xl text-text/40 font-semibold max-w-sm mx-auto leading-relaxed">
                                                     Sentiment analysis from your meeting transcript.
                                                 </p>
                                             </div>
 
-                                            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                                            <div className="grid grid-cols-1 md:grid-cols-2 gap-5 sm:gap-8">
                                                 {meeting.sentiment?.signals.map((sig, i) => (
-                                                    <div key={i} className="p-8 glass-card rounded-4xl hover:border-accent/40 transition-all duration-700">
+                                                    <div key={i} className="p-5 sm:p-8 glass-card rounded-4xl hover:border-accent/40 transition-all duration-700">
                                                         <span className="text-[10px] font-black uppercase text-accent tracking-[0.3em] mb-4 block">{sig.type}</span>
                                                         <blockquote className="text-base italic font-semibold text-text/60 leading-relaxed group">
                                                             "{sig.excerpt}"
@@ -441,16 +446,16 @@ export default function MeetingInsights() {
                                                 </button>
                                             </div>
 
-                                            <div className="p-12 glass-card rounded-4xl min-h-[500px]">
+                                            <div className="p-5 sm:p-12 glass-card rounded-4xl min-h-[500px]">
                                                 {isEditingTranscript ? (
                                                     <textarea
                                                         value={transcriptEdit}
                                                         onChange={(e) => setTranscriptEdit(e.target.value)}
-                                                        className="w-full h-[600px] bg-transparent border-none focus:ring-0 text-lg font-semibold leading-relaxed custom-scrollbar text-text/80"
+                                                        className="w-full h-[600px] bg-transparent border-none focus:ring-0 text-sm sm:text-lg font-semibold leading-relaxed custom-scrollbar text-text/80"
                                                         autoFocus
                                                     />
                                                 ) : (
-                                                    <p className="text-lg font-semibold leading-relaxed text-text/50 whitespace-pre-wrap selection:bg-accent/20">
+                                                    <p className="text-sm sm:text-lg font-semibold leading-relaxed text-text/50 whitespace-pre-wrap selection:bg-accent/20">
                                                         {meeting.transcript || "Transcript is still being generated by the AI engine..."}
                                                     </p>
                                                 )}

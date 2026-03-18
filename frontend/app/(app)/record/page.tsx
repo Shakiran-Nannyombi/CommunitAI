@@ -196,7 +196,7 @@ export default function RecordPage() {
     if (supported === null) return null;
 
     return (
-        <div className="flex-1 flex flex-col h-full bg-background overflow-y-auto px-16 lg:px-20 py-20 relative">
+        <div className="flex-1 flex flex-col h-full bg-background overflow-y-auto px-5 sm:px-10 lg:px-16 xl:px-20 py-8 lg:py-20 relative">
             <div className="absolute top-[-10%] right-[-10%] w-[40%] h-[40%] bg-accent/5 blur-[120px] rounded-full pointer-events-none" />
             <div className="absolute bottom-[-10%] left-[-10%] w-[30%] h-[30%] bg-accent/5 blur-[100px] rounded-full pointer-events-none" />
             <div className="max-w-5xl mx-auto w-full relative z-10">
@@ -204,20 +204,20 @@ export default function RecordPage() {
                 {recordState === "idle" && (
                     <div className="space-y-12">
                         <div className="space-y-6">
-                            <div className="flex items-center gap-6">
-                                <div className="p-4 bg-accent/10 border border-accent/20 rounded-3xl text-accent shadow-2xl shadow-accent/5">
-                                    <Mic className="w-8 h-8" />
+                            <div className="flex items-center gap-4 sm:gap-6">
+                                <div className="p-3 sm:p-4 bg-accent/10 border border-accent/20 rounded-3xl text-accent shadow-2xl shadow-accent/5">
+                                    <Mic className="w-6 h-6 sm:w-8 sm:h-8" />
                                 </div>
-                                <h1 className="text-5xl font-black text-text tracking-tighter">Record Meeting</h1>
+                                <h1 className="text-3xl sm:text-4xl lg:text-5xl font-black text-text tracking-tighter">Record Meeting</h1>
                             </div>
-                            <p className="text-xl text-text/40 font-semibold leading-relaxed">Capture community discussions seamlessly with local intelligence.</p>
+                            <p className="text-base sm:text-xl text-text/40 font-semibold leading-relaxed">Capture community discussions seamlessly with local intelligence.</p>
                         </div>
 
-                        <div className="grid grid-cols-1 lg:grid-cols-2 gap-10">
+                        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 lg:gap-10">
                             {/* Native Recorder Card */}
-                            <div className="glass-card rounded-4xl p-10 border-2 border-accent/20 bg-accent/3 transition-all duration-700 shadow-premium hover:shadow-premium-hover group select-none">
-                                <h3 className="text-2xl font-black text-text mb-4 tracking-tight">Native Recorder</h3>
-                                <p className="text-sm text-text/40 mb-10 font-semibold italic leading-relaxed">High-fidelity capture directly from your browser's internal engine.</p>
+                            <div className="glass-card rounded-4xl p-6 sm:p-10 border-2 border-accent/20 bg-accent/3 transition-all duration-700 shadow-premium hover:shadow-premium-hover group select-none">
+                                <h3 className="text-xl sm:text-2xl font-black text-text mb-4 tracking-tight">Native Recorder</h3>
+                                <p className="text-sm text-text/40 mb-6 sm:mb-10 font-semibold italic leading-relaxed">High-fidelity capture directly from your browser's internal engine.</p>
 
                                 <div className="space-y-6">
                                     <div className="flex gap-3">
@@ -255,9 +255,9 @@ export default function RecordPage() {
                             </div>
 
                             {/* Upload Card */}
-                            <div className="glass-card rounded-4xl p-10 shadow-premium hover:shadow-premium-hover transition-all duration-700 group cursor-pointer border-transparent hover:border-accent/20">
-                                <h3 className="text-2xl font-black text-text mb-4 tracking-tight">Manual Upload</h3>
-                                <p className="text-sm text-text/40 mb-10 font-semibold leading-relaxed">Already have a file? Upload it for instant AI analysis and synthesis.</p>
+                            <div className="glass-card rounded-4xl p-6 sm:p-10 shadow-premium hover:shadow-premium-hover transition-all duration-700 group cursor-pointer border-transparent hover:border-accent/20">
+                                <h3 className="text-xl sm:text-2xl font-black text-text mb-4 tracking-tight">Manual Upload</h3>
+                                <p className="text-sm text-text/40 mb-6 sm:mb-10 font-semibold leading-relaxed">Already have a file? Upload it for instant AI analysis and synthesis.</p>
 
                                 <label className="cursor-pointer block">
                                     <div className="w-full py-20 border-2 border-dashed border-text/10 rounded-3xl flex flex-col items-center justify-center gap-6 group-hover:border-accent/40 transition-all duration-700 bg-text/2">
@@ -317,31 +317,31 @@ export default function RecordPage() {
 
                 {/* PREVIEW STATE */}
                 {recordState === "preview" && blobUrl && (
-                    <div className="space-y-12">
-                        <div className="flex justify-between items-end gap-12">
-                            <div className="space-y-4">
-                                <h1 className="text-5xl font-black text-text tracking-tighter">Review Record</h1>
-                                <p className="text-xl text-text/40 font-semibold">Add details before we start the analysis.</p>
+                    <div className="space-y-8 sm:space-y-12">
+                        <div className="flex justify-between items-start sm:items-end gap-6 sm:gap-12">
+                            <div className="space-y-2 sm:space-y-4">
+                                <h1 className="text-3xl sm:text-4xl lg:text-5xl font-black text-text tracking-tighter">Review Record</h1>
+                                <p className="text-base sm:text-xl text-text/40 font-semibold">Add details before we start the analysis.</p>
                             </div>
-                            <button onClick={discardRecording} className="p-6 bg-red-500/10 text-red-500 rounded-3xl hover:bg-red-500 hover:text-white transition-all duration-500 shadow-xl shadow-red-500/5">
-                                <X className="w-8 h-8" />
+                            <button onClick={discardRecording} className="p-4 sm:p-6 bg-red-500/10 text-red-500 rounded-3xl hover:bg-red-500 hover:text-white transition-all duration-500 shadow-xl shadow-red-500/5 shrink-0">
+                                <X className="w-6 h-6 sm:w-8 sm:h-8" />
                             </button>
-                        </div>                        <div className="grid grid-cols-1 lg:grid-cols-5 gap-16">
+                        </div>                        <div className="grid grid-cols-1 lg:grid-cols-5 gap-8 lg:gap-16">
                             <div className="lg:col-span-3 space-y-12">
                                 <div className="glass-card rounded-[3rem] p-2 overflow-hidden relative shadow-premium group">
                                     <div className="absolute inset-0 bg-accent/5 opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none" />
                                     <video src={blobUrl} controls className="w-full aspect-video rounded-[2.8rem] bg-black" />
                                 </div>
 
-                                <div className="flex items-center gap-12 px-6">
+                                <div className="flex items-center gap-6 sm:gap-12 px-4 sm:px-6">
                                     <div>
                                         <p className="text-[10px] font-black uppercase text-text/20 tracking-[0.2em] mb-2">Duration</p>
-                                        <p className="text-3xl font-black tabular-nums">{formatElapsed(elapsed)}</p>
+                                        <p className="text-2xl sm:text-3xl font-black tabular-nums">{formatElapsed(elapsed)}</p>
                                     </div>
                                     <div className="w-px h-12 bg-text/5"></div>
                                     <div>
                                         <p className="text-[10px] font-black uppercase text-text/20 tracking-[0.2em] mb-2">File Size</p>
-                                        <p className="text-3xl font-black tabular-nums">{(blob?.size || 0) / 1024 > 1024 ? `${((blob?.size || 0) / (1024 * 1024)).toFixed(1)} MB` : `${((blob?.size || 0) / 1024).toFixed(0)} KB`}</p>
+                                        <p className="text-2xl sm:text-3xl font-black tabular-nums">{(blob?.size || 0) / 1024 > 1024 ? `${((blob?.size || 0) / (1024 * 1024)).toFixed(1)} MB` : `${((blob?.size || 0) / 1024).toFixed(0)} KB`}</p>
                                     </div>
                                 </div>
                             </div>
