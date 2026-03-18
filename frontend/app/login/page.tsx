@@ -4,18 +4,10 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { login, register, demoLogin, saveAuth } from "@/lib/api";
 import { LogoMark } from "@/components/Logo";
+import { Mail, Lock, CheckCircle2, ArrowRight, Rocket } from "lucide-react";
+import Link from "next/link";
 
 type Mode = "login" | "register";
-
-const INPUT_STYLE: React.CSSProperties = {
-    width: "100%", background: "var(--background)", border: "1px solid color-mix(in srgb, var(--text), transparent 90%)",
-    borderRadius: "4px", padding: "10px 12px", fontSize: "14px",
-    color: "var(--text)", outline: "none", fontFamily: "inherit",
-};
-const LABEL_STYLE: React.CSSProperties = {
-    display: "block", fontSize: "11px", letterSpacing: "0.15em",
-    color: "color-mix(in srgb, var(--text), transparent 60%)", marginBottom: "6px",
-};
 
 export default function AuthPage() {
     const router = useRouter();
@@ -52,118 +44,150 @@ export default function AuthPage() {
     }
 
     return (
-        <div className="app-root" style={{ minHeight: "100dvh", display: "flex", alignItems: "center", justifyContent: "center", padding: "24px" }}>
-            {/* Scanline overlay */}
-            <div className="fixed inset-0 pointer-events-none scanline opacity-20" />
+        <div className="font-sans bg-background text-text min-h-dvh flex items-center justify-center p-6 relative overflow-hidden">
+            {/* Background elements */}
+            <div className="absolute top-0 left-0 w-full h-full overflow-hidden pointer-events-none z-0">
+                <div className="absolute -top-24 -left-24 w-96 h-96 bg-accent opacity-[0.03] blur-[120px] rounded-full"></div>
+                <div className="absolute top-1/2 -right-24 w-80 h-80 bg-primary opacity-[0.03] blur-[100px] rounded-full"></div>
+            </div>
 
-            <div style={{ width: "100%", maxWidth: "400px", position: "relative", zIndex: 10 }}>
-                {/* Header */}
-                <div style={{ marginBottom: "40px", textAlign: "center" }}>
-                    <div style={{ display: "flex", justifyContent: "center", marginBottom: "12px" }}>
-                        <LogoMark size={48} />
+            <div className="relative z-10 w-full max-w-[1100px] min-h-[650px] flex flex-col lg:flex-row bg-background border border-text/10 rounded-[2.5rem] shadow-[0_32px_64px_-16px_rgba(0,0,0,0.1)] overflow-hidden">
+                {/* Visual Side */}
+                <div className="hidden lg:flex lg:w-1/2 flex-col justify-between p-16 bg-text/2 border-r border-text/5 relative group">
+                    <div className="relative z-10">
+                        <Link href="/" className="flex items-center gap-3 mb-16">
+                            <LogoMark size={40} className="hover:scale-110 transition-transform" />
+                            <span className="text-2xl font-black tracking-tighter text-text">CommunitAI</span>
+                        </Link>
+                        
+                        <div className="space-y-8">
+                            <h2 className="text-6xl font-extrabold leading-[1.1] tracking-tighter text-text">
+                                Focus on <br/>
+                                <span className="text-accent underline decoration-accent/20 underline-offset-8">Leading</span> <br/>
+                                Not Managing.
+                            </h2>
+                            <p className="text-xl text-text/50 max-w-sm font-medium leading-relaxed">
+                                The AI-powered Chief of Staff that turned chaos into community growth overnight.
+                            </p>
+                        </div>
                     </div>
-                    <p style={{ fontSize: "20px", letterSpacing: "0.3em", color: "var(--accent)", fontWeight: 800, textTransform: "uppercase" }}>
-                        CommunitAI
-                    </p>
-                    <p style={{ fontSize: "11px", letterSpacing: "0.2em", color: "color-mix(in srgb, var(--text), transparent 60%)", marginTop: "6px", textTransform: "uppercase" }}>
-                        AI Chief of Staff
-                    </p>
-                    <div style={{ marginTop: "10px", display: "flex", alignItems: "center", justifyContent: "center", gap: "8px", fontSize: "11px" }}>
-                        <span className="pulse-dot" style={{ width: "6px", height: "6px", borderRadius: "50%", background: "var(--accent)", display: "inline-block" }} />
-                        <span style={{ color: "color-mix(in srgb, var(--text), transparent 70%)", letterSpacing: "0.2em" }}>SYSTEM ONLINE</span>
+
+                    <div className="relative z-10">
+                        <div className="flex -space-x-3 mb-6">
+                            {[1, 2, 3, 4].map(i => (
+                                <div key={i} className="h-10 w-10 rounded-full border-2 border-background bg-text/10 overflow-hidden ring-2 ring-accent/5">
+                                    <div className="h-full w-full bg-accent/20" />
+                                </div>
+                            ))}
+                            <div className="h-10 w-10 rounded-full border-2 border-background bg-accent text-background flex items-center justify-center text-[10px] font-bold ring-2 ring-accent/5 whitespace-nowrap px-2">
+                                +12k
+                            </div>
+                        </div>
+                        <p className="text-xs font-bold uppercase tracking-[0.2em] text-text/30">Trusted by modern leaders</p>
                     </div>
+
+                    {/* Decorative Blob */}
+                    <div className="absolute bottom-0 right-0 w-64 h-64 bg-accent/5 blur-[80px] rounded-full translate-x-1/2 translate-y-1/2 group-hover:scale-125 transition-transform duration-700"></div>
                 </div>
 
-                {/* Card */}
-                <div style={{ borderRadius: "8px", overflow: "hidden", border: "1px solid color-mix(in srgb, var(--text), transparent 90%)", background: "var(--background)", boxShadow: "0 10px 30px -10px rgba(0,0,0,0.5)" }}>
-                    {/* Tab bar */}
-                    <div style={{ borderBottom: "1px solid color-mix(in srgb, var(--text), transparent 90%)", background: "color-mix(in srgb, var(--text), transparent 95%)", padding: "0 16px", display: "flex" }}>
-                        {(["login", "register"] as Mode[]).map(m => (
-                            <button key={m} onClick={() => { setMode(m); setError(""); }} style={{
-                                fontSize: "11px", letterSpacing: "0.15em", padding: "12px 16px",
-                                borderBottom: mode === m ? "2px solid var(--accent)" : "2px solid transparent",
-                                color: mode === m ? "var(--accent)" : "color-mix(in srgb, var(--text), transparent 60%)",
-                                background: "none", cursor: "pointer", transition: "color 0.15s", fontFamily: "inherit",
-                            }}>
-                                {m === "login" ? "SIGN IN" : "REGISTER"}
-                            </button>
-                        ))}
-                    </div>
+                {/* Form Side */}
+                <div className="flex-1 flex flex-col p-8 lg:p-16 justify-center">
+                    <div className="max-w-[400px] w-full mx-auto">
+                        <div className="mb-10 text-center lg:text-left">
+                            <h3 className="text-3xl font-black tracking-tight text-text mb-3">
+                                {mode === "login" ? "Welcome back" : "Join the movement"}
+                            </h3>
+                            <p className="text-text/50 font-medium">
+                                {mode === "login" 
+                                    ? "Access your dashboard to continue leading." 
+                                    : "Start your 14-day free trial today. No credit card."}
+                            </p>
+                        </div>
 
-                    <div style={{ padding: "24px" }}>
-                        <form onSubmit={handleSubmit} style={{ display: "flex", flexDirection: "column", gap: "16px" }}>
+                        <form onSubmit={handleSubmit} className="space-y-6">
                             {mode === "register" && (
-                                <div>
-                                    <label style={LABEL_STYLE}>DISPLAY NAME</label>
-                                    <input type="text" value={name} onChange={e => setName(e.target.value)}
-                                        placeholder="Your name" style={INPUT_STYLE}
-                                        onFocus={e => e.target.style.borderColor = "var(--primary)"}
-                                        onBlur={e => e.target.style.borderColor = "color-mix(in srgb, var(--text), transparent 90%)"} />
+                                <div className="space-y-2">
+                                    <label className="text-[10px] font-black uppercase tracking-[0.15em] text-text/40 ml-1">Full Name</label>
+                                    <div className="relative">
+                                        <CheckCircle2 className="absolute left-5 top-1/2 -translate-y-1/2 w-4 h-4 text-text/20" />
+                                        <input 
+                                            value={name} onChange={e => setName(e.target.value)}
+                                            placeholder="Enter your name" required
+                                            className="w-full bg-text/5 border border-text/10 rounded-2xl pl-12 pr-5 py-4 text-sm font-semibold focus:outline-none focus:ring-2 focus:ring-accent/20 focus:border-accent/40 transition-all placeholder:text-text/20"
+                                        />
+                                    </div>
                                 </div>
                             )}
-                            <div>
-                                <label style={LABEL_STYLE}>EMAIL</label>
-                                <input type="email" value={email} onChange={e => setEmail(e.target.value)}
-                                    placeholder="you@example.com" required style={INPUT_STYLE}
-                                    onFocus={e => e.target.style.borderColor = "var(--primary)"}
-                                    onBlur={e => e.target.style.borderColor = "color-mix(in srgb, var(--text), transparent 90%)"} />
+
+                            <div className="space-y-2">
+                                <label className="text-[10px] font-black uppercase tracking-[0.15em] text-text/40 ml-1">Work Email</label>
+                                <div className="group relative">
+                                    <Mail className="absolute left-5 top-1/2 -translate-y-1/2 w-4 h-4 text-text/20 group-focus-within:text-accent transition-colors" />
+                                    <input 
+                                        type="email" value={email} onChange={e => setEmail(e.target.value)}
+                                        placeholder="name@community.io" required
+                                        className="w-full bg-text/5 border border-text/10 rounded-2xl pl-12 pr-5 py-4 text-sm font-semibold focus:outline-none focus:ring-2 focus:ring-accent/20 focus:border-accent/40 transition-all placeholder:text-text/20"
+                                    />
+                                </div>
                             </div>
-                            <div>
-                                <label style={LABEL_STYLE}>PASSWORD</label>
-                                <input type="password" value={password} onChange={e => setPassword(e.target.value)}
-                                    placeholder="••••••••" required minLength={6} style={INPUT_STYLE}
-                                    onFocus={e => e.target.style.borderColor = "var(--primary)"}
-                                    onBlur={e => e.target.style.borderColor = "color-mix(in srgb, var(--text), transparent 90%)"} />
+
+                            <div className="space-y-2">
+                                <div className="flex justify-between items-end mb-1">
+                                    <label className="text-[10px] font-black uppercase tracking-[0.15em] text-text/40 ml-1">Password</label>
+                                    {mode === "login" && (
+                                        <button type="button" className="text-[10px] font-bold text-accent uppercase hover:underline">Forgot?</button>
+                                    )}
+                                </div>
+                                <div className="group relative">
+                                    <Lock className="absolute left-5 top-1/2 -translate-y-1/2 w-4 h-4 text-text/20 group-focus-within:text-accent transition-colors" />
+                                    <input 
+                                        type="password" value={password} onChange={e => setPassword(e.target.value)}
+                                        placeholder="••••••••" required minLength={6}
+                                        className="w-full bg-text/5 border border-text/10 rounded-2xl pl-12 pr-5 py-4 text-sm font-semibold focus:outline-none focus:ring-2 focus:ring-accent/20 focus:border-accent/40 transition-all placeholder:text-text/20"
+                                    />
+                                </div>
                             </div>
 
                             {error && (
-                                <p style={{ fontSize: "13px", color: "var(--accent)", border: "1px solid color-mix(in srgb, var(--accent), transparent 80%)", background: "color-mix(in srgb, var(--accent), transparent 95%)", borderRadius: "4px", padding: "10px 12px" }}>
+                                <div className="bg-red-500/10 border border-red-500/20 p-4 rounded-2xl text-red-500 text-xs font-bold">
                                     {error}
-                                </p>
+                                </div>
                             )}
 
-                            <button type="submit" disabled={loading} style={{
-                                width: "100%", background: loading ? "var(--primary)" : "var(--accent)",
-                                border: "none", borderRadius: "4px", padding: "12px",
-                                fontSize: "13px", fontWeight: 700, letterSpacing: "0.15em",
-                                color: "var(--background)", cursor: loading ? "not-allowed" : "pointer",
-                                fontFamily: "inherit", transition: "all 0.15s",
-                            }}
-                                onMouseEnter={e => { if (!loading) (e.target as HTMLButtonElement).style.background = "var(--primary)"; }}
-                                onMouseLeave={e => { if (!loading) (e.target as HTMLButtonElement).style.background = "var(--accent)"; }}
+                            <button 
+                                type="submit" disabled={loading}
+                                className="w-full bg-accent hover:bg-accent/90 text-background font-black py-4 rounded-2xl shadow-[0_20px_40px_-12px_rgba(66,174,68,0.3)] hover:shadow-accent/40 hover:-translate-y-1 transition-all duration-300 flex items-center justify-center gap-2 group"
                             >
-                                {loading ? "CONNECTING..." : mode === "login" ? "SIGN IN" : "CREATE ACCOUNT"}
+                                {loading ? "Authenticating..." : (mode === "login" ? "Sign In" : "Register")}
+                                <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
                             </button>
                         </form>
 
-                        <div style={{ display: "flex", alignItems: "center", gap: "12px", margin: "20px 0" }}>
-                            <div style={{ flex: 1, borderTop: "1px solid color-mix(in srgb, var(--text), transparent 90%)" }} />
-                            <span style={{ fontSize: "12px", color: "color-mix(in srgb, var(--text), transparent 70%)" }}>or</span>
-                            <div style={{ flex: 1, borderTop: "1px solid color-mix(in srgb, var(--text), transparent 90%)" }} />
+                        <div className="mt-10 pt-10 border-t border-text/5 text-center">
+                            <p className="text-sm font-medium text-text/40 mb-4">
+                                {mode === "login" ? "New to CommunitAI?" : "Already have an account?"}
+                            </p>
+                            <button 
+                                onClick={() => setMode(mode === "login" ? "register" : "login")}
+                                className="text-sm font-black text-text hover:text-accent transition-colors underline decoration-text/10 underline-offset-4"
+                            >
+                                {mode === "login" ? "Create an account" : "Sign in to your account"}
+                            </button>
                         </div>
-
-                        <button onClick={handleDemo} disabled={loading} style={{
-                            width: "100%", background: "none",
-                            border: "1px solid color-mix(in srgb, var(--text), transparent 90%)", borderRadius: "4px", padding: "12px",
-                            fontSize: "13px", letterSpacing: "0.15em", fontWeight: 600,
-                            color: "color-mix(in srgb, var(--text), transparent 50%)", cursor: loading ? "not-allowed" : "pointer",
-                            fontFamily: "inherit", transition: "all 0.15s",
-                        }}
-                            onMouseEnter={e => { const b = e.currentTarget; b.style.borderColor = "var(--accent)"; b.style.color = "var(--accent)"; }}
-                            onMouseLeave={e => { const b = e.currentTarget; b.style.borderColor = "color-mix(in srgb, var(--text), transparent 90%)"; b.style.color = "color-mix(in srgb, var(--text), transparent 50%)"; }}
-                        >
-                            {loading ? "CONNECTING..." : "⚡  TRY DEMO ACCOUNT"}
-                        </button>
-                        <p style={{ fontSize: "12px", color: "color-mix(in srgb, var(--text), transparent 70%)", textAlign: "center", marginTop: "8px" }}>
-                            Pre-loaded with sample meetings &amp; tasks
-                        </p>
                     </div>
                 </div>
-
-                <p style={{ fontSize: "11px", color: "color-mix(in srgb, var(--text), transparent 80%)", textAlign: "center", marginTop: "24px", letterSpacing: "0.2em" }}>
-                    COMMUNITAI · SECURE SESSION
-                </p>
             </div>
+
+            {/* Demo Button */}
+            {!loading && (
+                <button 
+                    onClick={handleDemo}
+                    className="fixed bottom-6 right-6 bg-text/5 hover:bg-text/10 border border-text/10 px-4 py-2 rounded-xl text-xs font-bold text-text/40 hover:text-accent transition-all flex items-center gap-2 group z-20"
+                >
+                    <Rocket className="w-4 h-4 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" />
+                    Try Demo
+                </button>
+            )}
         </div>
     );
 }

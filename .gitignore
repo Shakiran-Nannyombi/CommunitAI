@@ -127,3 +127,5 @@ pnpm-debug.log*
 # typescript
 *.tsbuildinfo
 .swc/
+
+stitch/*
