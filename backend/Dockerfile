@@ -7,11 +7,12 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     libpq-dev \
     && rm -rf /var/lib/apt/lists/*
 
+# Copy requirements first for layer caching
 COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
-# Copy backend source into /app/backend so imports resolve correctly
-COPY . ./backend/
+# Copy source into /app/backend/ so "from backend.X" imports resolve
+COPY . /app/backend/
 
 ENV PYTHONPATH=/app
 

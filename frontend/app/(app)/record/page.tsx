@@ -9,9 +9,9 @@ import {
     getWorkspaces,
     type Workspace,
 } from "@/lib/api";
-import { 
-    Mic, Monitor, StopCircle, Radio, 
-    ArrowRight, CheckCircle2, AlertCircle, 
+import {
+    Mic, Monitor, StopCircle, Radio,
+    ArrowRight, CheckCircle2, AlertCircle,
     X, Upload, Loader2, Sparkles, LayoutDashboard
 } from "lucide-react";
 
@@ -166,8 +166,11 @@ export default function RecordPage() {
             const meeting = await createMeeting(title.trim(), userId, workspaceId || undefined);
             await uploadAudio(meeting.id, blob);
             router.push(`/meetings/${meeting.id}`);
-        } catch {
-            setUploadError("Upload failed. Recording preserved.");
+        } catch (err: unknown) {
+            const msg = err instanceof Error ? err.message : "Upload failed.";
+            // Try to extract backend detail
+            const detail = (err as { response?: { data?: { detail?: string } } })?.response?.data?.detail;
+            setUploadError(detail || msg);
         } finally {
             setUploading(false);
         }
@@ -198,7 +201,7 @@ export default function RecordPage() {
                             <div className={`glass-card rounded-4xl p-10 border-2 transition-all duration-700 shadow-premium hover:shadow-premium-hover ${supported ? 'border-accent/20 bg-accent/3 group select-none' : 'border-text/5 bg-text/2 opacity-50 grayscale pointer-events-none'}`}>
                                 <h3 className="text-2xl font-black text-text mb-4 tracking-tight">Native Recorder</h3>
                                 <p className="text-sm text-text/40 mb-10 font-semibold italic leading-relaxed">High-fidelity capture directly from your browser's internal engine.</p>
-                                
+
                                 <div className="space-y-6">
                                     <div className="flex gap-3">
                                         {(["system", "microphone"] as AudioMode[]).map(mode => (
@@ -206,14 +209,13 @@ export default function RecordPage() {
                                                 key={mode}
                                                 disabled={!supported}
                                                 onClick={() => setAudioMode(mode)}
-                                                className={`flex-1 py-4 rounded-2xl font-black text-[10px] uppercase tracking-widest transition-all border ${
-                                                    audioMode === mode 
-                                                        ? 'bg-accent text-background border-accent shadow-lg shadow-accent/20' 
-                                                        : 'bg-background text-text/40 border-text/10'
-                                                }`}
+                                                className={`flex-1 py-4 rounded-2xl font-black text-[10px] uppercase tracking-widest transition-all border ${audioMode === mode
+                                                    ? 'bg-accent text-background border-accent shadow-lg shadow-accent/20'
+                                                    : 'bg-background text-text/40 border-text/10'
+                                                    }`}
                                             >
-                                                {mode === "system" ? <span className="flex items-center justify-center gap-2"><Monitor className="w-3.5 h-3.5" /> System</span> 
-                                                                   : <span className="flex items-center justify-center gap-2"><Radio className="w-3.5 h-3.5" /> Mic Only</span>}
+                                                {mode === "system" ? <span className="flex items-center justify-center gap-2"><Monitor className="w-3.5 h-3.5" /> System</span>
+                                                    : <span className="flex items-center justify-center gap-2"><Radio className="w-3.5 h-3.5" /> Mic Only</span>}
                                             </button>
                                         ))}
                                     </div>
@@ -235,15 +237,16 @@ export default function RecordPage() {
                             <div className="glass-card rounded-4xl p-10 shadow-premium hover:shadow-premium-hover transition-all duration-700 group cursor-pointer border-transparent hover:border-accent/20">
                                 <h3 className="text-2xl font-black text-text mb-4 tracking-tight">Manual Upload</h3>
                                 <p className="text-sm text-text/40 mb-10 font-semibold leading-relaxed">Already have a file? Upload it for instant AI analysis and synthesis.</p>
-                                
+
                                 <label className="cursor-pointer block">
                                     <div className="w-full py-20 border-2 border-dashed border-text/10 rounded-3xl flex flex-col items-center justify-center gap-6 group-hover:border-accent/40 transition-all duration-700 bg-text/2">
                                         <div className="p-6 bg-background rounded-full text-text/10 group-hover:text-accent group-hover:bg-accent/10 transition-all duration-500 shadow-sm">
                                             <Upload className="w-10 h-10" />
                                         </div>
                                         <p className="text-[10px] font-black uppercase tracking-[0.2em] text-text/30">Drop audio here</p>
+                                        <p className="text-[9px] font-bold uppercase tracking-widest text-text/20">MP3 · WAV · M4A · AAC · OGG · WEBM · MP4</p>
                                     </div>
-                                    <input type="file" className="hidden" accept="audio/*,video/*" onChange={e => {
+                                    <input type="file" className="hidden" accept="audio/*,video/mp4,video/webm" onChange={e => {
                                         const f = e.target.files?.[0];
                                         if (f) { setFallbackFile(f); setRecordState("preview"); setBlob(f); setBlobUrl(URL.createObjectURL(f)); }
                                     }} />
@@ -308,7 +311,7 @@ export default function RecordPage() {
                                     <div className="absolute inset-0 bg-accent/5 opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none" />
                                     <video src={blobUrl} controls className="w-full aspect-video rounded-[2.8rem] bg-black" />
                                 </div>
- 
+
                                 <div className="flex items-center gap-12 px-6">
                                     <div>
                                         <p className="text-[10px] font-black uppercase text-text/20 tracking-[0.2em] mb-2">Duration</p>
@@ -325,7 +328,7 @@ export default function RecordPage() {
                             <form className="lg:col-span-2 space-y-8" onSubmit={(e) => { e.preventDefault(); handleConfirmUpload(); }}>
                                 <div className="space-y-3">
                                     <label className="text-[10px] font-black uppercase tracking-[0.15em] text-text/40 ml-1">Meeting Title</label>
-                                    <input 
+                                    <input
                                         autoFocus
                                         value={title} onChange={e => setTitle(e.target.value)} required
                                         placeholder="e.g. Planning Committee Sync"
@@ -335,7 +338,7 @@ export default function RecordPage() {
 
                                 <div className="space-y-3">
                                     <label className="text-[10px] font-black uppercase tracking-[0.15em] text-text/40 ml-1">Workspace Target</label>
-                                    <select 
+                                    <select
                                         value={workspaceId} onChange={e => setWorkspaceId(e.target.value)}
                                         className="w-full bg-text/5 border border-text/10 rounded-2xl px-5 py-4 text-sm font-semibold focus:outline-none focus:ring-2 focus:ring-accent/20 focus:border-accent/40 transition-all appearance-none"
                                     >
@@ -346,7 +349,7 @@ export default function RecordPage() {
                                     </select>
                                 </div>
 
-                                <button 
+                                <button
                                     type="submit"
                                     disabled={uploading || !title.trim()}
                                     className="w-full py-6 bg-accent text-background rounded-3xl font-black text-xs uppercase tracking-[0.2em] hover:scale-[1.02] active:scale-95 transition-all shadow-2xl shadow-accent/20 flex items-center justify-center gap-4 disabled:opacity-50"
@@ -356,6 +359,7 @@ export default function RecordPage() {
                                 </button>
 
                                 {sizeError && <p className="text-[10px] text-red-500 font-bold uppercase text-center">{sizeError}</p>}
+                                {uploadError && <p className="text-[10px] text-red-500 font-bold uppercase text-center">{uploadError}</p>}
                             </form>
                         </div>
                     </div>

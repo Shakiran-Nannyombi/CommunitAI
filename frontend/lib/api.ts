@@ -186,11 +186,25 @@ export async function createMeeting(title: string, userId: string, workspaceId?:
 
 export async function uploadAudio(meetingId: string, file: File | Blob): Promise<MeetingDetail> {
     const formData = new FormData();
-    formData.append("file", file);
+    // Ensure a filename is always present so the backend can derive the extension
+    const filename = file instanceof File ? file.name : `recording.${_mimeToExt(file.type)}`;
+    formData.append("file", file, filename);
     const { data } = await api.post<MeetingDetail>(`/meetings/${meetingId}/upload`, formData, {
         headers: { "Content-Type": "multipart/form-data" },
     });
     return data;
+}
+
+function _mimeToExt(mime: string): string {
+    const map: Record<string, string> = {
+        "audio/webm": "webm", "video/webm": "webm",
+        "audio/mp4": "mp4", "video/mp4": "mp4",
+        "audio/mpeg": "mp3", "audio/wav": "wav",
+        "audio/ogg": "ogg", "audio/aac": "aac",
+        "audio/x-m4a": "m4a", "audio/m4a": "m4a",
+        "video/quicktime": "mp4",
+    };
+    return map[mime] ?? "webm";
 }
 
 export async function getMeetings(userId: string, workspaceId?: string): Promise<MeetingListItem[]> {

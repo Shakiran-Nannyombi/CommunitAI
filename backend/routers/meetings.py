@@ -108,7 +108,8 @@ async def get_meeting(
 
 _FAILED_STATUSES = {"transcription_failed", "analysis_failed", "summarization_failed"}
 
-_ALLOWED_MIME_TYPES = {"audio/mpeg", "audio/wav", "audio/mp4", "audio/x-m4a"}
+_ALLOWED_MIME_TYPES = {"audio/mpeg", "audio/wav", "audio/mp4", "audio/x-m4a", "audio/aac", "audio/x-aac", "audio/x-caf", "video/mp4", "audio/webm", "video/webm", "audio/ogg"}
+_ALLOWED_EXTENSIONS = {"mp3", "wav", "mp4", "m4a", "aac", "ogg", "flac", "webm"}
 _MAX_FILE_SIZE = 500 * 1024 * 1024  # 500 MB
 
 
@@ -133,11 +134,19 @@ async def upload_audio(
     if meeting is None:
         raise HTTPException(status_code=404, detail="Meeting not found")
 
-    # Validate MIME type
-    if file.content_type not in _ALLOWED_MIME_TYPES:
+    # Derive extension from filename
+    raw_ext = ""
+    if file.filename:
+        _, raw_ext = os.path.splitext(file.filename)
+        raw_ext = raw_ext.lstrip(".").lower()
+
+    # Validate: accept any audio/* MIME, known video containers, or known extension
+    mime_ok = (file.content_type or "").startswith("audio/") or (file.content_type or "") in {"video/mp4", "video/webm", "video/quicktime"}
+    ext_ok = raw_ext in _ALLOWED_EXTENSIONS
+    if not mime_ok and not ext_ok:
         raise HTTPException(
             status_code=400,
-            detail=f"Unsupported file type '{file.content_type}'. Allowed types: audio/mpeg, audio/wav, audio/mp4, audio/x-m4a.",
+            detail=f"Unsupported file type '{file.content_type}' / '.{raw_ext}'. Please upload an audio file (MP3, WAV, M4A, AAC, OGG, WEBM, MP4).",
         )
 
     # Read file and validate size
@@ -148,15 +157,13 @@ async def upload_audio(
             detail="File exceeds the 500 MB limit. Please compress or trim the recording.",
         )
 
-    # Derive extension from original filename, falling back to content type
-    ext = ""
-    if file.filename:
-        _, ext = os.path.splitext(file.filename)
-        ext = ext.lstrip(".")
-    if not ext:
-        ext = {"audio/mpeg": "mp3", "audio/wav": "wav", "audio/mp4": "mp4", "audio/x-m4a": "m4a"}.get(
-            file.content_type or "", "bin"
-        )
+    # Resolve final extension — prefer filename ext, fall back to MIME map
+    ext = raw_ext or {
+        "audio/mpeg": "mp3", "audio/wav": "wav", "audio/mp4": "mp4",
+        "audio/x-m4a": "m4a", "audio/aac": "aac", "audio/x-aac": "aac",
+        "video/mp4": "mp4", "audio/webm": "webm", "video/webm": "webm",
+        "audio/ogg": "ogg",
+    }.get(file.content_type or "", "webm")
 
     # Upload to Spaces
     key = f"audio/{meeting_id}.{ext}"
@@ -176,7 +183,7 @@ async def upload_audio(
     return _build_detail(meeting)
 
 
-_AUDIO_EXTENSIONS = ["mp3", "wav", "mp4", "m4a"]
+_AUDIO_EXTENSIONS = ["mp3", "wav", "mp4", "m4a", "aac"]
 
 
 @router.delete("/meetings/{meeting_id}", status_code=204)
