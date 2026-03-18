@@ -11,7 +11,7 @@ import { OverviewTab, TasksTab, MeetingsTab } from "./_components";
 import { LogoMark, LogoFull } from "@/components/Logo";
 import { motion } from "framer-motion";
 import {
-    LayoutDashboard, CheckSquare, Mic, Zap, Sparkles, Bell, Search, Settings as SettingsIcon
+    LayoutDashboard, CheckSquare, Mic, Zap, Sparkles, Bell, Search, Settings as SettingsIcon, User as UserIcon
 } from "lucide-react";
 
 const PROCESSING = new Set(["pending", "processing", "transcribed"]);
@@ -124,46 +124,43 @@ export default function CommandCentre() {
             {/* ── Main Dashboard Content ── */}
             <div className="flex flex-1 flex-col relative z-0">
                 {/* Global Dashboard Header (Desktop) */}
-                <header className="hidden md:flex sticky top-0 z-50 items-center justify-between border-b border-text/10 bg-background/80 backdrop-blur-md px-10 py-5">
-                    <div className="flex items-center gap-4">
+                <header className="hidden md:flex sticky top-0 z-50 items-center justify-between bg-background px-16 py-8 border-b border-text/5">
+                    <div className="flex items-center gap-6">
                         <div className="w-10 h-10 rounded-xl bg-accent flex items-center justify-center text-background shadow-lg shadow-accent/20">
-                            {(() => {
-                                const Icon = navLinks.find(t => t.id === tab)?.icon.type || LayoutDashboard;
-                                return <Icon className="w-5 h-5" />;
-                            })()}
+                            <LayoutDashboard className="w-6 h-6" />
                         </div>
                         <div>
-                            <h1 className="text-xl font-bold text-text tracking-tight">
-                                {activeWs ? activeWs.name : (navLinks.find(t => t.id === tab)?.label.split('(')[0].trim() || "Dashboard")}
+                            <h1 className="text-2xl font-black text-text tracking-tighter leading-none">
+                                Dashboard
                             </h1>
-                            <p className="text-[10px] font-bold uppercase tracking-widest text-text/40">
-                                {activeWs ? "Workspace Overview" : "Global Overview"}
+                            <p className="text-[10px] font-black uppercase tracking-widest text-text/20 mt-1.5">
+                                Global Overview
                             </p>
                         </div>
                     </div>
 
+                    <nav className="flex items-center gap-10">
+                        {navLinks.map(link => (
+                            <button
+                                key={link.id}
+                                onClick={() => setTab(link.id)}
+                                className={`text-[12px] font-black uppercase tracking-widest transition-all ${
+                                    tab === link.id ? "text-accent" : "text-text/40 hover:text-text"
+                                }`}
+                            >
+                                {link.label.split('(')[0].trim()}
+                            </button>
+                        ))}
+                        <button className="text-[12px] font-black uppercase tracking-widest text-text/40 hover:text-text transition-all">Insights</button>
+                    </nav>
+
                     <div className="flex items-center gap-6">
-                        <div className="relative hidden lg:block w-64">
-                            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-text/30" />
-                            <input 
-                                type="text" 
-                                placeholder="Search everything..." 
-                                className="w-full bg-text/5 border border-text/10 rounded-xl pl-10 pr-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-accent/20 transition-all"
-                            />
-                        </div>
-                        <div className="h-6 w-px bg-text/10"></div>
-                        <div className="flex items-center gap-3">
-                            <button className="p-2 text-text/40 hover:text-text hover:bg-text/5 rounded-lg transition-colors">
-                                <Bell className="w-5 h-5" />
-                            </button>
-                            <button className="p-2 text-text/40 hover:text-text hover:bg-text/5 rounded-lg transition-colors">
-                                <SettingsIcon className="w-5 h-5" />
-                            </button>
-                            <div className="h-10 w-10 rounded-full bg-text/5 border-2 border-accent/20 overflow-hidden">
-                                <div className="h-full w-full flex items-center justify-center text-accent font-bold">
-                                    {(user.display_name || user.email)[0].toUpperCase()}
-                                </div>
-                            </div>
+                        <button className="relative p-2 text-text/30 hover:text-accent transition-colors">
+                            <Bell className="w-6 h-6" />
+                            <span className="absolute top-1.5 right-1.5 w-2 h-2 bg-red-500 rounded-full border-2 border-background" />
+                        </button>
+                        <div className="w-10 h-10 rounded-full bg-accent/10 border border-accent/20 flex items-center justify-center overflow-hidden shadow-sm">
+                            <UserIcon className="w-6 h-6 text-accent/50" />
                         </div>
                     </div>
                 </header>
@@ -185,7 +182,7 @@ export default function CommandCentre() {
                     </div>
                 </div>
 
-                <div className="w-full relative px-6 md:px-10">
+                <div className="w-full relative px-6 md:px-16 lg:px-24 mt-12">
                     <div className="max-w-7xl mx-auto w-full">
                         {loading ? (
                             <div className="flex flex-col items-center justify-center h-[50vh]">
