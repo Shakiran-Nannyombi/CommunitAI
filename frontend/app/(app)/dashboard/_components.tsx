@@ -164,7 +164,11 @@ export function OverviewTab({ workspaces, meetings, pendingTasks, onComplete, on
                     ) : pendingTasks.map(item => (
                         <div key={item.id} className="grid grid-cols-[1fr_auto_auto_auto] gap-2 px-3 py-2 items-center tr-hover">
                             <p className="text-xs text-zinc-300 truncate">{item.description}</p>
-                            <span className="text-xs text-zinc-500 truncate max-w-24">{item.workspace_emoji} {item.workspace_name ?? "—"}</span>
+                            {item.workspace_id ? (
+                                <Link href={`/workspaces/${item.workspace_id}`} className="text-xs text-zinc-500 truncate max-w-24 hover:text-green-400 transition">{item.workspace_emoji} {item.workspace_name ?? "—"}</Link>
+                            ) : (
+                                <span className="text-xs text-zinc-500 truncate max-w-24">{item.workspace_emoji} {item.workspace_name ?? "—"}</span>
+                            )}
                             <span className="text-xs text-zinc-400">@{item.assignee}</span>
                             <div className="flex gap-1">
                                 <button onClick={() => onComplete(item.id)}
@@ -205,7 +209,11 @@ export function TasksTab({ tasks, activeWs, onComplete, onNudge, nudgeLoading }:
                 ) : tasks.map(item => (
                     <div key={item.id} className={`grid grid-cols-[1fr_auto_auto_auto_auto] gap-2 px-3 py-2 items-center tr-hover ${item.completed ? "opacity-30" : ""}`}>
                         <p className={`text-xs text-zinc-300 truncate ${item.completed ? "line-through" : ""}`}>{item.description}</p>
-                        <span className="text-xs text-green-700 truncate max-w-20">{item.workspace_emoji} {item.workspace_name ?? "—"}</span>
+                        {item.workspace_id ? (
+                            <Link href={`/workspaces/${item.workspace_id}`} className="text-xs text-green-700 truncate max-w-20 hover:text-green-400 transition">{item.workspace_emoji} {item.workspace_name ?? "—"}</Link>
+                        ) : (
+                            <span className="text-xs text-green-700 truncate max-w-20">{item.workspace_emoji} {item.workspace_name ?? "—"}</span>
+                        )}
                         <span className="text-xs text-zinc-500 truncate max-w-24">{item.meeting_title}</span>
                         <span className="text-xs text-zinc-400">@{item.assignee}</span>
                         <div className="flex gap-1">

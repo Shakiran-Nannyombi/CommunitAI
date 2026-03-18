@@ -145,7 +145,7 @@ export default function CommandCentre() {
                 {workspaces.map(ws => (
                     <button
                         key={ws.id}
-                        onClick={() => { setActiveWs(ws); setTab("meetings"); }}
+                        onClick={() => { setActiveWs(ws); setTab("meetings"); router.push(`/workspaces/${ws.id}`); }}
                         title={ws.name}
                         className={`w-9 h-9 rounded flex items-center justify-center text-base transition border ${activeWs?.id === ws.id ? "border-green-600 bg-green-950/40" : "border-zinc-800 text-zinc-600 hover:border-zinc-600"
                             }`}
