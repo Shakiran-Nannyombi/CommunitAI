@@ -103,7 +103,7 @@ export default function LandingPage() {
 
             {/* Hero */}
             <section ref={heroRef} className="relative overflow-hidden max-w-5xl mx-auto px-6 pt-28 pb-16 text-center">
-                <BackgroundBeams className="opacity-25" />
+                <BackgroundBeams className="opacity-60" />
                 <motion.div style={{ y: heroY }} className="relative z-10">
                     <motion.h1
                         initial={{ opacity: 0, y: 28 }} animate={{ opacity: 1, y: 0 }}

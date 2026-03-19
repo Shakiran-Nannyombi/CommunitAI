@@ -70,7 +70,7 @@ export const BackgroundBeams = React.memo(({ className }: { className?: string }
                 <path
                     d="M-380 -189C-380 -189 -312 216 152 343C616 470 684 875 684 875M-373 -197C-373 -197 -305 208 159 335C623 462 691 867 691 867M-366 -205C-366 -205 -298 200 166 327C630 454 698 859 698 859M-359 -213C-359 -213 -291 192 173 319C637 446 705 851 705 851M-352 -221C-352 -221 -284 184 180 311C644 438 712 843 712 843"
                     stroke="url(#paint0_radial_242_278)"
-                    strokeOpacity="0.05"
+                    strokeOpacity="0.15"
                     strokeWidth="0.5"
                 />
                 {paths.map((path, index) => (
@@ -78,8 +78,8 @@ export const BackgroundBeams = React.memo(({ className }: { className?: string }
                         key={`path-${index}`}
                         d={path}
                         stroke={`url(#linearGradient-${index})`}
-                        strokeOpacity="0.4"
-                        strokeWidth="0.5"
+                        strokeOpacity="0.6"
+                        strokeWidth="0.8"
                     />
                 ))}
                 <defs>
@@ -101,10 +101,10 @@ export const BackgroundBeams = React.memo(({ className }: { className?: string }
                                 delay: Math.random() * 10,
                             }}
                         >
-                            <stop stopColor="#18CCFC" stopOpacity="0" />
-                            <stop stopColor="#18CCFC" />
-                            <stop offset="32.5%" stopColor="#6344F5" />
-                            <stop offset="100%" stopColor="#AE48FF" stopOpacity="0" />
+                            <stop stopColor="#4ade80" stopOpacity="0" />
+                            <stop stopColor="#4ade80" />
+                            <stop offset="32.5%" stopColor="#22c55e" />
+                            <stop offset="100%" stopColor="#86efac" stopOpacity="0" />
                         </motion.linearGradient>
                     ))}
                     <radialGradient
