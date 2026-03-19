@@ -3,11 +3,12 @@ import { LogoFull } from "@/components/Logo";
 
 const STACK = [
     { label: "AI Inference", value: "DigitalOcean Gradient AI (llama3.3-70b-instruct)" },
-    { label: "Transcription", value: "Groq Whisper" },
+    { label: "Transcription", value: "Groq Whisper (whisper-large-v3)" },
     { label: "Backend", value: "FastAPI + PostgreSQL (Neon)" },
-    { label: "Storage", value: "Cloudflare R2" },
+    { label: "Storage", value: "DigitalOcean Spaces (S3-compatible)" },
     { label: "Frontend", value: "Next.js 15 + Tailwind v4" },
     { label: "Auth", value: "JWT + bcrypt" },
+    { label: "Deployment", value: "DigitalOcean App Platform + Vercel" },
 ];
 
 const NAV_LINK: React.CSSProperties = { fontSize: "14px", color: "color-mix(in srgb, var(--text), transparent 40%)", textDecoration: "none", fontWeight: 500 };

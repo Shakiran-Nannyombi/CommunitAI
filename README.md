@@ -57,10 +57,41 @@ Upload a meeting recording and CommunitAI handles the rest: transcription, actio
 
 ## Architecture
 
-```
-frontend/   Next.js 15  — App Router · TypeScript · Tailwind CSS v4 · Framer Motion
-backend/    FastAPI     — SQLAlchemy (async) · Alembic · PostgreSQL · DigitalOcean Spaces
-agent/      Gradient AI — ADK pipeline: Whisper → Extract → Analyze → Summarize
+```mermaid
+flowchart TD
+    User(["👤 User\n(Browser)"])
+
+    subgraph Vercel["☁️ Vercel"]
+        FE["Next.js 15\nApp Router · Tailwind v4\nFramer Motion"]
+    end
+
+    subgraph DO["🌊 DigitalOcean App Platform"]
+        BE["Backend\nFastAPI · SQLAlchemy\nAlembic · JWT Auth"]
+        AG["Agent\nGradient AI ADK\nPipeline Orchestrator"]
+    end
+
+    subgraph Pipeline["🤖 AI Pipeline (sequential, fault-tolerant)"]
+        direction LR
+        T["1️⃣ Transcribe\nGroq Whisper\nwhisper-large-v3"]
+        E["2️⃣ Extract\nAction Items\n+ Due Dates"]
+        A["3️⃣ Analyse\nSentiment\nScoring"]
+        S["4️⃣ Summarise\nGradient AI\nllama3.3-70b"]
+        T --> E --> A --> S
+    end
+
+    subgraph Data["💾 Data Layer"]
+        DB[("PostgreSQL\n(Neon)")]
+        SP[("DigitalOcean Spaces\nAudio · Transcripts\nSummaries")]
+    end
+
+    User -->|"HTTPS"| FE
+    FE -->|"REST API"| BE
+    BE -->|"Trigger pipeline"| AG
+    AG --> Pipeline
+    Pipeline -->|"Write results"| DB
+    Pipeline -->|"Store files"| SP
+    BE <-->|"Read / Write"| DB
+    BE <-->|"Signed URLs"| SP
 ```
 
 The agent pipeline runs sequentially and is fault-tolerant — each step writes its result to the DB and Spaces before the next begins, so a failure at any step can be retried from that point.
