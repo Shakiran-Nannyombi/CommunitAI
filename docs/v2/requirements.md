@@ -10,7 +10,7 @@ CommunitAI v2 significantly evolves the existing CommunitAI platform — a Bloom
 4. A Planner Agent chat interface per community workspace
 5. An Impact Tracker dashboard per community workspace
 
-The platform retains its existing tech stack: Next.js 15 + Tailwind v4 frontend, FastAPI + PostgreSQL backend, Groq Whisper for transcription, and Gradient AI (llama3.3-70b-instruct) for all LLM tasks.
+The platform retains its existing tech stack: Next.js 15 + Tailwind v4 frontend, FastAPI + PostgreSQL (Neon) backend, Groq Whisper (`whisper-large-v3`) for transcription, Gradient AI (`llama3.3-70b-instruct`) for all LLM tasks, and DigitalOcean Spaces for object storage. Backend and agent are deployed on DigitalOcean App Platform; frontend on Vercel.
 
 ---
 

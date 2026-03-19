@@ -46,7 +46,7 @@ graph TD
         GRADIENT[Gradient AI<br/>llama3.3-70b-instruct]
         SLACK_WH[Slack Webhook URL]
         GMAIL[mailto: handler]
-        R2[Cloudflare R2]
+        R2[DigitalOcean Spaces<br/>lon1 · S3-compatible]
     end
 
     REC -->|POST /meetings/id/upload| MTG_R
@@ -62,7 +62,7 @@ graph TD
 
     MTG_R -->|trigger| PIPELINE
     PIPELINE --> GRADIENT
-    MTG_R --> R2
+    MTG_R --> SPACES[DigitalOcean Spaces]
     PLAN_R --> GRADIENT
     SLACK_R --> SLACK_WH
 ```
@@ -74,3 +74,5 @@ graph TD
 - **Impact Tracker is read-only** — all metrics are computed from existing tables at query time. No new data collection, no caching layer needed at this scale.
 - **Gmail is pure frontend** — constructing a `mailto:` link requires no backend involvement and avoids OAuth complexity.
 - **Slack webhook is stored per workspace** — the backend calls the webhook server-side to avoid exposing the URL in the browser.
+- **Transcription uses Groq Whisper** — specifically `whisper-large-v3` via the Groq API. Audio is fetched from Spaces by the agent before transcription.
+- **Deployment** — backend and agent run on DigitalOcean App Platform (Docker). Frontend is deployed on Vercel.
